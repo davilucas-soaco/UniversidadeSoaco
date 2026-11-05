@@ -2,25 +2,27 @@
 
 :root,
 html[data-theme='dark'] {
-  --soaco-canvas: #0e131b;
-  --soaco-surface: #151b27;
-  --soaco-elevated: #1a2130;
+  --soaco-canvas: #0b0f1a;
+  --soaco-surface: #121827;
+  --soaco-elevated: #181f30;
   --soaco-ink: #f4f2ec;
-  --soaco-muted: #9aa3b8;
-  --soaco-line: rgb(255 255 255 / 0.08);
-  --soaco-fill: rgb(255 255 255 / 0.07);
-  --soaco-sidebar: #141a24;
+  --soaco-muted: #8892aa;
+  --soaco-line: rgb(255 255 255 / 0.07);
+  --soaco-fill: rgb(255 255 255 / 0.06);
+  --soaco-sidebar: #101522;
   --soaco-sidebar-ink: #f4f2ec;
-  --soaco-sidebar-muted: rgb(244 242 236 / 0.58);
-  --soaco-sidebar-active: rgb(218 215 117 / 0.16);
-  --soaco-hero: #171e33;
-  --soaco-glass: rgb(255 255 255 / 0.08);
-  --soaco-glass-border: rgb(255 255 255 / 0.14);
-  --soaco-glass-hover: rgb(255 255 255 / 0.12);
-  --soaco-glass-highlight: inset 0 1px 0 rgb(255 255 255 / 0.2);
-  --soaco-shadow-card: 0 18px 40px -24px rgb(4 8 24 / 0.72);
-  --soaco-shadow-float: 0 30px 64px -28px rgb(4 8 24 / 0.82);
-  --soaco-shadow-panel: 0 16px 36px -22px rgb(4 8 24 / 0.7);
+  --soaco-sidebar-muted: rgb(244 242 236 / 0.52);
+  --soaco-sidebar-active: rgb(79 126 247 / 0.14);
+  --soaco-hero: #13151f;
+  --soaco-glass: rgb(255 255 255 / 0.07);
+  --soaco-glass-border: rgb(255 255 255 / 0.10);
+  --soaco-glass-hover: rgb(255 255 255 / 0.11);
+  --soaco-glass-highlight: inset 0 1px 0 rgb(255 255 255 / 0.15);
+  --soaco-shadow-card: 0 18px 40px -24px rgb(2 4 18 / 0.80);
+  --soaco-shadow-float: 0 30px 64px -28px rgb(2 4 18 / 0.88);
+  --soaco-shadow-panel: 0 16px 36px -22px rgb(2 4 18 / 0.78);
+  --soaco-accent: #4f7ef7;
+  --soaco-accent-2: #7c5cfc;
 }
 
 html[data-theme='light'] {
@@ -162,10 +164,7 @@ html[data-theme='light'] {
   }
 
   html[data-theme='dark'] .soaco-ambient {
-    background:
-      radial-gradient(circle at 88% -8%, rgb(92 62 168 / 0.42), transparent 38%),
-      radial-gradient(circle at 8% 108%, rgb(38 63 96 / 0.55), transparent 36%),
-      radial-gradient(circle at 70% 90%, rgb(218 215 117 / 0.08), transparent 28%);
+    background: none;
   }
 
   html[data-theme='light'] .soaco-ambient {
@@ -254,7 +253,7 @@ html[data-theme='light'] {
   }
 
   .soaco-nav-item.is-active {
-    color: #dad775;
+    color: #7eb3ff;
     background: var(--soaco-sidebar-active);
   }
 
