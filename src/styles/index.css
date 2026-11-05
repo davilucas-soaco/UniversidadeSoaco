@@ -1,0 +1,667 @@
+@import "tailwindcss";
+
+:root,
+html[data-theme='dark'] {
+  --soaco-canvas: #0e131b;
+  --soaco-surface: #151b27;
+  --soaco-elevated: #1a2130;
+  --soaco-ink: #f4f2ec;
+  --soaco-muted: #9aa3b8;
+  --soaco-line: rgb(255 255 255 / 0.08);
+  --soaco-fill: rgb(255 255 255 / 0.07);
+  --soaco-sidebar: #141a24;
+  --soaco-sidebar-ink: #f4f2ec;
+  --soaco-sidebar-muted: rgb(244 242 236 / 0.58);
+  --soaco-sidebar-active: rgb(218 215 117 / 0.16);
+  --soaco-hero: #171e33;
+  --soaco-glass: rgb(255 255 255 / 0.08);
+  --soaco-glass-border: rgb(255 255 255 / 0.14);
+  --soaco-glass-hover: rgb(255 255 255 / 0.12);
+  --soaco-glass-highlight: inset 0 1px 0 rgb(255 255 255 / 0.2);
+  --soaco-shadow-card: 0 18px 40px -24px rgb(4 8 24 / 0.72);
+  --soaco-shadow-float: 0 30px 64px -28px rgb(4 8 24 / 0.82);
+  --soaco-shadow-panel: 0 16px 36px -22px rgb(4 8 24 / 0.7);
+}
+
+html[data-theme='light'] {
+  --soaco-canvas: #dfe3f2;
+  --soaco-surface: rgb(255 255 255 / 0.78);
+  --soaco-elevated: #ffffff;
+  --soaco-ink: #171b2c;
+  --soaco-muted: #6b7390;
+  --soaco-line: rgb(23 27 44 / 0.08);
+  --soaco-fill: #f3f4fb;
+  --soaco-sidebar: rgb(255 255 255 / 0.82);
+  --soaco-sidebar-ink: #171b2c;
+  --soaco-sidebar-muted: #7a8298;
+  --soaco-sidebar-active: rgb(17 27 45 / 0.06);
+  --soaco-hero: #111b2d;
+  --soaco-glass: rgb(255 255 255 / 0.58);
+  --soaco-glass-border: rgb(255 255 255 / 0.88);
+  --soaco-glass-hover: rgb(23 27 44 / 0.06);
+  --soaco-glass-highlight: inset 0 1px 0 rgb(255 255 255 / 0.95);
+  --soaco-shadow-card: 0 18px 44px -22px rgb(80 90 140 / 0.32);
+  --soaco-shadow-float: 0 32px 64px -28px rgb(70 80 130 / 0.36);
+  --soaco-shadow-panel: 0 16px 36px -20px rgb(80 90 140 / 0.28);
+}
+
+@theme {
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+
+  --color-midnight: #111b2d;
+  --color-navy-ink: #172a43;
+  --color-ocean: #263f60;
+  --color-steel: #52677f;
+  --color-warm-sand: #c49a73;
+  --color-golden: #dad775;
+  --color-soft-beige: #e8d8c4;
+  --color-light-sand: #f1e6d8;
+  --color-ivory: #faf7f1;
+  --color-gold-medal: #c6a15b;
+  --color-silver-medal: #9aa4b2;
+  --color-bronze-medal: #b08a62;
+  --color-canvas: var(--soaco-canvas);
+  --color-surface: var(--soaco-surface);
+  --color-elevated: var(--soaco-elevated);
+  --color-ink: var(--soaco-ink);
+  --color-muted: var(--soaco-muted);
+  --color-line: var(--soaco-line);
+  --color-fill: var(--soaco-fill);
+  --color-sidebar: var(--soaco-sidebar);
+  --color-hero: var(--soaco-hero);
+
+  --shadow-card: var(--soaco-shadow-card);
+  --shadow-float: var(--soaco-shadow-float);
+  --shadow-panel: var(--soaco-shadow-panel);
+
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.5rem;
+  --radius-3xl: 1.75rem;
+  --radius-4xl: 2rem;
+}
+
+@layer base {
+  * {
+    @apply border-line/80;
+  }
+
+  html,
+  body,
+  #root {
+    min-height: 100%;
+  }
+
+  html,
+  body {
+    overflow-x: clip;
+  }
+
+  body {
+    @apply bg-canvas font-sans text-ink antialiased;
+    transition:
+      background-color 220ms ease,
+      color 220ms ease;
+  }
+
+  html[data-theme='light'] body,
+  html[data-theme='dark'] body {
+    background-image: none;
+  }
+
+  ::selection {
+    background: #c49a73;
+    color: #111b2d;
+  }
+
+  button,
+  input,
+  select {
+    font-family: inherit;
+  }
+}
+
+@layer utilities {
+  .steel-grid {
+    background-image:
+      linear-gradient(rgb(250 247 241 / 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(250 247 241 / 0.04) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  .gold-hairline {
+    background: linear-gradient(90deg, transparent, #dad775, transparent);
+  }
+
+  .soaco-glass {
+    background:
+      linear-gradient(180deg, rgb(255 255 255 / 0.14), rgb(255 255 255 / 0.04)),
+      var(--soaco-glass);
+    border: 1px solid var(--soaco-glass-border);
+    box-shadow:
+      var(--soaco-glass-highlight),
+      0 10px 28px -18px rgb(0 0 0 / 0.28);
+    backdrop-filter: blur(22px) saturate(1.6);
+    -webkit-backdrop-filter: blur(22px) saturate(1.6);
+  }
+
+  .soaco-shell {
+    position: relative;
+    display: flex;
+    height: 100svh;
+    overflow: hidden;
+    background: var(--soaco-canvas);
+  }
+
+  .soaco-ambient {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+  }
+
+  html[data-theme='dark'] .soaco-ambient {
+    background:
+      radial-gradient(circle at 88% -8%, rgb(92 62 168 / 0.42), transparent 38%),
+      radial-gradient(circle at 8% 108%, rgb(38 63 96 / 0.55), transparent 36%),
+      radial-gradient(circle at 70% 90%, rgb(218 215 117 / 0.08), transparent 28%);
+  }
+
+  html[data-theme='light'] .soaco-ambient {
+    background:
+      radial-gradient(circle at 90% -10%, rgb(165 176 230 / 0.7), transparent 42%),
+      radial-gradient(circle at 6% 110%, rgb(196 154 115 / 0.22), transparent 34%),
+      radial-gradient(circle at 50% 50%, rgb(255 255 255 / 0.65), transparent 48%);
+  }
+
+  .soaco-frame {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    min-height: 0;
+    min-width: 0;
+    flex: 1;
+    gap: 0.9rem;
+    padding: 0.85rem;
+  }
+
+  .soaco-main {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    min-height: 0;
+    min-width: 0;
+    flex: 1;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .soaco-sidebar {
+    width: 248px;
+    border: 1px solid var(--soaco-glass-border);
+    border-radius: 1.75rem;
+    background: var(--soaco-sidebar);
+    color: var(--soaco-sidebar-ink);
+    box-shadow: var(--soaco-shadow-float);
+    backdrop-filter: blur(28px) saturate(1.35);
+    -webkit-backdrop-filter: blur(28px) saturate(1.35);
+  }
+
+  .soaco-brand-slot {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 1.35rem 1.15rem 0.85rem;
+  }
+
+  .soaco-section-title {
+    margin: 0.2rem 1.2rem 0.45rem;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--soaco-sidebar-muted);
+  }
+
+  .soaco-nav-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .soaco-nav-item {
+    position: relative;
+    display: flex;
+    width: auto;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.8rem;
+    margin-inline: 0.7rem;
+    padding: 0.68rem 0.95rem;
+    border-radius: 1rem;
+    color: var(--soaco-sidebar-muted);
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition:
+      color 180ms ease,
+      background-color 180ms ease;
+  }
+
+  .soaco-nav-item:hover {
+    color: var(--soaco-sidebar-ink);
+    background: var(--soaco-sidebar-active);
+  }
+
+  .soaco-nav-item.is-active {
+    color: #dad775;
+    background: var(--soaco-sidebar-active);
+  }
+
+  html[data-theme='light'] .soaco-nav-item.is-active {
+    color: #111b2d;
+  }
+
+  .soaco-nav-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .soaco-admin-block {
+    margin-top: 1.15rem;
+  }
+
+  .soaco-side-card {
+    margin: auto 0.85rem 0.9rem;
+    border-radius: 1.25rem;
+    background: var(--soaco-fill);
+    padding: 1rem 1.05rem 1.05rem;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--soaco-muted);
+  border-radius: 999px;
+  border: 2px solid transparent;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.introjs-tooltipReferenceLayer,
+.introjs-tooltipReferenceLayer * {
+  font-family: Manrope, ui-sans-serif, system-ui, sans-serif;
+}
+
+#soaco-tour-blur {
+  position: fixed;
+  inset: 0;
+  z-index: 9999990;
+  pointer-events: none;
+}
+
+#soaco-tour-blur > div {
+  position: absolute;
+  background: rgb(17 27 45 / 0.5);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+body.soaco-tour-aside-focus aside {
+  z-index: 9999994 !important;
+}
+
+body.soaco-tour-header-focus header {
+  z-index: 9999994 !important;
+}
+
+.introjs-tooltipReferenceLayer {
+  z-index: 100000010 !important;
+  transition:
+    top 0.48s cubic-bezier(0.22, 1, 0.36, 1),
+    left 0.48s cubic-bezier(0.22, 1, 0.36, 1),
+    width 0.48s cubic-bezier(0.22, 1, 0.36, 1),
+    height 0.48s cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+.introjs-tooltipReferenceLayer .soaco-tour {
+  isolation: isolate;
+}
+
+body.soaco-touring {
+  cursor: default;
+}
+
+html.soaco-touring,
+body.soaco-touring {
+  scroll-padding-top: 96px;
+  scroll-padding-bottom: 40px;
+}
+
+body.soaco-touring [id^='tour-'] {
+  scroll-margin-top: 96px;
+  scroll-margin-bottom: 48px;
+}
+
+.soaco-tour {
+  --introjs-arrow-color: #faf7f1;
+  background: #faf7f1;
+  color: #111b2d;
+  min-width: 292px;
+  max-width: 352px;
+  border-radius: 18px;
+  border: 1px solid rgb(196 154 115 / 0.55);
+  box-shadow:
+    0 22px 48px -18px rgb(17 27 45 / 0.5),
+    0 0 0 1px rgb(196 154 115 / 0.28),
+    0 0 28px rgb(196 154 115 / 0.16);
+  overflow: visible;
+  cursor: default;
+  isolation: isolate;
+  animation: soaco-tour-in 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.soaco-tour::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  z-index: 0;
+  border-radius: 20px;
+  border: 2px solid rgb(196 154 115 / 0.75);
+  pointer-events: none;
+  animation: soaco-tour-ring 2.6s ease-in-out infinite;
+}
+
+.soaco-tour .introjs-tooltip-header,
+.soaco-tour .introjs-tooltiptext,
+.soaco-tour .introjs-tooltipbuttons,
+.soaco-tour .introjs-progress,
+.soaco-tour .soaco-tour-step {
+  position: relative;
+  z-index: 1;
+}
+
+.soaco-tour .introjs-tooltip-header,
+.soaco-tour .introjs-tooltip-title,
+.soaco-tour .introjs-tooltiptext {
+  color: #111b2d;
+}
+
+.soaco-tour .introjs-tooltip-title {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  padding-right: 92px;
+}
+
+.soaco-tour .introjs-tooltiptext {
+  font-size: 14px;
+  line-height: 1.65;
+  color: #52677f;
+  cursor: default;
+}
+
+.soaco-tour .introjs-tooltipbuttons {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  border-top: 1px solid #e8d8c4;
+  padding: 12px 16px 14px;
+}
+
+.soaco-tour .soaco-tour-btn,
+.soaco-tour .introjs-button,
+.soaco-tour .introjs-skipbutton,
+.soaco-tour .introjs-nextbutton,
+.soaco-tour .introjs-prevbutton,
+.soaco-tour .introjs-donebutton {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box !important;
+  float: none !important;
+  width: auto !important;
+  min-width: 88px !important;
+  height: 36px !important;
+  margin: 0 !important;
+  padding: 0 14px !important;
+  border-radius: 10px !important;
+  border-style: solid !important;
+  border-width: 1px !important;
+  font-family: inherit !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  letter-spacing: -0.01em;
+  text-align: center;
+  text-decoration: none !important;
+  text-shadow: none !important;
+  white-space: nowrap;
+  cursor: pointer !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
+}
+
+.soaco-tour .soaco-tour-btn:hover,
+.soaco-tour .introjs-button:hover,
+.soaco-tour .introjs-skipbutton:hover,
+.soaco-tour .introjs-nextbutton:hover,
+.soaco-tour .introjs-prevbutton:hover,
+.soaco-tour .introjs-donebutton:hover {
+  transform: translateY(-1px);
+}
+
+.soaco-tour .soaco-tour-btn:active,
+.soaco-tour .introjs-button:active,
+.soaco-tour .introjs-skipbutton:active,
+.soaco-tour .introjs-nextbutton:active,
+.soaco-tour .introjs-prevbutton:active,
+.soaco-tour .introjs-donebutton:active {
+  transform: translateY(0);
+}
+
+.soaco-tour .introjs-skipbutton {
+  top: 12px;
+  right: 12px;
+  min-width: 76px;
+  height: 32px !important;
+  background: #ffffff !important;
+  color: #52677f !important;
+  border-color: #e8d8c4 !important;
+  font-size: 12px !important;
+}
+
+.soaco-tour .introjs-skipbutton:hover,
+.soaco-tour .introjs-skipbutton:focus {
+  background: #f1e6d8 !important;
+  color: #111b2d !important;
+  border-color: #c49a73 !important;
+  box-shadow: 0 6px 14px -10px rgb(17 27 45 / 0.45);
+}
+
+.soaco-tour .introjs-nextbutton,
+.soaco-tour .introjs-donebutton {
+  background: #111b2d !important;
+  color: #faf7f1 !important;
+  border-color: #111b2d !important;
+}
+
+.soaco-tour .introjs-nextbutton:hover,
+.soaco-tour .introjs-donebutton:hover,
+.soaco-tour .introjs-nextbutton:focus,
+.soaco-tour .introjs-donebutton:focus {
+  background: #263f60 !important;
+  color: #faf7f1 !important;
+  border-color: #c49a73 !important;
+  box-shadow: 0 10px 18px -12px rgb(17 27 45 / 0.85);
+}
+
+.soaco-tour .introjs-prevbutton {
+  margin-right: auto;
+  background: #ffffff !important;
+  color: #111b2d !important;
+  border-color: #e8d8c4 !important;
+}
+
+.soaco-tour .introjs-prevbutton:hover,
+.soaco-tour .introjs-prevbutton:focus {
+  background: #f1e6d8 !important;
+  color: #111b2d !important;
+  border-color: #c49a73 !important;
+}
+
+.soaco-tour .introjs-disabled,
+.soaco-tour .introjs-disabled:hover,
+.soaco-tour .introjs-disabled:focus {
+  opacity: 0.38;
+  cursor: default !important;
+  transform: none;
+  box-shadow: none !important;
+  background: #ffffff !important;
+  color: #52677f !important;
+  border-color: #e8d8c4 !important;
+}
+
+.soaco-tour .introjs-progress {
+  height: 5px;
+  margin: 6px 20px 0;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #ece3d6;
+  box-shadow: inset 0 1px 2px rgb(17 27 45 / 0.08);
+}
+
+.soaco-tour .introjs-progressbar {
+  border-radius: 999px;
+  background: linear-gradient(90deg, #c49a73 0%, #111b2d 100%);
+  transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.soaco-tour-step {
+  margin: 8px 20px 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #c49a73;
+}
+
+.soaco-tour-highlight {
+  border-radius: 16px;
+}
+
+.introjs-helperLayer {
+  border-radius: 16px;
+  outline: 2px solid rgb(196 154 115 / 0.9);
+  outline-offset: 3px;
+  transition:
+    top 0.48s cubic-bezier(0.22, 1, 0.36, 1),
+    left 0.48s cubic-bezier(0.22, 1, 0.36, 1),
+    width 0.48s cubic-bezier(0.22, 1, 0.36, 1),
+    height 0.48s cubic-bezier(0.22, 1, 0.36, 1) !important;
+  animation: soaco-highlight-glow 2.8s ease-in-out infinite;
+}
+
+.introjs-showElement {
+  filter: none !important;
+}
+
+@keyframes soaco-tour-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes soaco-tour-ring {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes soaco-highlight-glow {
+  0%,
+  100% {
+    outline-color: rgb(196 154 115 / 0.78);
+  }
+  50% {
+    outline-color: rgb(217 181 140 / 1);
+  }
+}
+
+html[data-theme='dark'] .soaco-tour {
+  --introjs-arrow-color: #232833;
+  background: #232833;
+  color: #f3f1eb;
+  border-color: rgb(196 154 115 / 0.35);
+}
+
+html[data-theme='dark'] .soaco-tour .introjs-tooltip-header,
+html[data-theme='dark'] .soaco-tour .introjs-tooltip-title {
+  color: #f3f1eb;
+}
+
+html[data-theme='dark'] .soaco-tour .introjs-tooltiptext {
+  color: #9aa3b0;
+}
+
+html[data-theme='dark'] .soaco-tour .introjs-tooltipbuttons {
+  border-top-color: #2d3440;
+}
+
+html[data-theme='dark'] .soaco-tour .introjs-skipbutton,
+html[data-theme='dark'] .soaco-tour .introjs-prevbutton,
+html[data-theme='dark'] .soaco-tour .introjs-disabled,
+html[data-theme='dark'] .soaco-tour .introjs-disabled:hover {
+  background: #1b1f27 !important;
+  color: #9aa3b0 !important;
+  border-color: #2d3440 !important;
+}
+
+html[data-theme='dark'] .soaco-tour .introjs-skipbutton:hover,
+html[data-theme='dark'] .soaco-tour .introjs-prevbutton:hover,
+html[data-theme='dark'] .soaco-tour .introjs-prevbutton:focus {
+  background: #262c36 !important;
+  color: #f3f1eb !important;
+  border-color: #c49a73 !important;
+}
+
+html[data-theme='dark'] .soaco-tour .introjs-progress {
+  background: #2d3440;
+}
+
+html[data-theme='dark'] #soaco-tour-blur > div {
+  background: rgb(8 10 14 / 0.62);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .soaco-tour,
+  .soaco-tour::before,
+  .introjs-helperLayer,
+  .introjs-tooltipReferenceLayer {
+    animation: none !important;
+    transition: none !important;
+  }
+}
