@@ -1,5 +1,4 @@
-import type { ReactNode } from 'react'
-import { useEffect } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { X } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { IconButton } from './IconButton'
@@ -13,43 +12,70 @@ type ModalProps = {
 }
 
 export function Modal({ open, title, children, onClose, width = 'max-w-lg' }: ModalProps) {
+  const [present, setPresent] = useState(open)
+  const [entered, setEntered] = useState(false)
+  const [cache, setCache] = useState({ title, children })
+
   useEffect(() => {
-    if (!open) return
-    const previous = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    return () => {
-      document.body.style.overflow = previous
+    if (open) {
+      setCache({ title, children })
+      setPresent(true)
+      return
     }
+    setEntered(false)
+    const timer = window.setTimeout(() => setPresent(false), 320)
+    return () => window.clearTimeout(timer)
   }, [open])
 
-  if (!open) return null
+  useEffect(() => {
+    if (!present || !open) return
+    const frame = window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => setEntered(true))
+    })
+    return () => window.cancelAnimationFrame(frame)
+  }, [open, present])
+
+  useEffect(() => {
+    if (!present) return
+    const previous = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    document.documentElement.classList.add('soaco-modal-open')
+
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose()
+    }
+    document.addEventListener('keydown', onKey)
+
+    return () => {
+      document.body.style.overflow = previous
+      document.documentElement.classList.remove('soaco-modal-open')
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [onClose, present])
+
+  if (!present) return null
 
   return (
-    <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
-      <button
-        type="button"
-        aria-label="Fechar"
-        className="absolute inset-0 bg-midnight/50 backdrop-blur-md"
-        onClick={onClose}
-      />
+    <div className={cn('soaco-modal', entered && 'is-open')} role="presentation">
+      <button type="button" aria-label="Fechar" className="soaco-modal-scrim" onClick={onClose} />
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"
         className={cn(
-          'relative z-10 w-full rounded-[28px] border border-line bg-elevated p-6 shadow-float',
+          'soaco-modal-panel w-full rounded-[28px] border border-line bg-elevated p-6 shadow-float',
           width,
         )}
       >
         <div className="mb-4 flex items-start justify-between gap-4">
           <h2 id="modal-title" className="text-lg font-bold tracking-tight text-ink">
-            {title}
+            {open ? title : cache.title}
           </h2>
           <IconButton label="Fechar" onClick={onClose} className="-mr-1 -mt-1">
             <X size={18} />
           </IconButton>
         </div>
-        {children}
+        {open ? children : cache.children}
       </div>
     </div>
   )

@@ -235,20 +235,22 @@ export function OnboardingTour() {
   const { openMobile, closeMobile } = useLayout()
   const location = useLocation()
   const navigate = useNavigate()
-  const persistOnExit = useRef(true)
+  // Cada pedido de tour (token) roda uma única vez; trocar de aba não o reabre.
+  const handledToken = useRef(0)
 
   useEffect(() => {
-    if (token === 0) return
+    if (token === 0 || handledToken.current === token) return
 
     if (location.pathname !== '/') {
       navigate('/', { replace: true })
       return
     }
 
+    handledToken.current = token
     let cancelled = false
+    let started = false
     let tour: ReturnType<typeof introJs.tour> | null = null
     let holeTimer = 0
-    persistOnExit.current = true
 
     const run = async () => {
       if (isMobileViewport()) openMobile()
@@ -339,16 +341,16 @@ export function OnboardingTour() {
 
       tour.onComplete(() => {
         unmountTourChrome()
-        if (persistOnExit.current) complete()
         closeMobile()
       })
 
       tour.onExit(() => {
         unmountTourChrome()
-        if (persistOnExit.current) complete()
         closeMobile()
       })
 
+      started = true
+      complete()
       mountTourChrome()
       window.addEventListener('resize', updateBlurHole)
       window.addEventListener('scroll', updateBlurHole, true)
@@ -360,7 +362,8 @@ export function OnboardingTour() {
 
     return () => {
       cancelled = true
-      persistOnExit.current = false
+      // Cancelado antes de abrir (ex.: remontagem do StrictMode): permite nova tentativa.
+      if (!started) handledToken.current = 0
       window.clearTimeout(holeTimer)
       window.removeEventListener('resize', updateBlurHole)
       window.removeEventListener('scroll', updateBlurHole, true)

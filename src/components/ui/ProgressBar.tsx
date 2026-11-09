@@ -12,7 +12,7 @@ export function ProgressBar({ value, className, trackClassName }: ProgressBarPro
   return (
     <div className={cn('h-1.5 w-full overflow-hidden rounded-full bg-fill', className)}>
       <div
-        className={cn('h-full rounded-full bg-golden transition-[width] duration-500', trackClassName)}
+        className={cn('h-full rounded-full bg-accent transition-[width] duration-500', trackClassName)}
         style={{ width: `${width}%` }}
       />
     </div>

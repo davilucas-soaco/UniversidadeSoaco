@@ -13,7 +13,7 @@ export function EmptyState({
 }) {
   return (
     <div className="flex flex-col items-center px-6 py-12 text-center">
-      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-fill text-golden">
+      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-fill text-accent">
         {icon}
       </div>
       <h3 className="text-base font-bold text-ink">{title}</h3>

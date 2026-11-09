@@ -9,7 +9,7 @@ export const currentUser: Collaborator = {
   role: 'colaborador',
   avatarInitials: 'DL',
   points: 128,
-  completedCourses: 12,
+  completedCourses: 5,
   isCurrentUser: true,
 }
 

@@ -56,7 +56,7 @@ export function FeedbackProvider({ children }: { children: ReactNode }) {
 
       {toast ? (
         <div className="pointer-events-none fixed bottom-6 left-1/2 z-[70] -translate-x-1/2 px-4">
-          <div className="pointer-events-auto rounded-full border border-line bg-elevated px-5 py-3 text-sm text-ink shadow-float backdrop-blur-xl">
+          <div className="soaco-toast pointer-events-auto rounded-full border border-line bg-[var(--soaco-popover-glass)] px-5 py-3 text-sm font-medium text-ink shadow-float backdrop-blur-xl">
             {toast.message}
           </div>
         </div>

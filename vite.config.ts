@@ -11,6 +11,16 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(rootDir, 'src'),
+      react: path.resolve(rootDir, 'node_modules/react'),
+      'react-dom': path.resolve(rootDir, 'node_modules/react-dom'),
     },
+    dedupe: ['react', 'react-dom'],
+  },
+  optimizeDeps: {
+    include: ['react', 'react-dom', '@react-three/fiber', '@react-three/drei', 'three'],
+  },
+  server: {
+    host: true,
+    port: 5173,
   },
 })

@@ -8,6 +8,7 @@ import {
   LayoutGrid,
   LineChart,
   LogOut,
+  Route,
   Settings,
   UserRound,
   Users,
@@ -16,6 +17,7 @@ import {
 export const navIcons: Record<string, LucideIcon> = {
   dashboard: LayoutGrid,
   contents: BookOpen,
+  workflow: Route,
   performance: LineChart,
   ranking: Award,
   profile: UserRound,

@@ -38,6 +38,81 @@ export type Collaborator = {
   isCurrentUser?: boolean
 }
 
+export type ProfileNotifications = {
+  courses: boolean
+  deadlines: boolean
+  ranking: boolean
+  digest: boolean
+}
+
+export type ProfileAccount = {
+  name: string
+  email: string
+  phone: string
+  location: string
+  photoUrl: string | null
+  notifications: ProfileNotifications
+  dndEnabled: boolean
+  dndFrom: string
+  dndTo: string
+  passwordHash: string | null
+}
+
+export type Instructor = {
+  id: string
+  name: string
+  title: string
+  initials: string
+  bio: string
+  stats: string
+}
+
+export type LessonKind = 'video' | 'pdf' | 'quiz'
+
+export type ContentKind = 'document' | 'video'
+
+export type VideoProvider = 'youtube' | 'vimeo' | 'loom'
+
+export type AuthoredDocument = {
+  id: string
+  name: string
+  mime: string
+  size: number
+}
+
+export type AuthoredCourse = {
+  id: string
+  title: string
+  kind: ContentKind
+  videoUrl?: string
+  videoProvider?: VideoProvider
+  embedUrl?: string
+  documents: AuthoredDocument[]
+  createdAt: string
+}
+
+export type Lesson = {
+  id: string
+  title: string
+  kind: LessonKind
+  /** Duração em minutos (vídeo) */
+  durationMin?: number
+  /** Páginas (apostila) */
+  pages?: number
+  /** Questões (quiz) */
+  questions?: number
+  points?: number
+  mandatory?: boolean
+  done: boolean
+}
+
+export type CourseModule = {
+  id: string
+  title: string
+  summary: string
+  lessons: Lesson[]
+}
+
 export type Course = {
   id: string
   title: string
@@ -50,7 +125,22 @@ export type Course = {
   cover: {
     accent: CoverAccent
     icon: CoverIcon
+    image: string
   }
+  instructorId: string
+  lessonsCount: number
+  moduleTitles: string[]
+  mandatory?: boolean
+  /** Data limite (ISO yyyy-mm-dd) para cursos obrigatórios */
+  dueDate?: string
+  isNew?: boolean
+  objectives: string[]
+  authored?: boolean
+  contentKind?: ContentKind
+  videoUrl?: string
+  videoProvider?: VideoProvider
+  embedUrl?: string
+  documents?: AuthoredDocument[]
 }
 
 export type PerformancePoint = {

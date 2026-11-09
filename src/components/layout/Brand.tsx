@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom'
+import { useTheme } from '@/context/ThemeContext'
 import { cn } from '@/lib/cn'
-import logoOnLight from '@/assets/brand/logo-soaco-on-light.png'
-import logoOnDark from '@/assets/brand/logo-soaco.png'
+import logoStackedLight from '@/assets/brand/logo-soaco-stacked-on-light.png'
+import logoStackedNavy from '@/assets/brand/logo-soaco-stacked-on-dark.png'
+import logoStackedCharcoal from '@/assets/brand/logo-soaco-stacked-on-charcoal.png'
 import logoMark from '@/assets/brand/logo-soaco-mark.png'
 
 export function BrandMark({
@@ -13,7 +15,9 @@ export function BrandMark({
   onDark?: boolean
   compact?: boolean
 }) {
-  const src = compact ? logoMark : onDark ? logoOnDark : logoOnLight
+  const { isDark } = useTheme()
+  const stacked = onDark ? (isDark ? logoStackedCharcoal : logoStackedNavy) : logoStackedLight
+  const src = compact ? logoMark : stacked
 
   return (
     <Link to="/" className={cn('flex shrink-0 items-center justify-center', className)} aria-label="Universidade Só Aço">
@@ -22,7 +26,7 @@ export function BrandMark({
         alt="Universidade Só Aço"
         className={cn(
           'object-contain object-center',
-          compact ? 'h-9 w-9' : 'h-11 w-auto max-w-[168px]',
+          compact ? 'h-9 w-9' : 'h-[4.75rem] w-auto max-w-[158px]',
         )}
       />
     </Link>

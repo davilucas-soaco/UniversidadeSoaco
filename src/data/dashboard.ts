@@ -1,19 +1,38 @@
 import { collaborators, currentUser } from '@/data/collaborators'
-import { continueLearningCourses, courses } from '@/data/courses'
+import { completedCourses, continueLearningCourses, courses, mandatoryCourses, pendingCourses } from '@/data/courses'
+import { performanceByPeriod } from '@/data/performance'
+import { daysUntil } from '@/lib/format'
 
-const inProgress = courses.filter((course) => course.status === 'em_andamento')
-const pending = courses.filter((course) => course.status === 'pendente')
+const averageProgress = Math.round(
+  courses.reduce((sum, course) => sum + course.progress, 0) / Math.max(1, courses.length),
+)
+
+const monthPoints = performanceByPeriod['30d'].reduce((sum, point) => sum + point.points, 0)
+
+/** Média das avaliações respondidas pelo colaborador (mock até integrar com o backend). */
+const assessmentAverage = 92.4
 
 export const dashboardStats = {
   points: currentUser.points,
-  completedCourses: currentUser.completedCourses,
-  inProgressCourses: inProgress.length,
-  pendingTrainings: pending.length,
-  completionRate: Math.round(
-    (currentUser.completedCourses / (currentUser.completedCourses + inProgress.length + pending.length)) *
-      100,
-  ),
+  monthPoints,
+  completedCourses: completedCourses.length,
+  totalCourses: courses.length,
+  inProgressCourses: continueLearningCourses.length,
+  pendingTrainings: pendingCourses.length,
+  mandatoryOpen: mandatoryCourses.length,
+  completionRate: Math.round((completedCourses.length / Math.max(1, courses.length)) * 100),
+  /** Progresso médio do plano trimestral (todos os cursos atribuídos). */
+  quarterProgress: averageProgress,
+  quarterRemaining: courses.filter((course) => course.status !== 'concluido').length,
+  assessmentAverage,
 }
+
+export const quarterStatus =
+  dashboardStats.quarterProgress >= 75
+    ? 'Alto desempenho'
+    : dashboardStats.quarterProgress >= 40
+      ? 'No ritmo'
+      : 'Atenção ao prazo'
 
 export const rankingPreview = [...collaborators]
   .sort((a, b) => {
@@ -21,49 +40,82 @@ export const rankingPreview = [...collaborators]
     if (b.completedCourses !== a.completedCourses) return b.completedCourses - a.completedCourses
     return a.name.localeCompare(b.name, 'pt-BR')
   })
-  .slice(0, 5)
   .map((collaborator, index) => ({
     ...collaborator,
     position: index + 1,
   }))
 
+export const rankingTop5 = rankingPreview.slice(0, 5)
+
 export const currentUserRank =
   rankingPreview.find((item) => item.isCurrentUser)?.position ??
   collaborators.findIndex((item) => item.id === currentUser.id) + 1
 
-export const featuredCourses = continueLearningCourses.slice(0, 3)
+export const currentUserPercentile = Math.max(
+  1,
+  Math.round((currentUserRank / Math.max(1, collaborators.length)) * 100),
+)
+
+export const featuredCourses = [
+  ...continueLearningCourses.slice(0, 2),
+  ...pendingCourses.filter((course) => course.isNew).slice(0, 1),
+]
+
+export const studyWeek = {
+  minutes: 405,
+  goalMinutes: 330,
+}
+
+export const deadlines = courses
+  .filter((course) => course.mandatory && course.dueDate && course.status !== 'concluido')
+  .sort((a, b) => daysUntil(a.dueDate!) - daysUntil(b.dueDate!))
+
+export const executiveTrail = {
+  name: 'Trilha Executiva',
+  focus: 'Gestão Administrativa',
+  progress: dashboardStats.completionRate,
+}
+
+export const annualGoal = {
+  doneHours: Math.round(
+    courses.reduce((sum, course) => sum + (course.durationHours * course.progress) / 100, 0),
+  ),
+  targetHours: 80,
+}
 
 export const indicatorMetrics = [
   {
     key: 'points',
-    label: 'Pontuação acumulada',
-    value: `${dashboardStats.points}`,
-    suffix: 'pontos',
-    trend: 12,
-    sparkline: [18, 22, 19, 28, 24, 30, 34],
+    label: 'Pontuação',
+    value: dashboardStats.points,
+    unit: 'pts',
+    detail: `+${dashboardStats.monthPoints} pts no mês`,
+    trend: 'up',
   },
   {
     key: 'completed',
     label: 'Cursos concluídos',
-    value: `${dashboardStats.completedCourses}`,
-    suffix: 'cursos',
-    trend: 8,
-    sparkline: [8, 9, 9, 10, 11, 11, 12],
+    value: dashboardStats.completedCourses,
+    unit: 'cursos',
+    detail: `Meta: ${dashboardStats.totalCourses}`,
+    trend: 'neutral',
   },
   {
     key: 'progress',
     label: 'Em andamento',
-    value: `${dashboardStats.inProgressCourses}`,
-    suffix: 'cursos',
-    trend: -4,
-    sparkline: [6, 5, 5, 4, 4, 3, 3],
+    value: dashboardStats.inProgressCourses,
+    unit: 'cursos',
+    detail: `${dashboardStats.mandatoryOpen} obrigatórios em aberto`,
+    trend: 'sync',
   },
   {
-    key: 'pending',
-    label: 'Pendentes',
-    value: `${dashboardStats.pendingTrainings}`,
-    suffix: 'treinamentos',
-    trend: -2,
-    sparkline: [8, 7, 7, 6, 6, 5, 5],
+    key: 'score',
+    label: 'Aproveitamento',
+    value: dashboardStats.assessmentAverage,
+    unit: '%',
+    detail: `Top ${currentUserPercentile}%`,
+    trend: 'neutral',
   },
 ] as const
+
+export type IndicatorMetric = (typeof indicatorMetrics)[number]

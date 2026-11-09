@@ -1,16 +1,18 @@
 <!doctype html>
-<html lang="pt-BR" data-theme="dark">
+<html lang="pt-BR" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <script>
       (function () {
         try {
           var theme = localStorage.getItem('universidade-soaco.theme')
-          if (theme !== 'light' && theme !== 'dark') theme = 'dark'
+          if (theme !== 'light' && theme !== 'dark') theme = 'light'
           document.documentElement.setAttribute('data-theme', theme)
           document.documentElement.style.colorScheme = theme
+          document.documentElement.classList.toggle('dark', theme === 'dark')
         } catch (error) {
-          document.documentElement.setAttribute('data-theme', 'dark')
+          document.documentElement.setAttribute('data-theme', 'light')
+          document.documentElement.classList.remove('dark')
         }
       })()
     </script>
@@ -24,7 +26,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Monda:wght@400;700&display=swap"
       rel="stylesheet"
     />
     <title>Universidade Corporativa Só Aço</title>

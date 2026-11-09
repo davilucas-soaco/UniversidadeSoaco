@@ -5,12 +5,30 @@ export const courses: Course[] = [
     id: 'curso-seguranca',
     title: 'Segurança do Trabalho',
     category: 'Segurança do Trabalho',
-    description: 'Normas, equipamentos de proteção e condutas obrigatórias no ambiente industrial.',
+    description:
+      'Normas, equipamentos de proteção e condutas obrigatórias no ambiente industrial da Só Aço.',
     durationHours: 4,
     points: 10,
     status: 'em_andamento',
     progress: 68,
-    cover: { accent: 'navy', icon: 'shield' },
+    cover: { accent: 'navy', icon: 'shield', image: '/covers/seguranca.jpg' },
+    instructorId: 'ins-vasconcelos',
+    lessonsCount: 18,
+    moduleTitles: [
+      'Fundamentos de segurança',
+      'EPIs e EPCs',
+      'Riscos na operação',
+      'Procedimentos de emergência',
+      'Avaliação final',
+    ],
+    mandatory: true,
+    dueDate: '2026-11-21',
+    objectives: [
+      'Identificar os riscos presentes em cada área da planta.',
+      'Selecionar e inspecionar os EPIs adequados à atividade.',
+      'Aplicar o procedimento correto diante de um incidente.',
+      'Registrar ocorrências conforme o padrão da Só Aço.',
+    ],
   },
   {
     id: 'curso-excel',
@@ -21,7 +39,21 @@ export const courses: Course[] = [
     points: 7,
     status: 'em_andamento',
     progress: 41,
-    cover: { accent: 'ocean', icon: 'chart' },
+    cover: { accent: 'ocean', icon: 'chart', image: '/covers/excel.jpg' },
+    instructorId: 'ins-nogueira',
+    lessonsCount: 22,
+    moduleTitles: [
+      'Organização de planilhas',
+      'Fórmulas essenciais',
+      'Tabelas dinâmicas',
+      'Gráficos e indicadores',
+      'Projeto prático',
+    ],
+    objectives: [
+      'Estruturar bases de dados limpas e consistentes.',
+      'Construir indicadores com fórmulas e tabelas dinâmicas.',
+      'Apresentar resultados em gráficos claros.',
+    ],
   },
   {
     id: 'curso-compras',
@@ -32,7 +64,15 @@ export const courses: Course[] = [
     points: 9,
     status: 'em_andamento',
     progress: 24,
-    cover: { accent: 'sand', icon: 'clipboard' },
+    cover: { accent: 'sand', icon: 'clipboard', image: '/covers/compras.jpg' },
+    instructorId: 'ins-prado',
+    lessonsCount: 12,
+    moduleTitles: ['Solicitação de compra', 'Cotações e alçadas', 'Fornecedores', 'Recebimento'],
+    objectives: [
+      'Abrir uma solicitação de compra completa.',
+      'Conduzir cotações dentro das alçadas de aprovação.',
+      'Cadastrar e avaliar fornecedores.',
+    ],
   },
   {
     id: 'curso-processos',
@@ -43,7 +83,18 @@ export const courses: Course[] = [
     points: 8,
     status: 'pendente',
     progress: 0,
-    cover: { accent: 'steel', icon: 'workflow' },
+    cover: { accent: 'steel', icon: 'workflow', image: '/covers/processos.jpg' },
+    instructorId: 'ins-valente',
+    lessonsCount: 15,
+    moduleTitles: ['Mapeamento de processos', 'Padronização', 'Indicadores', 'Melhoria contínua'],
+    mandatory: true,
+    dueDate: '2026-11-12',
+    isNew: true,
+    objectives: [
+      'Mapear um processo ponta a ponta.',
+      'Definir padrões e responsáveis.',
+      'Acompanhar indicadores de melhoria.',
+    ],
   },
   {
     id: 'curso-integracao',
@@ -54,7 +105,11 @@ export const courses: Course[] = [
     points: 8,
     status: 'concluido',
     progress: 100,
-    cover: { accent: 'navy', icon: 'building' },
+    cover: { accent: 'navy', icon: 'building', image: '/covers/integracao.jpg' },
+    instructorId: 'ins-brandao',
+    lessonsCount: 8,
+    moduleTitles: ['Nossa história', 'Estrutura e áreas', 'Rotinas e benefícios'],
+    objectives: ['Conhecer a trajetória da Só Aço.', 'Entender a estrutura das áreas.'],
   },
   {
     id: 'curso-cultura',
@@ -65,7 +120,11 @@ export const courses: Course[] = [
     points: 10,
     status: 'concluido',
     progress: 100,
-    cover: { accent: 'gold', icon: 'flag' },
+    cover: { accent: 'gold', icon: 'flag', image: '/covers/cultura.jpg' },
+    instructorId: 'ins-brandao',
+    lessonsCount: 6,
+    moduleTitles: ['Missão, visão e valores', 'Comportamentos esperados', 'Reconhecimento'],
+    objectives: ['Aplicar os valores no dia a dia.', 'Reconhecer condutas alinhadas à cultura.'],
   },
   {
     id: 'curso-etica',
@@ -76,7 +135,11 @@ export const courses: Course[] = [
     points: 9,
     status: 'concluido',
     progress: 100,
-    cover: { accent: 'navy', icon: 'book' },
+    cover: { accent: 'navy', icon: 'book', image: '/covers/etica.jpg' },
+    instructorId: 'ins-brandao',
+    lessonsCount: 5,
+    moduleTitles: ['Princípios de integridade', 'Conflitos de interesse', 'Canal de denúncias'],
+    objectives: ['Identificar situações de conflito de interesse.', 'Usar o canal de denúncias.'],
   },
   {
     id: 'curso-lgpd',
@@ -87,7 +150,13 @@ export const courses: Course[] = [
     points: 8,
     status: 'pendente',
     progress: 0,
-    cover: { accent: 'ocean', icon: 'shield' },
+    cover: { accent: 'ocean', icon: 'shield', image: '/covers/lgpd.jpg' },
+    instructorId: 'ins-nogueira',
+    lessonsCount: 7,
+    moduleTitles: ['Fundamentos da LGPD', 'Dados no dia a dia', 'Incidentes e resposta'],
+    mandatory: true,
+    dueDate: '2026-11-20',
+    objectives: ['Classificar dados pessoais e sensíveis.', 'Agir corretamente em um incidente.'],
   },
   {
     id: 'curso-atendimento',
@@ -98,7 +167,11 @@ export const courses: Course[] = [
     points: 7,
     status: 'pendente',
     progress: 0,
-    cover: { accent: 'sand', icon: 'heart' },
+    cover: { accent: 'sand', icon: 'heart', image: '/covers/atendimento.jpg' },
+    instructorId: 'ins-brandao',
+    lessonsCount: 6,
+    moduleTitles: ['Postura de atendimento', 'Comunicação entre áreas', 'Resolução de conflitos'],
+    objectives: ['Atender demandas internas com clareza.', 'Resolver conflitos com empatia.'],
   },
   {
     id: 'curso-comunicacao',
@@ -109,7 +182,11 @@ export const courses: Course[] = [
     points: 8,
     status: 'concluido',
     progress: 100,
-    cover: { accent: 'steel', icon: 'book' },
+    cover: { accent: 'steel', icon: 'book', image: '/covers/comunicacao.jpg' },
+    instructorId: 'ins-valente',
+    lessonsCount: 10,
+    moduleTitles: ['Escrita objetiva', 'Reuniões produtivas', 'Apresentações'],
+    objectives: ['Escrever e-mails objetivos.', 'Conduzir reuniões com pauta e ata.'],
   },
   {
     id: 'curso-primeiros-socorros',
@@ -120,7 +197,11 @@ export const courses: Course[] = [
     points: 10,
     status: 'concluido',
     progress: 100,
-    cover: { accent: 'navy', icon: 'heart' },
+    cover: { accent: 'navy', icon: 'heart', image: '/covers/primeiros-socorros.jpg' },
+    instructorId: 'ins-vasconcelos',
+    lessonsCount: 12,
+    moduleTitles: ['Avaliação da vítima', 'RCP e desengasgo', 'Queimaduras e cortes', 'Simulado'],
+    objectives: ['Avaliar uma vítima com segurança.', 'Executar RCP e manobras básicas.'],
   },
   {
     id: 'curso-incendio',
@@ -131,7 +212,11 @@ export const courses: Course[] = [
     points: 10,
     status: 'pendente',
     progress: 0,
-    cover: { accent: 'gold', icon: 'shield' },
+    cover: { accent: 'gold', icon: 'shield', image: '/covers/incendio.jpg' },
+    instructorId: 'ins-siqueira',
+    lessonsCount: 8,
+    moduleTitles: ['Classes de fogo', 'Extintores', 'Plano de abandono'],
+    objectives: ['Escolher o extintor correto.', 'Seguir o plano de abandono da planta.'],
   },
   {
     id: 'curso-logistica',
@@ -142,12 +227,27 @@ export const courses: Course[] = [
     points: 8,
     status: 'pendente',
     progress: 0,
-    cover: { accent: 'ocean', icon: 'workflow' },
+    cover: { accent: 'ocean', icon: 'workflow', image: '/covers/logistica.jpg' },
+    instructorId: 'ins-prado',
+    lessonsCount: 9,
+    moduleTitles: ['Conferência de carga', 'Documentação fiscal', 'Fluxo de saída'],
+    objectives: ['Conferir cargas sem divergências.', 'Emitir a documentação de saída.'],
   },
 ]
+
+export const courseById = Object.fromEntries(courses.map((course) => [course.id, course])) as Record<
+  string,
+  Course
+>
 
 export const continueLearningCourses = courses.filter((course) => course.status === 'em_andamento')
 
 export const completedCourses = courses.filter((course) => course.status === 'concluido')
 
 export const pendingCourses = courses.filter((course) => course.status === 'pendente')
+
+export const mandatoryCourses = courses.filter(
+  (course) => course.mandatory && course.status !== 'concluido',
+)
+
+export const courseCategories = Array.from(new Set(courses.map((course) => course.category)))

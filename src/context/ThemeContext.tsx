@@ -20,19 +20,20 @@ function readStoredTheme(): Theme {
   } catch {
     /* ignore */
   }
-  return 'dark'
+  return 'light'
 }
 
 function applyTheme(theme: Theme) {
   document.documentElement.dataset.theme = theme
   document.documentElement.style.colorScheme = theme
+  document.documentElement.classList.toggle('dark', theme === 'dark')
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>(() => {
-    if (typeof document === 'undefined') return 'dark'
+    if (typeof document === 'undefined') return 'light'
     const current = document.documentElement.dataset.theme
-    return current === 'light' ? 'light' : 'dark'
+    return current === 'dark' ? 'dark' : 'light'
   })
 
   useEffect(() => {

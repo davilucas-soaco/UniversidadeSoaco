@@ -22,7 +22,7 @@ export function SegmentedControl<T extends string>({
           type="button"
           onClick={() => onChange(option.value)}
           className={cn(
-            'rounded-full px-3 py-1.5 text-xs font-semibold transition',
+            'soaco-press rounded-full px-3 py-1.5 text-xs font-semibold',
             value === option.value
               ? 'bg-elevated text-ink shadow-sm'
               : 'text-muted hover:text-ink',
