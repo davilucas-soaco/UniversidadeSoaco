@@ -1,12 +1,14 @@
 import { createContext, useCallback, useContext, useMemo, type ReactNode } from 'react'
-import { currentUser } from '@/data/collaborators'
-import { defaultProfile, PROFILE_STORAGE_KEY } from '@/data/profile'
+import { useAuth } from '@/context/AuthContext'
+import { defaultPreferences, profileStorageKey } from '@/data/profile'
 import { useLocalStorageState } from '@/hooks/useLocalStorageState'
-import { sha256Hex } from '@/lib/hash'
 import { initialsFrom } from '@/lib/format'
-import type { ProfileAccount, ProfileNotifications } from '@/types'
+import type { ProfileAccount, ProfileNotifications, SessionUser } from '@/types'
 
-type ProfilePatch = Partial<Omit<ProfileAccount, 'notifications' | 'passwordHash'>>
+type ProfilePatch = Partial<Omit<ProfileAccount, 'notifications'>>
+
+/** Ajustes locais do perfil; o que não foi editado vem do cadastro no banco. */
+type StoredProfile = ProfilePatch & { notifications?: Partial<ProfileNotifications> }
 
 type ProfileContextValue = {
   profile: ProfileAccount
@@ -22,81 +24,84 @@ type ProfileContextValue = {
 
 const ProfileContext = createContext<ProfileContextValue | null>(null)
 
-function mergeProfile(stored: ProfileAccount): ProfileAccount {
+function buildProfile(user: SessionUser, stored: StoredProfile): ProfileAccount {
   return {
-    ...defaultProfile,
-    ...stored,
-    notifications: { ...defaultProfile.notifications, ...stored.notifications },
+    name: stored.name ?? user.name,
+    email: stored.email ?? user.email,
+    phone: stored.phone ?? user.phone ?? '',
+    location: stored.location ?? user.location ?? '',
+    photoUrl: stored.photoUrl !== undefined ? stored.photoUrl : user.photoUrl,
+    notifications: { ...defaultPreferences.notifications, ...stored.notifications },
+    dndEnabled: stored.dndEnabled ?? defaultPreferences.dndEnabled,
+    dndFrom: stored.dndFrom ?? defaultPreferences.dndFrom,
+    dndTo: stored.dndTo ?? defaultPreferences.dndTo,
   }
 }
 
-export function ProfileProvider({ children }: { children: ReactNode }) {
-  const [stored, setProfile] = useLocalStorageState<ProfileAccount>(PROFILE_STORAGE_KEY, defaultProfile)
-  const profile = useMemo(() => mergeProfile(stored), [stored])
+function ProfileStore({ user, children }: { user: SessionUser; children: ReactNode }) {
+  const { changePassword } = useAuth()
+  const [stored, setStored] = useLocalStorageState<StoredProfile>(profileStorageKey(user.id), {})
+  const profile = useMemo(() => buildProfile(user, stored), [user, stored])
 
   const updateProfile = useCallback(
     (patch: ProfilePatch) => {
-      setProfile((current) => ({ ...current, ...patch }))
+      setStored((current) => ({ ...current, ...patch }))
     },
-    [setProfile],
+    [setStored],
   )
 
   const setPhoto = useCallback(
     (photoUrl: string | null) => {
-      setProfile((current) => ({ ...current, photoUrl }))
+      setStored((current) => ({ ...current, photoUrl }))
     },
-    [setProfile],
+    [setStored],
   )
 
   const setNotification = useCallback(
     (key: keyof ProfileNotifications, value: boolean) => {
-      setProfile((current) => ({
+      setStored((current) => ({
         ...current,
         notifications: { ...current.notifications, [key]: value },
       }))
     },
-    [setProfile],
+    [setStored],
   )
 
-  const changePassword = useCallback(
-    async (currentPassword: string, nextPassword: string) => {
-      if (profile.passwordHash) {
-        const currentHash = await sha256Hex(currentPassword)
-        if (currentHash !== profile.passwordHash) {
-          throw new Error('A senha atual não confere.')
-        }
-      }
-      const nextHash = await sha256Hex(nextPassword)
-      setProfile((current) => ({ ...current, passwordHash: nextHash }))
-    },
-    [profile.passwordHash, setProfile],
-  )
-
-  const initials = initialsFrom(profile.name) || currentUser.avatarInitials
-  const firstName = profile.name.split(' ').filter(Boolean)[0] ?? currentUser.firstName
+  const initials = initialsFrom(profile.name) || user.initials
+  const firstName = profile.name.split(' ').filter(Boolean)[0] ?? user.firstName
 
   const value = useMemo(
     () => ({
       profile,
       initials,
       firstName,
-      jobTitle: currentUser.jobTitle,
-      sector: currentUser.sector,
+      jobTitle: user.jobTitle,
+      sector: user.sector,
       updateProfile,
       setPhoto,
       setNotification,
       changePassword,
     }),
-    [profile, initials, firstName, updateProfile, setPhoto, setNotification, changePassword],
+    [profile, initials, firstName, user.jobTitle, user.sector, updateProfile, setPhoto, setNotification, changePassword],
   )
 
   return <ProfileContext.Provider value={value}>{children}</ProfileContext.Provider>
 }
 
+export function ProfileProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth()
+  if (!user) return <>{children}</>
+  return (
+    <ProfileStore key={user.id} user={user}>
+      {children}
+    </ProfileStore>
+  )
+}
+
 export function useProfile() {
   const context = useContext(ProfileContext)
   if (!context) {
-    throw new Error('useProfile deve ser usado dentro de ProfileProvider.')
+    throw new Error('useProfile deve ser usado dentro de ProfileProvider, com usuário logado.')
   }
   return context
 }

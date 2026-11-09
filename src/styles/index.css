@@ -34,6 +34,9 @@ html[data-theme='light'] {
   --soaco-accent-ink: #ffffff;
   --soaco-danger: #e11d48;
   --soaco-success: #0f8a5f;
+  --soaco-podium-gold: #d99100;
+  --soaco-podium-silver: #7d8ea8;
+  --soaco-podium-bronze: #b8692e;
 }
 
 html[data-theme='dark'] {
@@ -67,6 +70,9 @@ html[data-theme='dark'] {
   --soaco-accent-ink: #ffffff;
   --soaco-danger: #fb7185;
   --soaco-success: #34d399;
+  --soaco-podium-gold: #ffad00;
+  --soaco-podium-silver: #cbd5e1;
+  --soaco-podium-bronze: #e0915a;
 }
 
 @theme {
@@ -98,6 +104,9 @@ html[data-theme='dark'] {
   --color-accent-strong: var(--soaco-accent-strong);
   --color-accent-2: var(--soaco-accent-2);
   --color-accent-ink: var(--soaco-accent-ink);
+  --color-podium-gold: var(--soaco-podium-gold);
+  --color-podium-silver: var(--soaco-podium-silver);
+  --color-podium-bronze: var(--soaco-podium-bronze);
   --color-danger: var(--soaco-danger);
   --color-success: var(--soaco-success);
 

@@ -21,7 +21,7 @@ export const onboardingSteps: OnboardingStep[] = [
     id: 'tabs',
     title: 'Menu lateral',
     description:
-      'Pelo menu à esquerda você acessa Dashboard, Meus Conteúdos e as áreas de administração. Perfil, ajuda e saída ficam no menu da sua conta, no topo.',
+      'Pelo menu à esquerda você acessa Dashboard, Meus Cursos e as áreas de administração. Perfil, ajuda e saída ficam no menu da sua conta, no topo.',
     element: '#tour-collaborator-nav',
     position: 'right',
   },
@@ -29,7 +29,7 @@ export const onboardingSteps: OnboardingStep[] = [
     id: 'contents-tab',
     title: 'Meus Conteúdos',
     description:
-      'Aqui ficam os cursos e trilhas atribuídos a você. É o caminho principal para iniciar ou continuar um treinamento.',
+      'Aqui ficam os cursos atribuídos a você. É o caminho principal para iniciar ou continuar um treinamento.',
     element: '#tour-nav-contents',
     position: 'right',
   },

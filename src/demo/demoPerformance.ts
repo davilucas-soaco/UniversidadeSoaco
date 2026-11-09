@@ -37,9 +37,3 @@ export const performanceByPeriod: Record<PeriodKey, PerformancePoint[]> = {
     { label: 'Nov', points: 6, average: 11 },
   ],
 }
-
-export const periodLabels: Record<PeriodKey, string> = {
-  '30d': 'Últimos 30 dias',
-  '6m': 'Últimos 6 meses',
-  '12m': 'Últimos 12 meses',
-}

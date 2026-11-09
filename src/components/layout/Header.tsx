@@ -3,12 +3,15 @@ import {
   Bell,
   ChevronDown,
   CircleHelp,
+  FlaskConical,
   GraduationCap,
   LogOut,
   Menu,
   UserRound,
 } from 'lucide-react'
 import { notifications } from '@/data/activity'
+import { useAuth } from '@/context/AuthContext'
+import { useDemoMode } from '@/context/DemoModeContext'
 import { useFeedback } from '@/context/FeedbackContext'
 import { useLayout } from '@/context/LayoutContext'
 import { useOnboarding } from '@/context/OnboardingContext'
@@ -28,7 +31,9 @@ const toolButtonClass =
 
 export function Header() {
   const { openMobile } = useLayout()
-  const { showComingSoon, showToast } = useFeedback()
+  const { showToast } = useFeedback()
+  const { logout } = useAuth()
+  const { enabled: demo, toggle: toggleDemo } = useDemoMode()
   const { start } = useOnboarding()
   const { profile, initials, jobTitle, sector } = useProfile()
   const { isDark, setTheme } = useTheme()
@@ -57,6 +62,28 @@ export function Header() {
               onThemeChange={setTheme}
               aria-label={isDark ? 'Usar tema claro' : 'Usar tema escuro'}
             />
+          </Tooltip>
+
+          {/* TEMPORÁRIO: alterna os dados de demonstração (src/demo). */}
+          <Tooltip label={demo ? 'Desligar dados de demonstração' : 'Ver com dados de demonstração'} side="top">
+            <button
+              type="button"
+              aria-pressed={demo}
+              aria-label={demo ? 'Desligar dados de demonstração' : 'Ver com dados de demonstração'}
+              onClick={() => {
+                toggleDemo()
+                showToast(demo ? 'Mostrando os dados reais do banco.' : 'Mostrando dados de demonstração.')
+              }}
+              className={cn(
+                'soaco-press inline-flex h-10 items-center gap-1.5 rounded-lg px-2.5 font-display text-[11px] font-semibold tracking-wide uppercase',
+                demo
+                  ? 'bg-[var(--soaco-accent)] text-[var(--soaco-accent-ink)] shadow-sm'
+                  : 'border border-line text-muted hover:bg-fill hover:text-ink',
+              )}
+            >
+              <FlaskConical size={16} strokeWidth={1.8} />
+              <span className="hidden sm:inline">Demo</span>
+            </button>
           </Tooltip>
 
           <Tooltip label="Ver tutorial" side="top">
@@ -155,12 +182,9 @@ export function Header() {
             <div className="border-t border-line">
               <DropdownItem
                 danger
-                onClick={() =>
-                  showComingSoon(
-                    'Sair da plataforma',
-                    'A autenticação e o encerramento de sessão serão implementados na próxima fase.',
-                  )
-                }
+                onClick={() => {
+                  void logout().then(() => navigate('/login', { replace: true }))
+                }}
               >
                 <LogOut size={16} />
                 Sair

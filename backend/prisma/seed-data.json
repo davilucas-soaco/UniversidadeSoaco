@@ -1,0 +1,3354 @@
+{
+  "instrutores": [
+    {
+      "id": "ins-vasconcelos",
+      "nome": "Dra. Mariana Vasconcelos",
+      "titulo": "Instrutora · Segurança e Processos",
+      "iniciais": "MV",
+      "bio": "Engenheira de segurança · 12 anos na Só Aço",
+      "resumo": "18 turmas · 1.420 colaboradores treinados"
+    },
+    {
+      "id": "ins-siqueira",
+      "nome": "Eng. Carlos Siqueira",
+      "titulo": "Instrutor · Normas Regulamentadoras",
+      "iniciais": "CS",
+      "bio": "Auditor de NRs · 9 anos na Só Aço",
+      "resumo": "11 turmas · 860 colaboradores treinados"
+    },
+    {
+      "id": "ins-valente",
+      "nome": "Prof. Ricardo Valente",
+      "titulo": "Instrutor · Gestão Industrial",
+      "iniciais": "RV",
+      "bio": "Consultor em operações · Lean Six Sigma Black Belt",
+      "resumo": "14 turmas · 1.100 colaboradores treinados"
+    },
+    {
+      "id": "ins-brandao",
+      "nome": "Dra. Helena Brandão",
+      "titulo": "Instrutora · Pessoas e Cultura",
+      "iniciais": "HB",
+      "bio": "Psicóloga organizacional · 7 anos na Só Aço",
+      "resumo": "22 turmas · 1.900 colaboradores treinados"
+    },
+    {
+      "id": "ins-nogueira",
+      "nome": "Dra. Camila Nogueira",
+      "titulo": "Instrutora · Dados e Tecnologia",
+      "iniciais": "CN",
+      "bio": "Analista de dados sênior · Especialista em LGPD",
+      "resumo": "9 turmas · 640 colaboradores treinados"
+    },
+    {
+      "id": "ins-prado",
+      "nome": "Eng. Marcelo Prado",
+      "titulo": "Instrutor · Logística e Suprimentos",
+      "iniciais": "MP",
+      "bio": "Coordenador de suprimentos · 10 anos na Só Aço",
+      "resumo": "8 turmas · 520 colaboradores treinados"
+    }
+  ],
+  "cursos": [
+    {
+      "id": "curso-seguranca",
+      "titulo": "Segurança do Trabalho",
+      "categoria": "Segurança do Trabalho",
+      "descricao": "Normas, equipamentos de proteção e condutas obrigatórias no ambiente industrial da Só Aço.",
+      "cargaHoraria": 4,
+      "pontos": 10,
+      "capaCor": "navy",
+      "capaIcone": "shield",
+      "capaImagem": "/covers/seguranca.jpg",
+      "instrutorId": "ins-vasconcelos",
+      "objetivos": [
+        "Identificar os riscos presentes em cada área da planta.",
+        "Selecionar e inspecionar os EPIs adequados à atividade.",
+        "Aplicar o procedimento correto diante de um incidente.",
+        "Registrar ocorrências conforme o padrão da Só Aço."
+      ],
+      "modulos": [
+        {
+          "ordem": 1,
+          "titulo": "Fundamentos de segurança",
+          "resumo": "Base conceitual para os módulos seguintes.",
+          "aulas": [
+            {
+              "id": "curso-seguranca-m1-a1",
+              "ordem": 1,
+              "titulo": "Introdução: Fundamentos de segurança",
+              "tipo": "video",
+              "duracaoMin": 21,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-seguranca-m1-a2",
+              "ordem": 2,
+              "titulo": "Conceitos de fundamentos de segurança",
+              "tipo": "video",
+              "duracaoMin": 22,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-seguranca-m1-a3",
+              "ordem": 3,
+              "titulo": "Fundamentos de segurança na prática",
+              "tipo": "video",
+              "duracaoMin": 23,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-seguranca-m1-a4",
+              "ordem": 4,
+              "titulo": "Estudo de caso: fundamentos de segurança",
+              "tipo": "video",
+              "duracaoMin": 24,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-seguranca-m1-pdf",
+              "ordem": 5,
+              "titulo": "Apostila: Fundamentos de segurança",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 18,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-seguranca-m1-quiz",
+              "ordem": 6,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 10,
+              "pontos": 50,
+              "obrigatoria": false
+            }
+          ]
+        },
+        {
+          "ordem": 2,
+          "titulo": "EPIs e EPCs",
+          "resumo": "Aplicação prática com exemplos da operação.",
+          "aulas": [
+            {
+              "id": "curso-seguranca-m2-a1",
+              "ordem": 1,
+              "titulo": "Conceitos de EPIs e EPCs",
+              "tipo": "video",
+              "duracaoMin": 13,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-seguranca-m2-a2",
+              "ordem": 2,
+              "titulo": "EPIs e EPCs na prática",
+              "tipo": "video",
+              "duracaoMin": 14,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-seguranca-m2-a3",
+              "ordem": 3,
+              "titulo": "Estudo de caso: ePIs e EPCs",
+              "tipo": "video",
+              "duracaoMin": 15,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-seguranca-m2-a4",
+              "ordem": 4,
+              "titulo": "Erros comuns em ePIs e EPCs",
+              "tipo": "video",
+              "duracaoMin": 16,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-seguranca-m2-pdf",
+              "ordem": 5,
+              "titulo": "Apostila: EPIs e EPCs",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 15,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-seguranca-m2-quiz",
+              "ordem": 6,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 11,
+              "pontos": 75,
+              "obrigatoria": false
+            }
+          ]
+        },
+        {
+          "ordem": 3,
+          "titulo": "Riscos na operação",
+          "resumo": "Aprofundamento com estudos de caso reais.",
+          "aulas": [
+            {
+              "id": "curso-seguranca-m3-a1",
+              "ordem": 1,
+              "titulo": "Riscos na operação na prática",
+              "tipo": "video",
+              "duracaoMin": 26,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-seguranca-m3-a2",
+              "ordem": 2,
+              "titulo": "Estudo de caso: riscos na operação",
+              "tipo": "video",
+              "duracaoMin": 27,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-seguranca-m3-a3",
+              "ordem": 3,
+              "titulo": "Erros comuns em riscos na operação",
+              "tipo": "video",
+              "duracaoMin": 28,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-seguranca-m3-a4",
+              "ordem": 4,
+              "titulo": "Checklist: riscos na operação",
+              "tipo": "video",
+              "duracaoMin": 29,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-seguranca-m3-pdf",
+              "ordem": 5,
+              "titulo": "Apostila: Riscos na operação",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 12,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-seguranca-m3-quiz",
+              "ordem": 6,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 12,
+              "pontos": 100,
+              "obrigatoria": false
+            }
+          ]
+        },
+        {
+          "ordem": 4,
+          "titulo": "Procedimentos de emergência",
+          "resumo": "Consolidação e verificação de aprendizagem.",
+          "aulas": [
+            {
+              "id": "curso-seguranca-m4-a1",
+              "ordem": 1,
+              "titulo": "Estudo de caso: Procedimentos de emergência",
+              "tipo": "video",
+              "duracaoMin": 18,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-seguranca-m4-a2",
+              "ordem": 2,
+              "titulo": "Erros comuns em procedimentos de emergência",
+              "tipo": "video",
+              "duracaoMin": 19,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-seguranca-m4-a3",
+              "ordem": 3,
+              "titulo": "Checklist: procedimentos de emergência",
+              "tipo": "video",
+              "duracaoMin": 20,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-seguranca-m4-pdf",
+              "ordem": 4,
+              "titulo": "Apostila: Procedimentos de emergência",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 14,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-seguranca-m4-quiz",
+              "ordem": 5,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 8,
+              "pontos": 50,
+              "obrigatoria": false
+            }
+          ]
+        },
+        {
+          "ordem": 5,
+          "titulo": "Avaliação final",
+          "resumo": "Etapa final com avaliação prática.",
+          "aulas": [
+            {
+              "id": "curso-seguranca-m5-a1",
+              "ordem": 1,
+              "titulo": "Erros comuns em Avaliação final",
+              "tipo": "video",
+              "duracaoMin": 31,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-seguranca-m5-a2",
+              "ordem": 2,
+              "titulo": "Checklist: avaliação final",
+              "tipo": "video",
+              "duracaoMin": 32,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-seguranca-m5-a3",
+              "ordem": 3,
+              "titulo": "Revisão de avaliação final",
+              "tipo": "video",
+              "duracaoMin": 12,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-seguranca-m5-pdf",
+              "ordem": 4,
+              "titulo": "Apostila: Avaliação final",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 9,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-seguranca-m5-quiz",
+              "ordem": 5,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 9,
+              "pontos": 75,
+              "obrigatoria": false
+            }
+          ]
+        }
+      ],
+      "progressoDemo": {
+        "status": "em_andamento",
+        "progresso": 68,
+        "obrigatorio": true,
+        "prazo": "2026-11-21",
+        "aulasConcluidas": [
+          "curso-seguranca-m1-a1",
+          "curso-seguranca-m1-a2",
+          "curso-seguranca-m1-a3",
+          "curso-seguranca-m1-a4",
+          "curso-seguranca-m1-pdf",
+          "curso-seguranca-m1-quiz",
+          "curso-seguranca-m2-a1",
+          "curso-seguranca-m2-a2",
+          "curso-seguranca-m2-a3",
+          "curso-seguranca-m2-a4",
+          "curso-seguranca-m2-pdf",
+          "curso-seguranca-m2-quiz",
+          "curso-seguranca-m3-a1",
+          "curso-seguranca-m3-a2",
+          "curso-seguranca-m3-a3",
+          "curso-seguranca-m3-a4",
+          "curso-seguranca-m3-pdf",
+          "curso-seguranca-m3-quiz",
+          "curso-seguranca-m4-a1"
+        ]
+      }
+    },
+    {
+      "id": "curso-excel",
+      "titulo": "Excel e Análise de Dados",
+      "categoria": "Desenvolvimento Profissional",
+      "descricao": "Planilhas, indicadores e leitura de informações para o dia a dia administrativo.",
+      "cargaHoraria": 6,
+      "pontos": 7,
+      "capaCor": "ocean",
+      "capaIcone": "chart",
+      "capaImagem": "/covers/excel.jpg",
+      "instrutorId": "ins-nogueira",
+      "objetivos": [
+        "Estruturar bases de dados limpas e consistentes.",
+        "Construir indicadores com fórmulas e tabelas dinâmicas.",
+        "Apresentar resultados em gráficos claros."
+      ],
+      "modulos": [
+        {
+          "ordem": 1,
+          "titulo": "Organização de planilhas",
+          "resumo": "Base conceitual para os módulos seguintes.",
+          "aulas": [
+            {
+              "id": "curso-excel-m1-a1",
+              "ordem": 1,
+              "titulo": "Introdução: Organização de planilhas",
+              "tipo": "video",
+              "duracaoMin": 18,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-excel-m1-a2",
+              "ordem": 2,
+              "titulo": "Conceitos de organização de planilhas",
+              "tipo": "video",
+              "duracaoMin": 19,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-excel-m1-a3",
+              "ordem": 3,
+              "titulo": "Organização de planilhas na prática",
+              "tipo": "video",
+              "duracaoMin": 20,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-excel-m1-a4",
+              "ordem": 4,
+              "titulo": "Estudo de caso: organização de planilhas",
+              "tipo": "video",
+              "duracaoMin": 21,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-excel-m1-a5",
+              "ordem": 5,
+              "titulo": "Erros comuns em organização de planilhas",
+              "tipo": "video",
+              "duracaoMin": 22,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-excel-m1-pdf",
+              "ordem": 6,
+              "titulo": "Apostila: Organização de planilhas",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 11,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-excel-m1-quiz",
+              "ordem": 7,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 8,
+              "pontos": 50,
+              "obrigatoria": false
+            }
+          ]
+        },
+        {
+          "ordem": 2,
+          "titulo": "Fórmulas essenciais",
+          "resumo": "Aplicação prática com exemplos da operação.",
+          "aulas": [
+            {
+              "id": "curso-excel-m2-a1",
+              "ordem": 1,
+              "titulo": "Conceitos de Fórmulas essenciais",
+              "tipo": "video",
+              "duracaoMin": 31,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-excel-m2-a2",
+              "ordem": 2,
+              "titulo": "Fórmulas essenciais na prática",
+              "tipo": "video",
+              "duracaoMin": 32,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-excel-m2-a3",
+              "ordem": 3,
+              "titulo": "Estudo de caso: fórmulas essenciais",
+              "tipo": "video",
+              "duracaoMin": 12,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-excel-m2-a4",
+              "ordem": 4,
+              "titulo": "Erros comuns em fórmulas essenciais",
+              "tipo": "video",
+              "duracaoMin": 13,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-excel-m2-a5",
+              "ordem": 5,
+              "titulo": "Checklist: fórmulas essenciais",
+              "tipo": "video",
+              "duracaoMin": 14,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-excel-m2-pdf",
+              "ordem": 6,
+              "titulo": "Apostila: Fórmulas essenciais",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 16,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-excel-m2-quiz",
+              "ordem": 7,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 9,
+              "pontos": 75,
+              "obrigatoria": false
+            }
+          ]
+        },
+        {
+          "ordem": 3,
+          "titulo": "Tabelas dinâmicas",
+          "resumo": "Aprofundamento com estudos de caso reais.",
+          "aulas": [
+            {
+              "id": "curso-excel-m3-a1",
+              "ordem": 1,
+              "titulo": "Tabelas dinâmicas na prática",
+              "tipo": "video",
+              "duracaoMin": 23,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-excel-m3-a2",
+              "ordem": 2,
+              "titulo": "Estudo de caso: tabelas dinâmicas",
+              "tipo": "video",
+              "duracaoMin": 24,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-excel-m3-a3",
+              "ordem": 3,
+              "titulo": "Erros comuns em tabelas dinâmicas",
+              "tipo": "video",
+              "duracaoMin": 25,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-excel-m3-a4",
+              "ordem": 4,
+              "titulo": "Checklist: tabelas dinâmicas",
+              "tipo": "video",
+              "duracaoMin": 26,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-excel-m3-pdf",
+              "ordem": 5,
+              "titulo": "Apostila: Tabelas dinâmicas",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 10,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-excel-m3-quiz",
+              "ordem": 6,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 10,
+              "pontos": 100,
+              "obrigatoria": false
+            }
+          ]
+        },
+        {
+          "ordem": 4,
+          "titulo": "Gráficos e indicadores",
+          "resumo": "Consolidação e verificação de aprendizagem.",
+          "aulas": [
+            {
+              "id": "curso-excel-m4-a1",
+              "ordem": 1,
+              "titulo": "Estudo de caso: Gráficos e indicadores",
+              "tipo": "video",
+              "duracaoMin": 15,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-excel-m4-a2",
+              "ordem": 2,
+              "titulo": "Erros comuns em gráficos e indicadores",
+              "tipo": "video",
+              "duracaoMin": 16,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-excel-m4-a3",
+              "ordem": 3,
+              "titulo": "Checklist: gráficos e indicadores",
+              "tipo": "video",
+              "duracaoMin": 17,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-excel-m4-a4",
+              "ordem": 4,
+              "titulo": "Revisão de gráficos e indicadores",
+              "tipo": "video",
+              "duracaoMin": 18,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-excel-m4-pdf",
+              "ordem": 5,
+              "titulo": "Apostila: Gráficos e indicadores",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 20,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-excel-m4-quiz",
+              "ordem": 6,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 11,
+              "pontos": 50,
+              "obrigatoria": false
+            }
+          ]
+        },
+        {
+          "ordem": 5,
+          "titulo": "Projeto prático",
+          "resumo": "Etapa final com avaliação prática.",
+          "aulas": [
+            {
+              "id": "curso-excel-m5-a1",
+              "ordem": 1,
+              "titulo": "Erros comuns em Projeto prático",
+              "tipo": "video",
+              "duracaoMin": 28,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-excel-m5-a2",
+              "ordem": 2,
+              "titulo": "Checklist: projeto prático",
+              "tipo": "video",
+              "duracaoMin": 29,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-excel-m5-a3",
+              "ordem": 3,
+              "titulo": "Revisão de projeto prático",
+              "tipo": "video",
+              "duracaoMin": 30,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-excel-m5-a4",
+              "ordem": 4,
+              "titulo": "Introdução: projeto prático",
+              "tipo": "video",
+              "duracaoMin": 31,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-excel-m5-pdf",
+              "ordem": 5,
+              "titulo": "Apostila: Projeto prático",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 21,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-excel-m5-quiz",
+              "ordem": 6,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 12,
+              "pontos": 75,
+              "obrigatoria": false
+            }
+          ]
+        }
+      ],
+      "progressoDemo": {
+        "status": "em_andamento",
+        "progresso": 41,
+        "obrigatorio": false,
+        "prazo": null,
+        "aulasConcluidas": [
+          "curso-excel-m1-a1",
+          "curso-excel-m1-a2",
+          "curso-excel-m1-a3",
+          "curso-excel-m1-a4",
+          "curso-excel-m1-a5",
+          "curso-excel-m1-pdf",
+          "curso-excel-m1-quiz",
+          "curso-excel-m2-a1",
+          "curso-excel-m2-a2",
+          "curso-excel-m2-a3",
+          "curso-excel-m2-a4",
+          "curso-excel-m2-a5",
+          "curso-excel-m2-pdf"
+        ]
+      }
+    },
+    {
+      "id": "curso-compras",
+      "titulo": "Procedimentos de Compras",
+      "categoria": "Compras",
+      "descricao": "Fluxo de solicitação, cotações, alçadas e registro de fornecedores da Só Aço.",
+      "cargaHoraria": 3,
+      "pontos": 9,
+      "capaCor": "sand",
+      "capaIcone": "clipboard",
+      "capaImagem": "/covers/compras.jpg",
+      "instrutorId": "ins-prado",
+      "objetivos": [
+        "Abrir uma solicitação de compra completa.",
+        "Conduzir cotações dentro das alçadas de aprovação.",
+        "Cadastrar e avaliar fornecedores."
+      ],
+      "modulos": [
+        {
+          "ordem": 1,
+          "titulo": "Solicitação de compra",
+          "resumo": "Base conceitual para os módulos seguintes.",
+          "aulas": [
+            {
+              "id": "curso-compras-m1-a1",
+              "ordem": 1,
+              "titulo": "Introdução: Solicitação de compra",
+              "tipo": "video",
+              "duracaoMin": 18,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-compras-m1-a2",
+              "ordem": 2,
+              "titulo": "Conceitos de solicitação de compra",
+              "tipo": "video",
+              "duracaoMin": 19,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-compras-m1-a3",
+              "ordem": 3,
+              "titulo": "Solicitação de compra na prática",
+              "tipo": "video",
+              "duracaoMin": 20,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-compras-m1-pdf",
+              "ordem": 4,
+              "titulo": "Apostila: Solicitação de compra",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 10,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-compras-m1-quiz",
+              "ordem": 5,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 11,
+              "pontos": 50,
+              "obrigatoria": false
+            }
+          ]
+        },
+        {
+          "ordem": 2,
+          "titulo": "Cotações e alçadas",
+          "resumo": "Aplicação prática com exemplos da operação.",
+          "aulas": [
+            {
+              "id": "curso-compras-m2-a1",
+              "ordem": 1,
+              "titulo": "Conceitos de Cotações e alçadas",
+              "tipo": "video",
+              "duracaoMin": 31,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-compras-m2-a2",
+              "ordem": 2,
+              "titulo": "Cotações e alçadas na prática",
+              "tipo": "video",
+              "duracaoMin": 32,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-compras-m2-a3",
+              "ordem": 3,
+              "titulo": "Estudo de caso: cotações e alçadas",
+              "tipo": "video",
+              "duracaoMin": 12,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-compras-m2-pdf",
+              "ordem": 4,
+              "titulo": "Apostila: Cotações e alçadas",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 15,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-compras-m2-quiz",
+              "ordem": 5,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 12,
+              "pontos": 75,
+              "obrigatoria": false
+            }
+          ]
+        },
+        {
+          "ordem": 3,
+          "titulo": "Fornecedores",
+          "resumo": "Aprofundamento com estudos de caso reais.",
+          "aulas": [
+            {
+              "id": "curso-compras-m3-a1",
+              "ordem": 1,
+              "titulo": "Fornecedores na prática",
+              "tipo": "video",
+              "duracaoMin": 23,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-compras-m3-a2",
+              "ordem": 2,
+              "titulo": "Estudo de caso: fornecedores",
+              "tipo": "video",
+              "duracaoMin": 24,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-compras-m3-a3",
+              "ordem": 3,
+              "titulo": "Erros comuns em fornecedores",
+              "tipo": "video",
+              "duracaoMin": 25,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-compras-m3-pdf",
+              "ordem": 4,
+              "titulo": "Apostila: Fornecedores",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 11,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-compras-m3-quiz",
+              "ordem": 5,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 8,
+              "pontos": 100,
+              "obrigatoria": false
+            }
+          ]
+        },
+        {
+          "ordem": 4,
+          "titulo": "Recebimento",
+          "resumo": "Consolidação e verificação de aprendizagem.",
+          "aulas": [
+            {
+              "id": "curso-compras-m4-a1",
+              "ordem": 1,
+              "titulo": "Estudo de caso: Recebimento",
+              "tipo": "video",
+              "duracaoMin": 15,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-compras-m4-a2",
+              "ordem": 2,
+              "titulo": "Erros comuns em recebimento",
+              "tipo": "video",
+              "duracaoMin": 16,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-compras-m4-a3",
+              "ordem": 3,
+              "titulo": "Checklist: recebimento",
+              "tipo": "video",
+              "duracaoMin": 17,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-compras-m4-pdf",
+              "ordem": 4,
+              "titulo": "Apostila: Recebimento",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 13,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-compras-m4-quiz",
+              "ordem": 5,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 9,
+              "pontos": 50,
+              "obrigatoria": false
+            }
+          ]
+        }
+      ],
+      "progressoDemo": {
+        "status": "em_andamento",
+        "progresso": 24,
+        "obrigatorio": false,
+        "prazo": null,
+        "aulasConcluidas": [
+          "curso-compras-m1-a1",
+          "curso-compras-m1-a2",
+          "curso-compras-m1-a3",
+          "curso-compras-m1-pdf",
+          "curso-compras-m1-quiz"
+        ]
+      }
+    },
+    {
+      "id": "curso-processos",
+      "titulo": "Gestão de Processos",
+      "categoria": "Produção",
+      "descricao": "Mapeamento de rotinas, padronização e melhoria contínua nas operações.",
+      "cargaHoraria": 5,
+      "pontos": 8,
+      "capaCor": "steel",
+      "capaIcone": "workflow",
+      "capaImagem": "/covers/processos.jpg",
+      "instrutorId": "ins-valente",
+      "objetivos": [
+        "Mapear um processo ponta a ponta.",
+        "Definir padrões e responsáveis.",
+        "Acompanhar indicadores de melhoria."
+      ],
+      "modulos": [
+        {
+          "ordem": 1,
+          "titulo": "Mapeamento de processos",
+          "resumo": "Base conceitual para os módulos seguintes.",
+          "aulas": [
+            {
+              "id": "curso-processos-m1-a1",
+              "ordem": 1,
+              "titulo": "Introdução: Mapeamento de processos",
+              "tipo": "video",
+              "duracaoMin": 23,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-processos-m1-a2",
+              "ordem": 2,
+              "titulo": "Conceitos de mapeamento de processos",
+              "tipo": "video",
+              "duracaoMin": 24,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-processos-m1-a3",
+              "ordem": 3,
+              "titulo": "Mapeamento de processos na prática",
+              "tipo": "video",
+              "duracaoMin": 25,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-processos-m1-a4",
+              "ordem": 4,
+              "titulo": "Estudo de caso: mapeamento de processos",
+              "tipo": "video",
+              "duracaoMin": 26,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-processos-m1-pdf",
+              "ordem": 5,
+              "titulo": "Apostila: Mapeamento de processos",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 9,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-processos-m1-quiz",
+              "ordem": 6,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 9,
+              "pontos": 50,
+              "obrigatoria": false
+            }
+          ]
+        },
+        {
+          "ordem": 2,
+          "titulo": "Padronização",
+          "resumo": "Aplicação prática com exemplos da operação.",
+          "aulas": [
+            {
+              "id": "curso-processos-m2-a1",
+              "ordem": 1,
+              "titulo": "Conceitos de Padronização",
+              "tipo": "video",
+              "duracaoMin": 15,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-processos-m2-a2",
+              "ordem": 2,
+              "titulo": "Padronização na prática",
+              "tipo": "video",
+              "duracaoMin": 16,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-processos-m2-a3",
+              "ordem": 3,
+              "titulo": "Estudo de caso: padronização",
+              "tipo": "video",
+              "duracaoMin": 17,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-processos-m2-a4",
+              "ordem": 4,
+              "titulo": "Erros comuns em padronização",
+              "tipo": "video",
+              "duracaoMin": 18,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-processos-m2-pdf",
+              "ordem": 5,
+              "titulo": "Apostila: Padronização",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 19,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-processos-m2-quiz",
+              "ordem": 6,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 10,
+              "pontos": 75,
+              "obrigatoria": false
+            }
+          ]
+        },
+        {
+          "ordem": 3,
+          "titulo": "Indicadores",
+          "resumo": "Aprofundamento com estudos de caso reais.",
+          "aulas": [
+            {
+              "id": "curso-processos-m3-a1",
+              "ordem": 1,
+              "titulo": "Indicadores na prática",
+              "tipo": "video",
+              "duracaoMin": 28,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-processos-m3-a2",
+              "ordem": 2,
+              "titulo": "Estudo de caso: indicadores",
+              "tipo": "video",
+              "duracaoMin": 29,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-processos-m3-a3",
+              "ordem": 3,
+              "titulo": "Erros comuns em indicadores",
+              "tipo": "video",
+              "duracaoMin": 30,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-processos-m3-a4",
+              "ordem": 4,
+              "titulo": "Checklist: indicadores",
+              "tipo": "video",
+              "duracaoMin": 31,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-processos-m3-pdf",
+              "ordem": 5,
+              "titulo": "Apostila: Indicadores",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 21,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-processos-m3-quiz",
+              "ordem": 6,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 11,
+              "pontos": 100,
+              "obrigatoria": false
+            }
+          ]
+        },
+        {
+          "ordem": 4,
+          "titulo": "Melhoria contínua",
+          "resumo": "Consolidação e verificação de aprendizagem.",
+          "aulas": [
+            {
+              "id": "curso-processos-m4-a1",
+              "ordem": 1,
+              "titulo": "Estudo de caso: Melhoria contínua",
+              "tipo": "video",
+              "duracaoMin": 20,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-processos-m4-a2",
+              "ordem": 2,
+              "titulo": "Erros comuns em melhoria contínua",
+              "tipo": "video",
+              "duracaoMin": 21,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-processos-m4-a3",
+              "ordem": 3,
+              "titulo": "Checklist: melhoria contínua",
+              "tipo": "video",
+              "duracaoMin": 22,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-processos-m4-pdf",
+              "ordem": 4,
+              "titulo": "Apostila: Melhoria contínua",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 16,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-processos-m4-quiz",
+              "ordem": 5,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 12,
+              "pontos": 50,
+              "obrigatoria": false
+            }
+          ]
+        }
+      ],
+      "progressoDemo": {
+        "status": "pendente",
+        "progresso": 0,
+        "obrigatorio": true,
+        "prazo": "2026-11-12",
+        "aulasConcluidas": []
+      }
+    },
+    {
+      "id": "curso-integracao",
+      "titulo": "Integração Institucional",
+      "categoria": "Institucional",
+      "descricao": "História, estrutura e funcionamento da Só Aço Industrial.",
+      "cargaHoraria": 2,
+      "pontos": 8,
+      "capaCor": "navy",
+      "capaIcone": "building",
+      "capaImagem": "/covers/integracao.jpg",
+      "instrutorId": "ins-brandao",
+      "objetivos": [
+        "Conhecer a trajetória da Só Aço.",
+        "Entender a estrutura das áreas."
+      ],
+      "modulos": [
+        {
+          "ordem": 1,
+          "titulo": "Nossa história",
+          "resumo": "Base conceitual para os módulos seguintes.",
+          "aulas": [
+            {
+              "id": "curso-integracao-m1-a1",
+              "ordem": 1,
+              "titulo": "Introdução: Nossa história",
+              "tipo": "video",
+              "duracaoMin": 27,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-integracao-m1-a2",
+              "ordem": 2,
+              "titulo": "Conceitos de nossa história",
+              "tipo": "video",
+              "duracaoMin": 28,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-integracao-m1-a3",
+              "ordem": 3,
+              "titulo": "Nossa história na prática",
+              "tipo": "video",
+              "duracaoMin": 29,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-integracao-m1-pdf",
+              "ordem": 4,
+              "titulo": "Apostila: Nossa história",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 13,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-integracao-m1-quiz",
+              "ordem": 5,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 10,
+              "pontos": 50,
+              "obrigatoria": false
+            }
+          ]
+        },
+        {
+          "ordem": 2,
+          "titulo": "Estrutura e áreas",
+          "resumo": "Aplicação prática com exemplos da operação.",
+          "aulas": [
+            {
+              "id": "curso-integracao-m2-a1",
+              "ordem": 1,
+              "titulo": "Conceitos de Estrutura e áreas",
+              "tipo": "video",
+              "duracaoMin": 19,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-integracao-m2-a2",
+              "ordem": 2,
+              "titulo": "Estrutura e áreas na prática",
+              "tipo": "video",
+              "duracaoMin": 20,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-integracao-m2-a3",
+              "ordem": 3,
+              "titulo": "Estudo de caso: estrutura e áreas",
+              "tipo": "video",
+              "duracaoMin": 21,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-integracao-m2-pdf",
+              "ordem": 4,
+              "titulo": "Apostila: Estrutura e áreas",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 8,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-integracao-m2-quiz",
+              "ordem": 5,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 11,
+              "pontos": 75,
+              "obrigatoria": false
+            }
+          ]
+        },
+        {
+          "ordem": 3,
+          "titulo": "Rotinas e benefícios",
+          "resumo": "Aprofundamento com estudos de caso reais.",
+          "aulas": [
+            {
+              "id": "curso-integracao-m3-a1",
+              "ordem": 1,
+              "titulo": "Rotinas e benefícios na prática",
+              "tipo": "video",
+              "duracaoMin": 32,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-integracao-m3-a2",
+              "ordem": 2,
+              "titulo": "Estudo de caso: rotinas e benefícios",
+              "tipo": "video",
+              "duracaoMin": 12,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-integracao-m3-pdf",
+              "ordem": 3,
+              "titulo": "Apostila: Rotinas e benefícios",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 18,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-integracao-m3-quiz",
+              "ordem": 4,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 12,
+              "pontos": 100,
+              "obrigatoria": false
+            }
+          ]
+        }
+      ],
+      "progressoDemo": {
+        "status": "concluido",
+        "progresso": 100,
+        "obrigatorio": false,
+        "prazo": null,
+        "aulasConcluidas": [
+          "curso-integracao-m1-a1",
+          "curso-integracao-m1-a2",
+          "curso-integracao-m1-a3",
+          "curso-integracao-m1-pdf",
+          "curso-integracao-m1-quiz",
+          "curso-integracao-m2-a1",
+          "curso-integracao-m2-a2",
+          "curso-integracao-m2-a3",
+          "curso-integracao-m2-pdf",
+          "curso-integracao-m2-quiz",
+          "curso-integracao-m3-a1",
+          "curso-integracao-m3-a2",
+          "curso-integracao-m3-pdf",
+          "curso-integracao-m3-quiz"
+        ]
+      }
+    },
+    {
+      "id": "curso-cultura",
+      "titulo": "Cultura e Valores da Só Aço",
+      "categoria": "Institucional",
+      "descricao": "Princípios, conduta esperada e a forma de trabalhar da empresa.",
+      "cargaHoraria": 2,
+      "pontos": 10,
+      "capaCor": "gold",
+      "capaIcone": "flag",
+      "capaImagem": "/covers/cultura.jpg",
+      "instrutorId": "ins-brandao",
+      "objetivos": [
+        "Aplicar os valores no dia a dia.",
+        "Reconhecer condutas alinhadas à cultura."
+      ],
+      "modulos": [
+        {
+          "ordem": 1,
+          "titulo": "Missão, visão e valores",
+          "resumo": "Base conceitual para os módulos seguintes.",
+          "aulas": [
+            {
+              "id": "curso-cultura-m1-a1",
+              "ordem": 1,
+              "titulo": "Introdução: Missão, visão e valores",
+              "tipo": "video",
+              "duracaoMin": 26,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-cultura-m1-a2",
+              "ordem": 2,
+              "titulo": "Conceitos de missão, visão e valores",
+              "tipo": "video",
+              "duracaoMin": 27,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-cultura-m1-pdf",
+              "ordem": 3,
+              "titulo": "Apostila: Missão, visão e valores",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 17,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-cultura-m1-quiz",
+              "ordem": 4,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 11,
+              "pontos": 50,
+              "obrigatoria": false
+            }
+          ]
+        },
+        {
+          "ordem": 2,
+          "titulo": "Comportamentos esperados",
+          "resumo": "Aplicação prática com exemplos da operação.",
+          "aulas": [
+            {
+              "id": "curso-cultura-m2-a1",
+              "ordem": 1,
+              "titulo": "Conceitos de Comportamentos esperados",
+              "tipo": "video",
+              "duracaoMin": 18,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-cultura-m2-a2",
+              "ordem": 2,
+              "titulo": "Comportamentos esperados na prática",
+              "tipo": "video",
+              "duracaoMin": 19,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-cultura-m2-pdf",
+              "ordem": 3,
+              "titulo": "Apostila: Comportamentos esperados",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 13,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-cultura-m2-quiz",
+              "ordem": 4,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 12,
+              "pontos": 75,
+              "obrigatoria": false
+            }
+          ]
+        },
+        {
+          "ordem": 3,
+          "titulo": "Reconhecimento",
+          "resumo": "Aprofundamento com estudos de caso reais.",
+          "aulas": [
+            {
+              "id": "curso-cultura-m3-a1",
+              "ordem": 1,
+              "titulo": "Reconhecimento na prática",
+              "tipo": "video",
+              "duracaoMin": 31,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-cultura-m3-a2",
+              "ordem": 2,
+              "titulo": "Estudo de caso: reconhecimento",
+              "tipo": "video",
+              "duracaoMin": 32,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-cultura-m3-pdf",
+              "ordem": 3,
+              "titulo": "Apostila: Reconhecimento",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 15,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-cultura-m3-quiz",
+              "ordem": 4,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 8,
+              "pontos": 100,
+              "obrigatoria": false
+            }
+          ]
+        }
+      ],
+      "progressoDemo": {
+        "status": "concluido",
+        "progresso": 100,
+        "obrigatorio": false,
+        "prazo": null,
+        "aulasConcluidas": [
+          "curso-cultura-m1-a1",
+          "curso-cultura-m1-a2",
+          "curso-cultura-m1-pdf",
+          "curso-cultura-m1-quiz",
+          "curso-cultura-m2-a1",
+          "curso-cultura-m2-a2",
+          "curso-cultura-m2-pdf",
+          "curso-cultura-m2-quiz",
+          "curso-cultura-m3-a1",
+          "curso-cultura-m3-a2",
+          "curso-cultura-m3-pdf",
+          "curso-cultura-m3-quiz"
+        ]
+      }
+    },
+    {
+      "id": "curso-etica",
+      "titulo": "Código de Ética",
+      "categoria": "Institucional",
+      "descricao": "Diretrizes de integridade, conflitos de interesse e relacionamento profissional.",
+      "cargaHoraria": 1.5,
+      "pontos": 9,
+      "capaCor": "navy",
+      "capaIcone": "book",
+      "capaImagem": "/covers/etica.jpg",
+      "instrutorId": "ins-brandao",
+      "objetivos": [
+        "Identificar situações de conflito de interesse.",
+        "Usar o canal de denúncias."
+      ],
+      "modulos": [
+        {
+          "ordem": 1,
+          "titulo": "Princípios de integridade",
+          "resumo": "Base conceitual para os módulos seguintes.",
+          "aulas": [
+            {
+              "id": "curso-etica-m1-a1",
+              "ordem": 1,
+              "titulo": "Introdução: Princípios de integridade",
+              "tipo": "video",
+              "duracaoMin": 12,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-etica-m1-a2",
+              "ordem": 2,
+              "titulo": "Conceitos de princípios de integridade",
+              "tipo": "video",
+              "duracaoMin": 13,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-etica-m1-pdf",
+              "ordem": 3,
+              "titulo": "Apostila: Princípios de integridade",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 19,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-etica-m1-quiz",
+              "ordem": 4,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 12,
+              "pontos": 50,
+              "obrigatoria": false
+            }
+          ]
+        },
+        {
+          "ordem": 2,
+          "titulo": "Conflitos de interesse",
+          "resumo": "Aplicação prática com exemplos da operação.",
+          "aulas": [
+            {
+              "id": "curso-etica-m2-a1",
+              "ordem": 1,
+              "titulo": "Conceitos de Conflitos de interesse",
+              "tipo": "video",
+              "duracaoMin": 25,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-etica-m2-a2",
+              "ordem": 2,
+              "titulo": "Conflitos de interesse na prática",
+              "tipo": "video",
+              "duracaoMin": 26,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-etica-m2-pdf",
+              "ordem": 3,
+              "titulo": "Apostila: Conflitos de interesse",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 12,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-etica-m2-quiz",
+              "ordem": 4,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 8,
+              "pontos": 75,
+              "obrigatoria": false
+            }
+          ]
+        },
+        {
+          "ordem": 3,
+          "titulo": "Canal de denúncias",
+          "resumo": "Aprofundamento com estudos de caso reais.",
+          "aulas": [
+            {
+              "id": "curso-etica-m3-a1",
+              "ordem": 1,
+              "titulo": "Canal de denúncias na prática",
+              "tipo": "video",
+              "duracaoMin": 17,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-etica-m3-pdf",
+              "ordem": 2,
+              "titulo": "Apostila: Canal de denúncias",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 9,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-etica-m3-quiz",
+              "ordem": 3,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 9,
+              "pontos": 100,
+              "obrigatoria": false
+            }
+          ]
+        }
+      ],
+      "progressoDemo": {
+        "status": "concluido",
+        "progresso": 100,
+        "obrigatorio": false,
+        "prazo": null,
+        "aulasConcluidas": [
+          "curso-etica-m1-a1",
+          "curso-etica-m1-a2",
+          "curso-etica-m1-pdf",
+          "curso-etica-m1-quiz",
+          "curso-etica-m2-a1",
+          "curso-etica-m2-a2",
+          "curso-etica-m2-pdf",
+          "curso-etica-m2-quiz",
+          "curso-etica-m3-a1",
+          "curso-etica-m3-pdf",
+          "curso-etica-m3-quiz"
+        ]
+      }
+    },
+    {
+      "id": "curso-lgpd",
+      "titulo": "Privacidade e Proteção de Dados",
+      "categoria": "Tecnologia",
+      "descricao": "Boas práticas de tratamento de dados pessoais no ambiente de trabalho.",
+      "cargaHoraria": 2,
+      "pontos": 8,
+      "capaCor": "ocean",
+      "capaIcone": "shield",
+      "capaImagem": "/covers/lgpd.jpg",
+      "instrutorId": "ins-nogueira",
+      "objetivos": [
+        "Classificar dados pessoais e sensíveis.",
+        "Agir corretamente em um incidente."
+      ],
+      "modulos": [
+        {
+          "ordem": 1,
+          "titulo": "Fundamentos da LGPD",
+          "resumo": "Base conceitual para os módulos seguintes.",
+          "aulas": [
+            {
+              "id": "curso-lgpd-m1-a1",
+              "ordem": 1,
+              "titulo": "Introdução: Fundamentos da LGPD",
+              "tipo": "video",
+              "duracaoMin": 25,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-lgpd-m1-a2",
+              "ordem": 2,
+              "titulo": "Conceitos de fundamentos da LGPD",
+              "tipo": "video",
+              "duracaoMin": 26,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-lgpd-m1-a3",
+              "ordem": 3,
+              "titulo": "Fundamentos da LGPD na prática",
+              "tipo": "video",
+              "duracaoMin": 27,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-lgpd-m1-pdf",
+              "ordem": 4,
+              "titulo": "Apostila: Fundamentos da LGPD",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 12,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-lgpd-m1-quiz",
+              "ordem": 5,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 12,
+              "pontos": 50,
+              "obrigatoria": false
+            }
+          ]
+        },
+        {
+          "ordem": 2,
+          "titulo": "Dados no dia a dia",
+          "resumo": "Aplicação prática com exemplos da operação.",
+          "aulas": [
+            {
+              "id": "curso-lgpd-m2-a1",
+              "ordem": 1,
+              "titulo": "Conceitos de Dados no dia a dia",
+              "tipo": "video",
+              "duracaoMin": 17,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-lgpd-m2-a2",
+              "ordem": 2,
+              "titulo": "Dados no dia a dia na prática",
+              "tipo": "video",
+              "duracaoMin": 18,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-lgpd-m2-pdf",
+              "ordem": 3,
+              "titulo": "Apostila: Dados no dia a dia",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 15,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-lgpd-m2-quiz",
+              "ordem": 4,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 8,
+              "pontos": 75,
+              "obrigatoria": false
+            }
+          ]
+        },
+        {
+          "ordem": 3,
+          "titulo": "Incidentes e resposta",
+          "resumo": "Aprofundamento com estudos de caso reais.",
+          "aulas": [
+            {
+              "id": "curso-lgpd-m3-a1",
+              "ordem": 1,
+              "titulo": "Incidentes e resposta na prática",
+              "tipo": "video",
+              "duracaoMin": 30,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-lgpd-m3-a2",
+              "ordem": 2,
+              "titulo": "Estudo de caso: incidentes e resposta",
+              "tipo": "video",
+              "duracaoMin": 31,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-lgpd-m3-pdf",
+              "ordem": 3,
+              "titulo": "Apostila: Incidentes e resposta",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 12,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-lgpd-m3-quiz",
+              "ordem": 4,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 9,
+              "pontos": 100,
+              "obrigatoria": false
+            }
+          ]
+        }
+      ],
+      "progressoDemo": {
+        "status": "pendente",
+        "progresso": 0,
+        "obrigatorio": true,
+        "prazo": "2026-11-20",
+        "aulasConcluidas": []
+      }
+    },
+    {
+      "id": "curso-atendimento",
+      "titulo": "Atendimento Interno",
+      "categoria": "Recursos Humanos",
+      "descricao": "Comunicação clara entre áreas e qualidade no suporte aos colegas.",
+      "cargaHoraria": 2,
+      "pontos": 7,
+      "capaCor": "sand",
+      "capaIcone": "heart",
+      "capaImagem": "/covers/atendimento.jpg",
+      "instrutorId": "ins-brandao",
+      "objetivos": [
+        "Atender demandas internas com clareza.",
+        "Resolver conflitos com empatia."
+      ],
+      "modulos": [
+        {
+          "ordem": 1,
+          "titulo": "Postura de atendimento",
+          "resumo": "Base conceitual para os módulos seguintes.",
+          "aulas": [
+            {
+              "id": "curso-atendimento-m1-a1",
+              "ordem": 1,
+              "titulo": "Introdução: Postura de atendimento",
+              "tipo": "video",
+              "duracaoMin": 28,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-atendimento-m1-a2",
+              "ordem": 2,
+              "titulo": "Conceitos de postura de atendimento",
+              "tipo": "video",
+              "duracaoMin": 29,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-atendimento-m1-pdf",
+              "ordem": 3,
+              "titulo": "Apostila: Postura de atendimento",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 15,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-atendimento-m1-quiz",
+              "ordem": 4,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 10,
+              "pontos": 50,
+              "obrigatoria": false
+            }
+          ]
+        },
+        {
+          "ordem": 2,
+          "titulo": "Comunicação entre áreas",
+          "resumo": "Aplicação prática com exemplos da operação.",
+          "aulas": [
+            {
+              "id": "curso-atendimento-m2-a1",
+              "ordem": 1,
+              "titulo": "Conceitos de Comunicação entre áreas",
+              "tipo": "video",
+              "duracaoMin": 20,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-atendimento-m2-a2",
+              "ordem": 2,
+              "titulo": "Comunicação entre áreas na prática",
+              "tipo": "video",
+              "duracaoMin": 21,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-atendimento-m2-pdf",
+              "ordem": 3,
+              "titulo": "Apostila: Comunicação entre áreas",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 18,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-atendimento-m2-quiz",
+              "ordem": 4,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 11,
+              "pontos": 75,
+              "obrigatoria": false
+            }
+          ]
+        },
+        {
+          "ordem": 3,
+          "titulo": "Resolução de conflitos",
+          "resumo": "Aprofundamento com estudos de caso reais.",
+          "aulas": [
+            {
+              "id": "curso-atendimento-m3-a1",
+              "ordem": 1,
+              "titulo": "Resolução de conflitos na prática",
+              "tipo": "video",
+              "duracaoMin": 12,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-atendimento-m3-a2",
+              "ordem": 2,
+              "titulo": "Estudo de caso: resolução de conflitos",
+              "tipo": "video",
+              "duracaoMin": 13,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-atendimento-m3-pdf",
+              "ordem": 3,
+              "titulo": "Apostila: Resolução de conflitos",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 13,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-atendimento-m3-quiz",
+              "ordem": 4,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 12,
+              "pontos": 100,
+              "obrigatoria": false
+            }
+          ]
+        }
+      ],
+      "progressoDemo": {
+        "status": "pendente",
+        "progresso": 0,
+        "obrigatorio": false,
+        "prazo": null,
+        "aulasConcluidas": []
+      }
+    },
+    {
+      "id": "curso-comunicacao",
+      "titulo": "Comunicação Empresarial",
+      "categoria": "Desenvolvimento Profissional",
+      "descricao": "Escrita objetiva, reuniões produtivas e alinhamento entre setores.",
+      "cargaHoraria": 3,
+      "pontos": 8,
+      "capaCor": "steel",
+      "capaIcone": "book",
+      "capaImagem": "/covers/comunicacao.jpg",
+      "instrutorId": "ins-valente",
+      "objetivos": [
+        "Escrever e-mails objetivos.",
+        "Conduzir reuniões com pauta e ata."
+      ],
+      "modulos": [
+        {
+          "ordem": 1,
+          "titulo": "Escrita objetiva",
+          "resumo": "Base conceitual para os módulos seguintes.",
+          "aulas": [
+            {
+              "id": "curso-comunicacao-m1-a1",
+              "ordem": 1,
+              "titulo": "Introdução: Escrita objetiva",
+              "tipo": "video",
+              "duracaoMin": 20,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-comunicacao-m1-a2",
+              "ordem": 2,
+              "titulo": "Conceitos de escrita objetiva",
+              "tipo": "video",
+              "duracaoMin": 21,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-comunicacao-m1-a3",
+              "ordem": 3,
+              "titulo": "Escrita objetiva na prática",
+              "tipo": "video",
+              "duracaoMin": 22,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-comunicacao-m1-a4",
+              "ordem": 4,
+              "titulo": "Estudo de caso: escrita objetiva",
+              "tipo": "video",
+              "duracaoMin": 23,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-comunicacao-m1-pdf",
+              "ordem": 5,
+              "titulo": "Apostila: Escrita objetiva",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 21,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-comunicacao-m1-quiz",
+              "ordem": 6,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 11,
+              "pontos": 50,
+              "obrigatoria": false
+            }
+          ]
+        },
+        {
+          "ordem": 2,
+          "titulo": "Reuniões produtivas",
+          "resumo": "Aplicação prática com exemplos da operação.",
+          "aulas": [
+            {
+              "id": "curso-comunicacao-m2-a1",
+              "ordem": 1,
+              "titulo": "Conceitos de Reuniões produtivas",
+              "tipo": "video",
+              "duracaoMin": 12,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-comunicacao-m2-a2",
+              "ordem": 2,
+              "titulo": "Reuniões produtivas na prática",
+              "tipo": "video",
+              "duracaoMin": 13,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-comunicacao-m2-a3",
+              "ordem": 3,
+              "titulo": "Estudo de caso: reuniões produtivas",
+              "tipo": "video",
+              "duracaoMin": 14,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-comunicacao-m2-pdf",
+              "ordem": 4,
+              "titulo": "Apostila: Reuniões produtivas",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 17,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-comunicacao-m2-quiz",
+              "ordem": 5,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 12,
+              "pontos": 75,
+              "obrigatoria": false
+            }
+          ]
+        },
+        {
+          "ordem": 3,
+          "titulo": "Apresentações",
+          "resumo": "Aprofundamento com estudos de caso reais.",
+          "aulas": [
+            {
+              "id": "curso-comunicacao-m3-a1",
+              "ordem": 1,
+              "titulo": "Apresentações na prática",
+              "tipo": "video",
+              "duracaoMin": 25,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-comunicacao-m3-a2",
+              "ordem": 2,
+              "titulo": "Estudo de caso: apresentações",
+              "tipo": "video",
+              "duracaoMin": 26,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-comunicacao-m3-a3",
+              "ordem": 3,
+              "titulo": "Erros comuns em apresentações",
+              "tipo": "video",
+              "duracaoMin": 27,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-comunicacao-m3-pdf",
+              "ordem": 4,
+              "titulo": "Apostila: Apresentações",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 15,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-comunicacao-m3-quiz",
+              "ordem": 5,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 8,
+              "pontos": 100,
+              "obrigatoria": false
+            }
+          ]
+        }
+      ],
+      "progressoDemo": {
+        "status": "concluido",
+        "progresso": 100,
+        "obrigatorio": false,
+        "prazo": null,
+        "aulasConcluidas": [
+          "curso-comunicacao-m1-a1",
+          "curso-comunicacao-m1-a2",
+          "curso-comunicacao-m1-a3",
+          "curso-comunicacao-m1-a4",
+          "curso-comunicacao-m1-pdf",
+          "curso-comunicacao-m1-quiz",
+          "curso-comunicacao-m2-a1",
+          "curso-comunicacao-m2-a2",
+          "curso-comunicacao-m2-a3",
+          "curso-comunicacao-m2-pdf",
+          "curso-comunicacao-m2-quiz",
+          "curso-comunicacao-m3-a1",
+          "curso-comunicacao-m3-a2",
+          "curso-comunicacao-m3-a3",
+          "curso-comunicacao-m3-pdf",
+          "curso-comunicacao-m3-quiz"
+        ]
+      }
+    },
+    {
+      "id": "curso-primeiros-socorros",
+      "titulo": "Primeiros Socorros",
+      "categoria": "Segurança do Trabalho",
+      "descricao": "Conduta inicial em emergências até a chegada do atendimento especializado.",
+      "cargaHoraria": 4,
+      "pontos": 10,
+      "capaCor": "navy",
+      "capaIcone": "heart",
+      "capaImagem": "/covers/primeiros-socorros.jpg",
+      "instrutorId": "ins-vasconcelos",
+      "objetivos": [
+        "Avaliar uma vítima com segurança.",
+        "Executar RCP e manobras básicas."
+      ],
+      "modulos": [
+        {
+          "ordem": 1,
+          "titulo": "Avaliação da vítima",
+          "resumo": "Base conceitual para os módulos seguintes.",
+          "aulas": [
+            {
+              "id": "curso-primeiros-socorros-m1-a1",
+              "ordem": 1,
+              "titulo": "Introdução: Avaliação da vítima",
+              "tipo": "video",
+              "duracaoMin": 18,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-primeiros-socorros-m1-a2",
+              "ordem": 2,
+              "titulo": "Conceitos de avaliação da vítima",
+              "tipo": "video",
+              "duracaoMin": 19,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-primeiros-socorros-m1-a3",
+              "ordem": 3,
+              "titulo": "Avaliação da vítima na prática",
+              "tipo": "video",
+              "duracaoMin": 20,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-primeiros-socorros-m1-pdf",
+              "ordem": 4,
+              "titulo": "Apostila: Avaliação da vítima",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 18,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-primeiros-socorros-m1-quiz",
+              "ordem": 5,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 10,
+              "pontos": 50,
+              "obrigatoria": false
+            }
+          ]
+        },
+        {
+          "ordem": 2,
+          "titulo": "RCP e desengasgo",
+          "resumo": "Aplicação prática com exemplos da operação.",
+          "aulas": [
+            {
+              "id": "curso-primeiros-socorros-m2-a1",
+              "ordem": 1,
+              "titulo": "Conceitos de RCP e desengasgo",
+              "tipo": "video",
+              "duracaoMin": 31,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-primeiros-socorros-m2-a2",
+              "ordem": 2,
+              "titulo": "RCP e desengasgo na prática",
+              "tipo": "video",
+              "duracaoMin": 32,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-primeiros-socorros-m2-a3",
+              "ordem": 3,
+              "titulo": "Estudo de caso: rCP e desengasgo",
+              "tipo": "video",
+              "duracaoMin": 12,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-primeiros-socorros-m2-pdf",
+              "ordem": 4,
+              "titulo": "Apostila: RCP e desengasgo",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 20,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-primeiros-socorros-m2-quiz",
+              "ordem": 5,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 11,
+              "pontos": 75,
+              "obrigatoria": false
+            }
+          ]
+        },
+        {
+          "ordem": 3,
+          "titulo": "Queimaduras e cortes",
+          "resumo": "Aprofundamento com estudos de caso reais.",
+          "aulas": [
+            {
+              "id": "curso-primeiros-socorros-m3-a1",
+              "ordem": 1,
+              "titulo": "Queimaduras e cortes na prática",
+              "tipo": "video",
+              "duracaoMin": 23,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-primeiros-socorros-m3-a2",
+              "ordem": 2,
+              "titulo": "Estudo de caso: queimaduras e cortes",
+              "tipo": "video",
+              "duracaoMin": 24,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-primeiros-socorros-m3-a3",
+              "ordem": 3,
+              "titulo": "Erros comuns em queimaduras e cortes",
+              "tipo": "video",
+              "duracaoMin": 25,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-primeiros-socorros-m3-pdf",
+              "ordem": 4,
+              "titulo": "Apostila: Queimaduras e cortes",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 10,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-primeiros-socorros-m3-quiz",
+              "ordem": 5,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 12,
+              "pontos": 100,
+              "obrigatoria": false
+            }
+          ]
+        },
+        {
+          "ordem": 4,
+          "titulo": "Simulado",
+          "resumo": "Consolidação e verificação de aprendizagem.",
+          "aulas": [
+            {
+              "id": "curso-primeiros-socorros-m4-a1",
+              "ordem": 1,
+              "titulo": "Estudo de caso: Simulado",
+              "tipo": "video",
+              "duracaoMin": 15,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-primeiros-socorros-m4-a2",
+              "ordem": 2,
+              "titulo": "Erros comuns em simulado",
+              "tipo": "video",
+              "duracaoMin": 16,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-primeiros-socorros-m4-a3",
+              "ordem": 3,
+              "titulo": "Checklist: simulado",
+              "tipo": "video",
+              "duracaoMin": 17,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-primeiros-socorros-m4-pdf",
+              "ordem": 4,
+              "titulo": "Apostila: Simulado",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 20,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-primeiros-socorros-m4-quiz",
+              "ordem": 5,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 8,
+              "pontos": 50,
+              "obrigatoria": false
+            }
+          ]
+        }
+      ],
+      "progressoDemo": {
+        "status": "concluido",
+        "progresso": 100,
+        "obrigatorio": false,
+        "prazo": null,
+        "aulasConcluidas": [
+          "curso-primeiros-socorros-m1-a1",
+          "curso-primeiros-socorros-m1-a2",
+          "curso-primeiros-socorros-m1-a3",
+          "curso-primeiros-socorros-m1-pdf",
+          "curso-primeiros-socorros-m1-quiz",
+          "curso-primeiros-socorros-m2-a1",
+          "curso-primeiros-socorros-m2-a2",
+          "curso-primeiros-socorros-m2-a3",
+          "curso-primeiros-socorros-m2-pdf",
+          "curso-primeiros-socorros-m2-quiz",
+          "curso-primeiros-socorros-m3-a1",
+          "curso-primeiros-socorros-m3-a2",
+          "curso-primeiros-socorros-m3-a3",
+          "curso-primeiros-socorros-m3-pdf",
+          "curso-primeiros-socorros-m3-quiz",
+          "curso-primeiros-socorros-m4-a1",
+          "curso-primeiros-socorros-m4-a2",
+          "curso-primeiros-socorros-m4-a3",
+          "curso-primeiros-socorros-m4-pdf",
+          "curso-primeiros-socorros-m4-quiz"
+        ]
+      }
+    },
+    {
+      "id": "curso-incendio",
+      "titulo": "Prevenção de Incêndio",
+      "categoria": "Segurança do Trabalho",
+      "descricao": "Rotas de fuga, extintores e responsabilidades de cada colaborador.",
+      "cargaHoraria": 2,
+      "pontos": 10,
+      "capaCor": "gold",
+      "capaIcone": "shield",
+      "capaImagem": "/covers/incendio.jpg",
+      "instrutorId": "ins-siqueira",
+      "objetivos": [
+        "Escolher o extintor correto.",
+        "Seguir o plano de abandono da planta."
+      ],
+      "modulos": [
+        {
+          "ordem": 1,
+          "titulo": "Classes de fogo",
+          "resumo": "Base conceitual para os módulos seguintes.",
+          "aulas": [
+            {
+              "id": "curso-incendio-m1-a1",
+              "ordem": 1,
+              "titulo": "Introdução: Classes de fogo",
+              "tipo": "video",
+              "duracaoMin": 22,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-incendio-m1-a2",
+              "ordem": 2,
+              "titulo": "Conceitos de classes de fogo",
+              "tipo": "video",
+              "duracaoMin": 23,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-incendio-m1-a3",
+              "ordem": 3,
+              "titulo": "Classes de fogo na prática",
+              "tipo": "video",
+              "duracaoMin": 24,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-incendio-m1-pdf",
+              "ordem": 4,
+              "titulo": "Apostila: Classes de fogo",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 10,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-incendio-m1-quiz",
+              "ordem": 5,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 12,
+              "pontos": 50,
+              "obrigatoria": false
+            }
+          ]
+        },
+        {
+          "ordem": 2,
+          "titulo": "Extintores",
+          "resumo": "Aplicação prática com exemplos da operação.",
+          "aulas": [
+            {
+              "id": "curso-incendio-m2-a1",
+              "ordem": 1,
+              "titulo": "Conceitos de Extintores",
+              "tipo": "video",
+              "duracaoMin": 14,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-incendio-m2-a2",
+              "ordem": 2,
+              "titulo": "Extintores na prática",
+              "tipo": "video",
+              "duracaoMin": 15,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-incendio-m2-a3",
+              "ordem": 3,
+              "titulo": "Estudo de caso: extintores",
+              "tipo": "video",
+              "duracaoMin": 16,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-incendio-m2-pdf",
+              "ordem": 4,
+              "titulo": "Apostila: Extintores",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 9,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-incendio-m2-quiz",
+              "ordem": 5,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 8,
+              "pontos": 75,
+              "obrigatoria": false
+            }
+          ]
+        },
+        {
+          "ordem": 3,
+          "titulo": "Plano de abandono",
+          "resumo": "Aprofundamento com estudos de caso reais.",
+          "aulas": [
+            {
+              "id": "curso-incendio-m3-a1",
+              "ordem": 1,
+              "titulo": "Plano de abandono na prática",
+              "tipo": "video",
+              "duracaoMin": 27,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-incendio-m3-a2",
+              "ordem": 2,
+              "titulo": "Estudo de caso: plano de abandono",
+              "tipo": "video",
+              "duracaoMin": 28,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-incendio-m3-pdf",
+              "ordem": 3,
+              "titulo": "Apostila: Plano de abandono",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 13,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-incendio-m3-quiz",
+              "ordem": 4,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 9,
+              "pontos": 100,
+              "obrigatoria": false
+            }
+          ]
+        }
+      ],
+      "progressoDemo": {
+        "status": "pendente",
+        "progresso": 0,
+        "obrigatorio": false,
+        "prazo": null,
+        "aulasConcluidas": []
+      }
+    },
+    {
+      "id": "curso-logistica",
+      "titulo": "Rotinas de Expedição",
+      "categoria": "Logística",
+      "descricao": "Conferência, documentação e fluxo de saída de materiais.",
+      "cargaHoraria": 3,
+      "pontos": 8,
+      "capaCor": "ocean",
+      "capaIcone": "workflow",
+      "capaImagem": "/covers/logistica.jpg",
+      "instrutorId": "ins-prado",
+      "objetivos": [
+        "Conferir cargas sem divergências.",
+        "Emitir a documentação de saída."
+      ],
+      "modulos": [
+        {
+          "ordem": 1,
+          "titulo": "Conferência de carga",
+          "resumo": "Base conceitual para os módulos seguintes.",
+          "aulas": [
+            {
+              "id": "curso-logistica-m1-a1",
+              "ordem": 1,
+              "titulo": "Introdução: Conferência de carga",
+              "tipo": "video",
+              "duracaoMin": 23,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-logistica-m1-a2",
+              "ordem": 2,
+              "titulo": "Conceitos de conferência de carga",
+              "tipo": "video",
+              "duracaoMin": 24,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-logistica-m1-a3",
+              "ordem": 3,
+              "titulo": "Conferência de carga na prática",
+              "tipo": "video",
+              "duracaoMin": 25,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-logistica-m1-pdf",
+              "ordem": 4,
+              "titulo": "Apostila: Conferência de carga",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 15,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-logistica-m1-quiz",
+              "ordem": 5,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 9,
+              "pontos": 50,
+              "obrigatoria": false
+            }
+          ]
+        },
+        {
+          "ordem": 2,
+          "titulo": "Documentação fiscal",
+          "resumo": "Aplicação prática com exemplos da operação.",
+          "aulas": [
+            {
+              "id": "curso-logistica-m2-a1",
+              "ordem": 1,
+              "titulo": "Conceitos de Documentação fiscal",
+              "tipo": "video",
+              "duracaoMin": 15,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-logistica-m2-a2",
+              "ordem": 2,
+              "titulo": "Documentação fiscal na prática",
+              "tipo": "video",
+              "duracaoMin": 16,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-logistica-m2-a3",
+              "ordem": 3,
+              "titulo": "Estudo de caso: documentação fiscal",
+              "tipo": "video",
+              "duracaoMin": 17,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-logistica-m2-pdf",
+              "ordem": 4,
+              "titulo": "Apostila: Documentação fiscal",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 21,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-logistica-m2-quiz",
+              "ordem": 5,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 10,
+              "pontos": 75,
+              "obrigatoria": false
+            }
+          ]
+        },
+        {
+          "ordem": 3,
+          "titulo": "Fluxo de saída",
+          "resumo": "Aprofundamento com estudos de caso reais.",
+          "aulas": [
+            {
+              "id": "curso-logistica-m3-a1",
+              "ordem": 1,
+              "titulo": "Fluxo de saída na prática",
+              "tipo": "video",
+              "duracaoMin": 28,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-logistica-m3-a2",
+              "ordem": 2,
+              "titulo": "Estudo de caso: fluxo de saída",
+              "tipo": "video",
+              "duracaoMin": 29,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-logistica-m3-a3",
+              "ordem": 3,
+              "titulo": "Erros comuns em fluxo de saída",
+              "tipo": "video",
+              "duracaoMin": 30,
+              "paginas": null,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": false
+            },
+            {
+              "id": "curso-logistica-m3-pdf",
+              "ordem": 4,
+              "titulo": "Apostila: Fluxo de saída",
+              "tipo": "pdf",
+              "duracaoMin": null,
+              "paginas": 11,
+              "questoes": null,
+              "pontos": null,
+              "obrigatoria": true
+            },
+            {
+              "id": "curso-logistica-m3-quiz",
+              "ordem": 5,
+              "titulo": "Quiz de fixação",
+              "tipo": "quiz",
+              "duracaoMin": null,
+              "paginas": null,
+              "questoes": 11,
+              "pontos": 100,
+              "obrigatoria": false
+            }
+          ]
+        }
+      ],
+      "progressoDemo": {
+        "status": "pendente",
+        "progresso": 0,
+        "obrigatorio": false,
+        "prazo": null,
+        "aulasConcluidas": []
+      }
+    }
+  ]
+}

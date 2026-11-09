@@ -1,10 +1,11 @@
-import { dashboardStats, quarterStatus } from '@/data/dashboard'
+import { useCourseSummary } from '@/context/CatalogContext'
+import { progressStatusLabel } from '@/lib/courseStats'
 import { cn } from '@/lib/cn'
 
 const MASCOT_URL = '/mascot/soaco-mascot.png?v=edges2'
 
 export function MascotViewport({ className }: { className?: string }) {
-  const percent = dashboardStats.quarterProgress
+  const percent = useCourseSummary().averageProgress
 
   return (
     <div
@@ -21,7 +22,7 @@ export function MascotViewport({ className }: { className?: string }) {
       />
       <div className="pointer-events-none absolute right-2 bottom-8">
         <span className="rounded-full border border-line bg-elevated/85 px-3 py-1 font-display text-[11px] font-semibold text-ink shadow-sm backdrop-blur-md">
-          {percent}% · {quarterStatus}
+          {percent}% · {progressStatusLabel(percent)}
         </span>
       </div>
     </div>

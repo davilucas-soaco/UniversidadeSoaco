@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import {
   Award,
   BadgeCheck,
@@ -20,11 +20,10 @@ import {
   type LessonNote,
   type WorkspaceTab,
 } from '@/components/lesson/LessonWorkspace'
-import { useFeedback } from '@/context/FeedbackContext'
-import { currentUser } from '@/data/collaborators'
-import { courses as seedCourses } from '@/data/courses'
-import { buildCurriculum, curriculumStats } from '@/data/curriculum'
+import { useSessionUser } from '@/context/AuthContext'
 import { useCatalog } from '@/context/CatalogContext'
+import { useFeedback } from '@/context/FeedbackContext'
+import { buildCurriculum, curriculumStats } from '@/data/curriculum'
 import { instructorById } from '@/data/instructors'
 import { useLocalStorageState } from '@/hooks/useLocalStorageState'
 import { formatClock } from '@/lib/format'
@@ -60,6 +59,7 @@ function applyState(base: CourseModule[], doneIds: string[]) {
 function LessonView({ course }: { course: Course }) {
   const navigate = useNavigate()
   const { showToast } = useFeedback()
+  const user = useSessionUser()
   const instructor = instructorById[course.instructorId] ?? Object.values(instructorById)[0]
   const baseModules = useMemo(() => buildCurriculum(course), [course])
 
@@ -144,9 +144,9 @@ function LessonView({ course }: { course: Course }) {
       posts: [
         {
           id: `post-${Date.now()}`,
-          author: currentUser.name,
-          initials: currentUser.avatarInitials,
-          role: currentUser.jobTitle,
+          author: user.name,
+          initials: user.initials,
+          role: user.jobTitle,
           text,
           when: 'agora',
         },
@@ -183,12 +183,7 @@ function LessonView({ course }: { course: Course }) {
               <Award size={14} className="text-accent" />
               Obrigatório
             </span>
-          ) : (
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-elevated px-3 py-1 font-display text-[11px] font-medium text-ink/80">
-              <Award size={14} className="text-accent" />
-              Trilha Executiva
-            </span>
-          )}
+          ) : null}
         </div>
       </div>
 
@@ -328,6 +323,7 @@ function LessonView({ course }: { course: Course }) {
 export function LessonPage() {
   const { courseId } = useParams()
   const { getCourse } = useCatalog()
-  const course = (courseId && getCourse(courseId)) || seedCourses[0]
+  const course = courseId ? getCourse(courseId) : undefined
+  if (!course) return <Navigate to="/conteudos" replace />
   return <LessonView key={course.id} course={course} />
 }

@@ -61,5 +61,18 @@ export function initialsFrom(fullName: string) {
 }
 
 export function formatDate(dateIso: string) {
-  return new Date(`${dateIso}T12:00:00`).toLocaleDateString('pt-BR')
+  const date = dateIso.length === 10 ? new Date(`${dateIso}T12:00:00`) : new Date(dateIso)
+  return date.toLocaleDateString('pt-BR')
+}
+
+/** Tempo relativo curto: "Agora", "Há 2 horas", "Há 3 dias", "Em 12/08/2026". */
+export function timeAgo(dateIso: string, now = new Date()) {
+  const minutes = Math.floor((now.getTime() - new Date(dateIso).getTime()) / 60000)
+  if (minutes < 1) return 'Agora'
+  if (minutes < 60) return `Há ${minutes} min`
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) return hours === 1 ? 'Há 1 hora' : `Há ${hours} horas`
+  const days = Math.floor(hours / 24)
+  if (days < 30) return days === 1 ? 'Ontem' : `Há ${days} dias`
+  return `Em ${formatDate(dateIso)}`
 }

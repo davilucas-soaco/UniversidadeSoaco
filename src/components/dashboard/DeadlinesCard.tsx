@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
-import { ArrowRight, CalendarClock } from 'lucide-react'
+import { CalendarClock } from 'lucide-react'
 import { InsetCard } from '@/components/ui/Card'
-import { deadlines, executiveTrail } from '@/data/dashboard'
+import { useCourseSummary } from '@/context/CatalogContext'
 import { daysUntil, shortDate } from '@/lib/format'
 import { cn } from '@/lib/cn'
 
@@ -14,10 +14,11 @@ function urgencyLabel(days: number) {
 
 export function DeadlinesCard() {
   const navigate = useNavigate()
+  const { deadlines } = useCourseSummary()
   const hasUrgent = deadlines.some((course) => daysUntil(course.dueDate!) <= 7)
 
   return (
-    <section className="flex flex-col gap-4 rounded-2xl border border-line bg-elevated p-6 shadow-md">
+    <section className="flex h-full flex-col gap-4 rounded-2xl border border-line bg-elevated p-6 shadow-md">
       <div className="flex items-center justify-between border-b border-line/80 pb-2">
         <div className="flex items-center gap-2">
           <CalendarClock size={22} className="text-accent" />
@@ -72,21 +73,6 @@ export function DeadlinesCard() {
             </InsetCard>
           )
         })}
-      </div>
-
-      <div className="mt-1 flex items-center justify-between rounded-xl border border-line bg-canvas p-4">
-        <div className="flex flex-col">
-          <span className="font-display text-[10px] font-semibold tracking-wider text-accent uppercase">Trilha</span>
-          <span className="font-display text-xs font-medium text-ink">{executiveTrail.focus}</span>
-        </div>
-        <button
-          type="button"
-          onClick={() => navigate('/trilhas')}
-          aria-label="Abrir trilha"
-          className="rounded-lg border border-line bg-fill p-2 text-accent transition-all hover:brightness-110"
-        >
-          <ArrowRight size={18} />
-        </button>
       </div>
     </section>
   )

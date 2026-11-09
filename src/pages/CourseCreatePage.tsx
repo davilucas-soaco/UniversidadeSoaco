@@ -1,16 +1,22 @@
 import { useMemo, useState, type FormEvent, type ReactNode } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ArrowLeft, FileStack, PlayCircle } from 'lucide-react'
+import { ArrowLeft, CheckCircle2, CircleAlert, FileStack, Link2, PlayCircle, Type } from 'lucide-react'
 import { DocumentDropzone, type PendingDocument } from '@/components/admin/DocumentDropzone'
 import { VideoEmbed } from '@/components/lesson/VideoEmbed'
+import { profileFieldClass } from '@/components/profile/fields'
 import { Button } from '@/components/ui/Button'
-import { Card, CardContent } from '@/components/ui/Card'
+import { Card } from '@/components/ui/Card'
+import { Spinner } from '@/components/ui/Spinner'
 import { useCatalog } from '@/context/CatalogContext'
 import { useFeedback } from '@/context/FeedbackContext'
 import { parseVideoUrl, videoProviderLabel } from '@/lib/videoEmbed'
 import { cn } from '@/lib/cn'
-import { profileFieldClass } from '@/components/profile/fields'
 import type { ContentKind } from '@/types'
+
+const kinds: { value: ContentKind; label: string; hint: string; icon: ReactNode }[] = [
+  { value: 'video', label: 'Vídeo', hint: 'YouTube, Vimeo ou Loom', icon: <PlayCircle size={16} /> },
+  { value: 'document', label: 'Documentos', hint: 'PDF, Word e Excel', icon: <FileStack size={16} /> },
+]
 
 export function CourseCreatePage() {
   const navigate = useNavigate()
@@ -24,6 +30,7 @@ export function CourseCreatePage() {
 
   const embed = useMemo(() => parseVideoUrl(videoUrl), [videoUrl])
   const videoTyped = videoUrl.trim().length > 0
+  const contentReady = kind === 'video' ? Boolean(embed) : files.length > 0
 
   const submit = (event: FormEvent) => {
     event.preventDefault()
@@ -57,7 +64,7 @@ export function CourseCreatePage() {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col pb-12">
+    <div className="mx-auto flex w-full max-w-4xl flex-col pb-12">
       <Link
         to="/admin/conteudos"
         className="mb-6 inline-flex w-fit items-center gap-1.5 text-sm text-muted transition hover:text-ink"
@@ -65,24 +72,82 @@ export function CourseCreatePage() {
         <ArrowLeft size={16} /> Gestão de conteúdos
       </Link>
 
-      <div className="mb-8 text-center">
-        <p className="font-display text-[11px] font-semibold tracking-widest text-accent uppercase">
-          Cadastro
-        </p>
-        <h1 className="mt-1 font-display text-[32px] leading-10 font-bold tracking-tight text-ink">
-          Novo curso
-        </h1>
-        <p className="mx-auto mt-1 max-w-2xl text-sm leading-relaxed text-muted">
-          Defina o nome e o tipo de conteúdo. Vídeos do YouTube, Vimeo ou Loom entram no player da
-          plataforma; documentos PDF, Word e Excel ficam como material de apoio.
-        </p>
+      <div className="mb-8">
+        <p className="font-display text-[11px] font-semibold tracking-widest text-accent uppercase">Cadastro</p>
+        <h1 className="mt-1 font-display text-[32px] leading-10 font-bold tracking-tight text-ink">Novo curso</h1>
+        <p className="mt-1 text-sm text-muted">Adicione um vídeo ou documentos e dê um nome ao curso.</p>
       </div>
 
-      <form onSubmit={submit} className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
+      <form onSubmit={submit} className="flex flex-col gap-6" noValidate>
+        {/* Conteúdo em destaque */}
+        <Card className="overflow-hidden">
+          <div className="flex flex-col gap-4 border-b border-line px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="font-display text-[11px] font-semibold tracking-widest text-muted uppercase">
+                1 · Conteúdo do curso
+              </p>
+              <h2 className="mt-0.5 font-display text-lg font-semibold text-ink">
+                {title.trim() || 'Prévia do curso'}
+              </h2>
+            </div>
+            <div role="radiogroup" aria-label="Tipo de conteúdo" className="inline-flex rounded-xl border border-line bg-fill p-1">
+              {kinds.map((item) => (
+                <button
+                  key={item.value}
+                  type="button"
+                  role="radio"
+                  aria-checked={kind === item.value}
+                  title={item.hint}
+                  onClick={() => setKind(item.value)}
+                  className={cn(
+                    'soaco-press inline-flex items-center gap-2 rounded-lg px-4 py-2 font-display text-xs font-semibold transition',
+                    kind === item.value ? 'bg-accent text-accent-ink shadow-sm' : 'text-muted hover:text-ink',
+                  )}
+                >
+                  {item.icon}
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-surface/60 p-6">
+            {kind === 'video' ? (
+              <VideoEmbed info={embed} title={title.trim() || 'Prévia do curso'} className="shadow-card" />
+            ) : (
+              <DocumentDropzone files={files} onChange={setFiles} />
+            )}
+          </div>
+
+          <div className="flex items-center gap-2 border-t border-line px-6 py-3 text-xs">
+            {contentReady ? (
+              <span className="inline-flex items-center gap-1.5 font-medium text-success">
+                <CheckCircle2 size={15} />
+                {kind === 'video' && embed
+                  ? `Vídeo pronto para o player · ${videoProviderLabel[embed.provider]}`
+                  : `${files.length} arquivo${files.length > 1 ? 's' : ''} pronto${files.length > 1 ? 's' : ''}`}
+              </span>
+            ) : kind === 'video' && videoTyped ? (
+              <span className="inline-flex items-center gap-1.5 font-medium text-danger">
+                <CircleAlert size={15} /> Link não reconhecido. Use YouTube, Vimeo ou Loom.
+              </span>
+            ) : (
+              <span className="text-muted">
+                {kind === 'video' ? 'Cole o link abaixo para ver a prévia.' : 'Envie ao menos um documento.'}
+              </span>
+            )}
+          </div>
+        </Card>
+
+        {/* Campos do formulário */}
         <Card>
-          <CardContent className="flex flex-col gap-6">
-            <label className="flex flex-col gap-2">
-              <span className="font-display text-xs font-semibold tracking-wide text-ink">Nome do curso</span>
+          <div className="border-b border-line px-6 py-4">
+            <p className="font-display text-[11px] font-semibold tracking-widest text-muted uppercase">
+              2 · Informações do curso
+            </p>
+          </div>
+          <div className="grid gap-5 p-6 md:grid-cols-2">
+            <Field label="Nome do curso" icon={<Type size={15} />} className={kind === 'document' ? 'md:col-span-2' : undefined}>
               <input
                 value={title}
                 onChange={(event) => setTitle(event.target.value)}
@@ -90,139 +155,56 @@ export function CourseCreatePage() {
                 placeholder="Ex.: Integração de novos colaboradores"
                 autoFocus
               />
-            </label>
-
-            <fieldset>
-              <legend className="mb-2 font-display text-xs font-semibold tracking-wide text-ink">
-                Tipo de conteúdo
-              </legend>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <TypeCard
-                  active={kind === 'video'}
-                  icon={<PlayCircle size={22} />}
-                  title="Vídeo"
-                  hint="YouTube, Vimeo ou Loom"
-                  onClick={() => setKind('video')}
-                />
-                <TypeCard
-                  active={kind === 'document'}
-                  icon={<FileStack size={22} />}
-                  title="Documentos"
-                  hint="PDF, Word e Excel"
-                  onClick={() => setKind('document')}
-                />
-              </div>
-            </fieldset>
-
+            </Field>
             {kind === 'video' ? (
-              <label className="flex flex-col gap-2">
-                <span className="font-display text-xs font-semibold tracking-wide text-ink">Link do vídeo</span>
+              <Field label="Link do vídeo" icon={<Link2 size={15} />} hint="YouTube, Vimeo ou Loom.">
                 <input
                   value={videoUrl}
                   onChange={(event) => setVideoUrl(event.target.value)}
-                  className={profileFieldClass}
-                  placeholder="https://www.youtube.com/watch?v=… ou Vimeo / Loom"
+                  className={cn(profileFieldClass, videoTyped && !embed && 'border-danger/60')}
+                  placeholder="https://www.youtube.com/watch?v=…"
                   inputMode="url"
                   autoComplete="off"
                 />
-                {videoTyped && !embed ? (
-                  <p className="text-xs text-[var(--soaco-danger)]">
-                    Não reconhecemos esse link. Use YouTube, Vimeo ou Loom.
-                  </p>
-                ) : embed ? (
-                  <p className="text-xs text-muted">
-                    Pronto para exibir no player · {videoProviderLabel[embed.provider]}
-                  </p>
-                ) : (
-                  <p className="text-xs text-muted">Cole o link compartilhado do vídeo.</p>
-                )}
-              </label>
-            ) : (
-              <div className="flex flex-col gap-2">
-                <span className="font-display text-xs font-semibold tracking-wide text-ink">Arquivos</span>
-                <DocumentDropzone files={files} onChange={setFiles} />
-              </div>
-            )}
+              </Field>
+            ) : null}
+          </div>
 
-            <div className="flex flex-wrap items-center justify-end gap-3 pt-2">
-              <Button variant="ghost" type="button" onClick={() => navigate('/admin/conteudos')}>
-                Cancelar
-              </Button>
-              <Button type="submit" disabled={saving}>
-                {saving ? 'Salvando…' : 'Cadastrar curso'}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="overflow-hidden">
-          <CardContent className="flex flex-col gap-4">
-            <div className="text-center">
-              <p className="font-display text-xs font-semibold tracking-wide text-muted uppercase">
-                Prévia do player
-              </p>
-              <h2 className="mt-1 font-display text-lg font-semibold text-ink">
-                {title.trim() || 'Sem título'}
-              </h2>
-            </div>
-            {kind === 'video' ? (
-              <VideoEmbed info={embed} title={title.trim() || 'Prévia do curso'} />
-            ) : (
-              <div className="flex min-h-[240px] flex-col items-center justify-center rounded-xl border border-line bg-surface px-6 py-10 text-center">
-                <FileStack size={32} className="text-accent" />
-                <p className="mt-3 font-display text-sm font-semibold text-ink">
-                  {files.length
-                    ? `${files.length} arquivo${files.length > 1 ? 's' : ''} pronto${files.length > 1 ? 's' : ''} para o curso`
-                    : 'Os documentos aparecerão na aula após o cadastro'}
-                </p>
-                <p className="mt-1 max-w-sm text-xs leading-5 text-muted">
-                  PDF abre no leitor da plataforma. Word e Excel ficam disponíveis para download.
-                </p>
-              </div>
-            )}
-          </CardContent>
+          <div className="flex flex-col-reverse gap-3 border-t border-line px-6 py-4 sm:flex-row sm:items-center sm:justify-end">
+            <Button variant="ghost" type="button" onClick={() => navigate('/admin/conteudos')}>
+              Cancelar
+            </Button>
+            <Button type="submit" disabled={saving} icon={saving ? <Spinner className="h-4 w-4" /> : undefined}>
+              {saving ? 'Salvando…' : 'Cadastrar curso'}
+            </Button>
+          </div>
         </Card>
       </form>
     </div>
   )
 }
 
-function TypeCard({
-  active,
+function Field({
+  label,
   icon,
-  title,
   hint,
-  onClick,
+  className,
+  children,
 }: {
-  active: boolean
+  label: string
   icon: ReactNode
-  title: string
-  hint: string
-  onClick: () => void
+  hint?: string
+  className?: string
+  children: ReactNode
 }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn(
-        'soaco-press flex items-start gap-3 rounded-2xl border px-4 py-4 text-left transition',
-        active
-          ? 'border-accent bg-accent/8 ring-4 ring-accent/10'
-          : 'border-line bg-surface hover:border-accent/30 hover:bg-fill',
-      )}
-    >
-      <span
-        className={cn(
-          'flex h-10 w-10 shrink-0 items-center justify-center rounded-xl',
-          active ? 'bg-accent text-accent-ink' : 'bg-fill text-muted',
-        )}
-      >
-        {icon}
+    <label className={cn('flex flex-col gap-2', className)}>
+      <span className="inline-flex items-center gap-1.5 font-display text-xs font-semibold tracking-wide text-ink">
+        <span className="text-muted">{icon}</span>
+        {label}
       </span>
-      <span>
-        <span className="block font-display text-sm font-semibold text-ink">{title}</span>
-        <span className="mt-0.5 block text-xs text-muted">{hint}</span>
-      </span>
-    </button>
+      {children}
+      {hint ? <span className="text-[11px] text-muted">{hint}</span> : null}
+    </label>
   )
 }

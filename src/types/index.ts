@@ -55,7 +55,51 @@ export type ProfileAccount = {
   dndEnabled: boolean
   dndFrom: string
   dndTo: string
-  passwordHash: string | null
+}
+
+export type SessionUser = {
+  id: string
+  name: string
+  firstName: string
+  email: string
+  role: UserRole
+  jobTitle: string
+  sector: string
+  initials: string
+  phone: string | null
+  location: string | null
+  photoUrl: string | null
+  classes: string[]
+  /** Senha inicial definida pelo administrador ainda não foi trocada. */
+  mustChangePassword: boolean
+}
+
+export type AdminUser = {
+  id: string
+  name: string
+  email: string
+  role: UserRole
+  sectorId: number | null
+  sectorName: string | null
+  classIds: number[]
+  classNames: string[]
+  active: boolean
+  mustChangePassword: boolean
+  lastLoginAt: string | null
+  createdAt: string
+}
+
+export type Sector = {
+  id: number
+  name: string
+  usersCount: number
+}
+
+export type ClassGroup = {
+  id: number
+  name: string
+  description: string | null
+  membersCount: number
 }
 
 export type Instructor = {
@@ -141,7 +185,15 @@ export type Course = {
   videoProvider?: VideoProvider
   embedUrl?: string
   documents?: AuthoredDocument[]
+  /** Por onde o curso chegou ao colaborador. */
+  assignedVia?: AssignmentTarget[]
+  assignedAt?: string
+  startedAt?: string
+  completedAt?: string
+  lastAccessAt?: string
 }
+
+export type AssignmentTarget = 'usuario' | 'setor' | 'classe'
 
 export type PerformancePoint = {
   label: string
@@ -162,18 +214,55 @@ export type NotificationItem = {
 
 export type ActivityItem = {
   id: string
-  title: string
   description: string
-  time: string
+  createdAt: string
   type: 'completion' | 'progress' | 'assignment' | 'points'
 }
 
-export type UpcomingTraining = {
+export type CourseReview = {
   id: string
-  courseId: string
-  title: string
-  dueLabel: string
-  status: CourseStatus
+  author: string
+  initials: string
+  role: string
+  rating: number
+  comment: string
+  createdAt: string
+  isMine: boolean
+}
+
+export type CourseReviews = {
+  average: number | null
+  count: number
+  distribution: { stars: number; count: number }[]
+  mine: { rating: number; comment: string | null } | null
+  reviews: CourseReview[]
+}
+
+export type RankingEntry = {
+  id: string
+  name: string
+  initials: string
+  jobTitle: string
+  points: number
+  completedCourses: number
+  position: number
+  isCurrentUser: boolean
+}
+
+export type DashboardData = {
+  points: number
+  monthPoints: number
+  assessmentAverage: number | null
+  annualTargetHours: number
+  studyWeek: { minutes: number; goalMinutes: number }
+  performance: Record<PeriodKey, PerformancePoint[]>
+  ranking: {
+    top: RankingEntry[]
+    me: RankingEntry | null
+    total: number
+    percentile: number | null
+  }
+  activities: ActivityItem[]
 }
 
 export type NavItem = {
@@ -181,4 +270,6 @@ export type NavItem = {
   label: string
   icon: string
   reserved?: boolean
+  /** Papéis que enxergam o item; ausente = todos. */
+  roles?: UserRole[]
 }

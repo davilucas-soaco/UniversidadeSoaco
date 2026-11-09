@@ -2,11 +2,9 @@ import { useMemo, useState } from 'react'
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis } from 'recharts'
 import { InsetCard } from '@/components/ui/Card'
 import { PillTabs } from '@/components/ui/PillTabs'
+import { useDashboardData } from '@/context/DashboardContext'
 import { useTheme } from '@/context/ThemeContext'
-import { recentActivities } from '@/data/activity'
-import { studyWeek } from '@/data/dashboard'
-import { performanceByPeriod } from '@/data/performance'
-import { formatMinutes } from '@/lib/format'
+import { formatMinutes, timeAgo } from '@/lib/format'
 import type { ActivityItem, PeriodKey } from '@/types'
 
 const options: { value: PeriodKey; label: string }[] = [
@@ -48,7 +46,8 @@ function ChartTooltip({
 export function LearningEvolution() {
   const [period, setPeriod] = useState<PeriodKey>('30d')
   const { isDark } = useTheme()
-  const data = performanceByPeriod[period]
+  const { performance, studyWeek, activities } = useDashboardData()
+  const data = performance[period]
   const total = useMemo(() => data.reduce((sum, item) => sum + item.points, 0), [data])
   const you = isDark ? '#3b82f6' : '#1e22aa'
   const team = isDark ? '#6b7280' : '#808080'
@@ -133,7 +132,7 @@ export function LearningEvolution() {
           <div className="h-1.5 w-full overflow-hidden rounded-full bg-fill">
             <div
               className="h-full rounded-full bg-accent"
-              style={{ width: `${Math.min(100, Math.round((studyWeek.minutes / studyWeek.goalMinutes) * 100))}%` }}
+              style={{ width: `${Math.min(100, Math.round((studyWeek.minutes / Math.max(1, studyWeek.goalMinutes)) * 100))}%` }}
             />
           </div>
           <p className="text-xs text-muted">
@@ -146,12 +145,13 @@ export function LearningEvolution() {
         <InsetCard className="flex flex-col gap-3 p-4">
           <span className="font-display text-sm font-medium text-ink">Atividades recentes</span>
           <div className="flex flex-col gap-2">
-            {recentActivities.slice(0, 3).map((item) => (
+            {activities.length === 0 ? <p className="text-xs text-muted">Nenhuma atividade ainda.</p> : null}
+            {activities.slice(0, 3).map((item) => (
               <div key={item.id} className="flex items-start gap-3 text-xs">
-                <div className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${activityDot[item.type]}`} />
+                <div className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${activityDot[item.type] ?? 'bg-accent'}`} />
                 <div className="flex min-w-0 flex-col">
                   <span className="truncate font-medium text-ink">{item.description}</span>
-                  <span className="text-[12px] text-muted">{item.time.toLocaleLowerCase('pt-BR')}</span>
+                  <span className="text-[12px] text-muted">{timeAgo(item.createdAt).toLocaleLowerCase('pt-BR')}</span>
                 </div>
               </div>
             ))}

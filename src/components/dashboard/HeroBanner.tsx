@@ -1,17 +1,22 @@
 import { useNavigate } from 'react-router-dom'
 import { Compass, Play } from 'lucide-react'
-import { continueLearningCourses } from '@/data/courses'
-import { dashboardStats } from '@/data/dashboard'
+import { useCourseSummary } from '@/context/CatalogContext'
 import { useOnboarding } from '@/context/OnboardingContext'
 import { useProfile } from '@/context/ProfileContext'
 import { MascotViewport } from './MascotViewport'
+
+function getGreeting() {
+  const hour = new Date().getHours()
+  if (hour >= 5 && hour < 12) return 'Bom dia'
+  if (hour >= 12 && hour < 18) return 'Boa tarde'
+  return 'Boa noite'
+}
 
 export function HeroBanner() {
   const navigate = useNavigate()
   const { start } = useOnboarding()
   const { firstName } = useProfile()
-  const nextCourse = continueLearningCourses[0]
-  const percent = dashboardStats.quarterProgress
+  const nextCourse = useCourseSummary().inProgress[0]
 
   return (
     <section
@@ -43,18 +48,12 @@ export function HeroBanner() {
         <div className="flex min-w-0 flex-col lg:max-w-lg lg:flex-1">
           <div className="hidden lg:block lg:flex-1" aria-hidden />
           <div className="flex flex-col">
-            <div className="mb-3 inline-flex w-max items-center gap-2 rounded-full border border-accent/20 bg-fill px-3 py-1">
-              <span className="h-2 w-2 animate-pulse rounded-full bg-accent" />
-              <span className="font-display text-[11px] font-semibold tracking-wider text-accent uppercase">
-                Plano trimestral
-              </span>
-            </div>
-            <h1 className="mb-2 font-display text-[26px] leading-[1.12] font-bold tracking-[-0.022em] text-ink sm:text-[32px]">
-              Olá, {firstName}. Continue evoluindo.
+            <h1 className="mb-3 font-display text-[32px] leading-[1.08] font-bold tracking-[-0.025em] text-ink sm:text-[42px]">
+              Olá, {firstName}. {getGreeting()}!
             </h1>
-            <p className="text-base leading-relaxed text-muted">
-              Você completou <strong className="font-semibold text-accent">{percent}%</strong> da meta trimestral.
-              Faltam {dashboardStats.quarterRemaining} cursos.
+            <p className="text-base leading-relaxed text-muted sm:text-lg">
+              Você está na <strong className="font-semibold text-accent">Universidade Só Aço</strong>. Continue
+              evoluindo junto com a gente.
             </p>
           </div>
           <div className="mt-6 flex flex-wrap items-center gap-4 lg:mt-0 lg:flex-1 lg:items-end">

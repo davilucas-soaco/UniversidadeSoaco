@@ -3,16 +3,18 @@ import { BadgeCheck, Camera, Mail, MapPin, Pencil } from 'lucide-react'
 import { Avatar } from '@/components/ui/Avatar'
 import { Button } from '@/components/ui/Button'
 import { Modal } from '@/components/ui/Modal'
+import { useCourseSummary } from '@/context/CatalogContext'
+import { useDashboardData } from '@/context/DashboardContext'
 import { useFeedback } from '@/context/FeedbackContext'
 import { useProfile } from '@/context/ProfileContext'
-import { annualGoal, dashboardStats } from '@/data/dashboard'
 import { readProfilePhoto } from '@/lib/photo'
 import { profileFieldClass } from './fields'
 
-const rating = (dashboardStats.assessmentAverage / 20).toFixed(1).replace('.', ',')
-
 export function ProfileHero() {
   const { profile, initials, jobTitle, sector, updateProfile, setPhoto } = useProfile()
+  const summary = useCourseSummary()
+  const { assessmentAverage } = useDashboardData()
+  const rating = assessmentAverage == null ? '—' : (assessmentAverage / 20).toFixed(1).replace('.', ',')
   const { showToast } = useFeedback()
   const inputRef = useRef<HTMLInputElement>(null)
   const [editing, setEditing] = useState(false)
@@ -143,9 +145,9 @@ export function ProfileHero() {
 
         <div className="mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-line bg-line sm:grid-cols-4">
           {[
-            { value: `${annualGoal.doneHours}h`, label: 'Horas de estudo' },
-            { value: String(dashboardStats.completedCourses), label: 'Cursos concluídos' },
-            { value: String(dashboardStats.inProgressCourses), label: 'Em andamento' },
+            { value: `${summary.studiedHours}h`, label: 'Horas de estudo' },
+            { value: String(summary.completed.length), label: 'Cursos concluídos' },
+            { value: String(summary.inProgress.length), label: 'Em andamento' },
             { value: `${rating} / 5,0`, label: 'Aproveitamento' },
           ].map((item) => (
             <div key={item.label} className="bg-elevated px-4 py-4 text-center sm:py-5">

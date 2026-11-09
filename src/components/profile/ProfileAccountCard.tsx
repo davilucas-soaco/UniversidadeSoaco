@@ -57,7 +57,7 @@ export function ProfileAccountCard() {
       showToast(error)
       return
     }
-    if (profile.passwordHash && !currentPassword) {
+    if (!currentPassword) {
       showToast('Informe a senha atual.')
       return
     }
@@ -179,18 +179,14 @@ export function ProfileAccountCard() {
               Trocar senha
             </div>
             <div className="flex flex-col gap-2">
-              {profile.passwordHash ? (
-                <input
-                  type="password"
-                  autoComplete="current-password"
-                  placeholder="Senha atual"
-                  value={currentPassword}
-                  onChange={(event) => setCurrentPassword(event.target.value)}
-                  className={profileFieldClass}
-                />
-              ) : (
-                <p className="text-xs text-muted">Defina uma senha para esta conta de demonstração.</p>
-              )}
+              <input
+                type="password"
+                autoComplete="current-password"
+                placeholder="Senha atual"
+                value={currentPassword}
+                onChange={(event) => setCurrentPassword(event.target.value)}
+                className={profileFieldClass}
+              />
               <input
                 type="password"
                 autoComplete="new-password"

@@ -234,20 +234,3 @@ export const courses: Course[] = [
     objectives: ['Conferir cargas sem divergências.', 'Emitir a documentação de saída.'],
   },
 ]
-
-export const courseById = Object.fromEntries(courses.map((course) => [course.id, course])) as Record<
-  string,
-  Course
->
-
-export const continueLearningCourses = courses.filter((course) => course.status === 'em_andamento')
-
-export const completedCourses = courses.filter((course) => course.status === 'concluido')
-
-export const pendingCourses = courses.filter((course) => course.status === 'pendente')
-
-export const mandatoryCourses = courses.filter(
-  (course) => course.mandatory && course.status !== 'concluido',
-)
-
-export const courseCategories = Array.from(new Set(courses.map((course) => course.category)))

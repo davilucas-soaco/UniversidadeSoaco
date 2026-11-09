@@ -1,0 +1,46 @@
+---
+description: Padrão de tabelas da Universidade Só Aço — toda tabela de dados usa o DataTable com filtros estilo Excel no cabeçalho
+globs: src/**/*.tsx
+alwaysApply: false
+---
+
+# Tabelas: sempre use `DataTable`
+
+Toda listagem em formato de tabela usa `@/components/ui/DataTable`. Não escreva `<table>` à mão nem crie outro componente de tabela.
+O `DataTable` já entrega: busca, filtro por valores + ordenação em cada coluna (`ColumnFilter`, estilo Excel), contador "X de Y", botão "Limpar filtros", estado vazio e linha clicável.
+
+```tsx
+const columns: DataTableColumn<Curso>[] = [
+  { key: 'title', header: 'Curso', filterValues: (c) => [c.title], render: (c) => c.title },
+  {
+    key: 'dueDate',
+    header: 'Prazo',
+    filterValues: (c) => [c.dueDate ? formatDate(c.dueDate) : 'Sem prazo'],
+    sortValue: (c) => (c.dueDate ? new Date(c.dueDate).getTime() : 0), // datas ordenam por número
+    sortLabels: { asc: 'Prazo mais próximo primeiro', desc: 'Prazo mais distante primeiro' },
+    optionOrder: 'sort-asc',
+    emptyValues: ['Sem prazo'], // vão para o fim da lista do filtro
+    render: (c) => (c.dueDate ? formatDate(c.dueDate) : '—'),
+  },
+  { key: 'actions', header: 'Ações', align: 'right', render: (c) => <Acoes curso={c} /> }, // sem filterValues = sem filtro
+]
+
+<DataTable
+  rows={cursos}
+  columns={columns}
+  rowKey={(c) => c.id}
+  search={{ placeholder: 'Buscar curso...', text: (c) => `${c.title} ${c.category}` }}
+  initialSort={{ key: 'title', direction: 'asc' }}
+  itemLabel={{ singular: 'curso', plural: 'cursos' }}
+/>
+```
+
+## Regras
+- Toda coluna de dados tem `filterValues`; só colunas de ação/ícone ficam sem filtro.
+- Valor vazio vira um rótulo explícito entre parênteses ou por extenso (`'(Sem setor)'`, `'Nunca'`) e entra em `emptyValues`.
+- Coluna com vários valores por linha (ex.: classes) devolve todos em `filterValues`; a linha aparece se qualquer um estiver marcado.
+- Datas: `filterValues` com a data formatada, `sortValue` com o timestamp e `sortLabels` em linguagem natural.
+- Dentro de um `Card` já existente use `variant="plain"`; em resumos use `limit` (ex.: 8) e um botão "Ver todos" em `actions`.
+- Em espaços estreitos (cards laterais) use `dense` e `minWidth="0"`; colunas curtas com `className: 'w-px whitespace-nowrap'` e a coluna de texto com `'w-full max-w-0'` + `truncate`.
+- Ações destrutivas na linha (excluir, desativar) sempre confirmam com `@/components/ui/ConfirmDialog`.
+- Se faltar algo, evolua o `DataTable`/`ColumnFilter` em vez de criar uma tabela paralela.

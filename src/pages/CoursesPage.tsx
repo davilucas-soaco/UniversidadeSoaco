@@ -19,10 +19,9 @@ import {
   X,
 } from 'lucide-react'
 import { CourseCard } from '@/components/content/CourseCard'
-import { useCatalog } from '@/context/CatalogContext'
+import { useCatalog, useCourseSummary } from '@/context/CatalogContext'
+import { useDashboardData } from '@/context/DashboardContext'
 import { useFeedback } from '@/context/FeedbackContext'
-import { courseCategories } from '@/data/courses'
-import { annualGoal, deadlines } from '@/data/dashboard'
 import { instructorById } from '@/data/instructors'
 import { dueLabel, formatMinutes } from '@/lib/format'
 import { cn } from '@/lib/cn'
@@ -52,6 +51,12 @@ export function CoursesPage() {
   const navigate = useNavigate()
   const { showComingSoon } = useFeedback()
   const { courses } = useCatalog()
+  const summary = useCourseSummary()
+  const { annualTargetHours } = useDashboardData()
+  const courseCategories = useMemo(
+    () => Array.from(new Set(courses.map((course) => course.category))).sort((a, b) => a.localeCompare(b, 'pt-BR')),
+    [courses],
+  )
   const [query, setQuery] = useState('')
   const [filter, setFilter] = useState<Filter>('todos')
   const [category, setCategory] = useState('Todas')
@@ -93,7 +98,7 @@ export function CoursesPage() {
     if (sort === 'duracao') sorted.sort((a, b) => b.durationHours - a.durationHours)
     if (sort === 'pontuacao') sorted.sort((a, b) => b.points - a.points)
     return sorted
-  }, [category, filter, query, sort])
+  }, [category, courses, filter, query, sort])
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
   const page = Math.min(requestedPage, totalPages)
@@ -120,15 +125,15 @@ export function CoursesPage() {
     setPage(1)
   }
 
-  const inProgress = courses.filter((c) => c.status === 'em_andamento')
+  const inProgress = summary.inProgress
   const remainingMinutes = Math.round(
     inProgress.reduce((sum, c) => sum + c.durationHours * 60 * (1 - c.progress / 100), 0),
   )
   const inProgressAverage = Math.round(
     inProgress.reduce((sum, c) => sum + c.progress, 0) / Math.max(1, inProgress.length),
   )
-  const nextDeadline = deadlines[0]
-  const annualPercent = Math.min(100, Math.round((annualGoal.doneHours / annualGoal.targetHours) * 100))
+  const nextDeadline = summary.deadlines[0]
+  const annualPercent = Math.min(100, Math.round((summary.studiedHours / Math.max(1, annualTargetHours)) * 100))
 
   const tabs: { value: Filter; label: string; dot?: boolean }[] = [
     { value: 'todos', label: `Todos (${counts.todos})` },
@@ -264,7 +269,7 @@ export function CoursesPage() {
             <div className="flex items-baseline justify-between">
               <span className="font-display text-2xl leading-8 font-bold text-ink">{annualPercent}%</span>
               <span className="font-display text-xs font-medium text-muted">
-                {annualGoal.doneHours}h / {annualGoal.targetHours}h
+                {summary.studiedHours}h / {annualTargetHours}h
               </span>
             </div>
             <div className="mt-2 h-2 w-full overflow-hidden rounded-full border border-line/60 bg-canvas">
@@ -364,7 +369,9 @@ export function CoursesPage() {
 
       {pageItems.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-line p-12 text-center text-sm text-muted">
-          Nenhum curso encontrado com esses filtros.
+          {courses.length === 0
+            ? 'Nenhum curso foi destinado a você ainda.'
+            : 'Nenhum curso encontrado com esses filtros.'}
         </div>
       ) : (
         <div className={cn(view === 'grid' ? 'grid grid-cols-1 gap-3 overflow-visible px-1 pt-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' : 'flex flex-col gap-1')}>

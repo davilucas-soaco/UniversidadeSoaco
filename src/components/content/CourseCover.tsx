@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { cn } from '@/lib/cn'
 import type { CoverAccent, CoverIcon as CoverIconName } from '@/types'
 import { CoverIcon } from './CoverIcon'
@@ -25,13 +26,22 @@ export function CourseCover({
   className?: string
   compact?: boolean
 }) {
+  const [failedImage, setFailedImage] = useState<string | null>(null)
+  const showImage = Boolean(image) && failedImage !== image
+
   return (
     <div
       className={cn('relative overflow-hidden bg-[#0b1320]', className)}
-      style={image ? undefined : { backgroundImage: accents[accent], backgroundColor: '#111B2D' }}
+      style={showImage ? undefined : { backgroundImage: accents[accent], backgroundColor: '#111B2D' }}
     >
-      {image ? (
-        <img src={image} alt="" draggable={false} className="absolute inset-0 h-full w-full object-cover" />
+      {showImage ? (
+        <img
+          src={image}
+          alt=""
+          draggable={false}
+          onError={() => setFailedImage(image ?? null)}
+          className="absolute inset-0 h-full w-full object-cover"
+        />
       ) : compact ? (
         <div className="relative flex h-full items-center justify-center text-ivory">
           <CoverIcon name={icon} />

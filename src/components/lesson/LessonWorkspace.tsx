@@ -10,10 +10,10 @@ import {
   Star,
   Trash2,
 } from 'lucide-react'
+import { CourseReviewsPanel } from '@/components/lesson/CourseReviewsPanel'
 import { Avatar } from '@/components/ui/Avatar'
+import { useSessionUser } from '@/context/AuthContext'
 import { useFeedback } from '@/context/FeedbackContext'
-import { currentUser } from '@/data/collaborators'
-import { formatNumber } from '@/lib/format'
 import { cn } from '@/lib/cn'
 import type { Course, Instructor } from '@/types'
 
@@ -28,12 +28,6 @@ const tabs: { value: WorkspaceTab; label: string; Icon: typeof FileText }[] = [
   { value: 'discussion', label: 'Discussão', Icon: MessageSquare },
   { value: 'notes', label: 'Anotações', Icon: Bookmark },
 ]
-
-function hash(text: string) {
-  let value = 0
-  for (const char of text) value = (value * 31 + char.charCodeAt(0)) >>> 0
-  return value
-}
 
 type LessonWorkspaceProps = {
   course: Course
@@ -61,14 +55,9 @@ export function LessonWorkspace({
   currentClock,
 }: LessonWorkspaceProps) {
   const { showComingSoon, showToast } = useFeedback()
+  const user = useSessionUser()
   const [noteDraft, setNoteDraft] = useState('')
   const [postDraft, setPostDraft] = useState('')
-  const [myRating, setMyRating] = useState(0)
-
-  const seed = hash(course.id)
-  const rating = (4.6 + (seed % 4) / 10).toFixed(1)
-  const reviewCount = 80 + (seed % 140)
-  const distribution = [84 + (seed % 8), 9, 3, 1]
 
   return (
     <div className="flex flex-col gap-6 rounded-xl border border-line bg-surface p-6 shadow-xl">
@@ -137,73 +126,7 @@ export function LessonWorkspace({
         </div>
       ) : null}
 
-      {tab === 'reviews' ? (
-        <div className="flex flex-col gap-6">
-          <div className="flex flex-col gap-6 rounded-xl border border-line bg-elevated/70 p-5 md:flex-row md:items-center">
-            <div className="flex flex-col items-center gap-1 md:min-w-[160px]">
-              <span className="font-display text-5xl font-bold text-ink">{rating}</span>
-              <div className="flex items-center gap-0.5 text-accent">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Star key={star} size={18} fill={star <= Math.round(Number(rating)) ? 'currentColor' : 'transparent'} />
-                ))}
-              </div>
-              <span className="text-xs text-muted">{formatNumber(reviewCount)} avaliações</span>
-            </div>
-            <div className="flex flex-1 flex-col gap-2">
-              {distribution.map((value, index) => (
-                <div key={index} className="flex items-center gap-3 text-xs">
-                  <span className="w-16 text-muted">{5 - index} estrelas</span>
-                  <div className="h-2 flex-1 overflow-hidden rounded-full bg-fill">
-                    <div className="h-full rounded-full bg-accent" style={{ width: `${value}%` }} />
-                  </div>
-                  <span className="w-8 text-right font-semibold text-ink">{value}%</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="rounded-xl border border-line bg-elevated p-4">
-            <div className="flex items-center justify-between gap-3">
-              <span className="font-display text-sm font-semibold text-ink">Sua avaliação</span>
-              <div className="flex items-center gap-1 text-accent">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <button
-                    key={star}
-                    type="button"
-                    aria-label={`${star} estrelas`}
-                    onClick={() => {
-                      setMyRating(star)
-                      showToast(`Avaliação registrada: ${star} estrela${star > 1 ? 's' : ''}.`)
-                    }}
-                    className="transition-transform hover:scale-110"
-                  >
-                    <Star size={22} fill={star <= myRating ? 'currentColor' : 'transparent'} />
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-3 rounded-xl border border-line bg-elevated p-4">
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <Avatar name="Marcelo Prado" initials="MP" size="md" />
-                <div className="flex flex-col">
-                  <span className="font-display text-sm font-semibold text-ink">Eng. Marcelo Prado</span>
-                  <span className="text-xs text-muted">Coordenador de Suprimentos</span>
-                </div>
-              </div>
-              <div className="flex items-center gap-0.5 text-accent">
-                {[1, 2, 3, 4, 5].map((star) => <Star key={star} size={14} fill="currentColor" />)}
-              </div>
-            </div>
-            <p className="text-sm leading-relaxed text-ink/90">
-              “Conteúdo direto ao ponto e com exemplos da nossa própria operação. Os checklists ajudaram a equipe a padronizar a rotina já na semana seguinte.”
-            </p>
-            <span className="text-[11px] text-muted">há 2 dias</span>
-          </div>
-        </div>
-      ) : null}
+      {tab === 'reviews' ? <CourseReviewsPanel courseId={course.id} /> : null}
 
       {tab === 'discussion' ? (
         <div className="flex flex-col gap-4">
@@ -338,7 +261,7 @@ export function LessonWorkspace({
         </div>
       ) : null}
 
-      <p className="sr-only">Conectado como {currentUser.name}</p>
+      <p className="sr-only">Conectado como {user.name}</p>
     </div>
   )
 }

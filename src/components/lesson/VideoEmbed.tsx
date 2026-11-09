@@ -20,9 +20,7 @@ export function VideoEmbed({
         )}
       >
         <PlayCircle size={40} className="text-white/40" />
-        <p className="max-w-sm px-6 text-sm">
-          Cole um link do YouTube, Vimeo ou Loom para exibir o vídeo no player da plataforma.
-        </p>
+        <p className="max-w-sm px-6 text-sm">A prévia do vídeo aparece aqui.</p>
       </div>
     )
   }

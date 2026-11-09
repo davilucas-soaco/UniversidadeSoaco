@@ -12,6 +12,13 @@ dist
 dist-ssr
 *.local
 
+# Backend: segredos e banco SQLite local
+backend/.env
+backend/prisma/*.db
+backend/prisma/*.db-journal
+backend/prisma/*.db-wal
+backend/prisma/*.db-shm
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

@@ -1,0 +1,333 @@
+// Prisma schema — SQLite local da Universidade Só Aço.
+// O banco inteiro fica em prisma/dev.db: para levar à produção, copie esse arquivo com o backend parado.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DB_URL")
+}
+
+// ─── Pessoas e organização ───────────────────────────────────────────────────
+
+/// papel: administrador | gestor_conteudo | colaborador
+model Usuario {
+  id                String    @id @default(cuid())
+  nome              String
+  email             String    @unique
+  senhaHash         String    @map("senha_hash")
+  papel             String    @default("colaborador")
+  cargo             String    @default("")
+  /// true quando a senha foi definida pelo administrador: o usuário troca no primeiro acesso.
+  trocarSenha       Boolean   @default(false) @map("trocar_senha")
+  setorId           Int?      @map("setor_id")
+  telefone          String?
+  localizacao       String?
+  fotoUrl           String?   @map("foto_url")
+  metaHorasAno      Int       @default(80) @map("meta_horas_ano")
+  metaMinutosSemana Int       @default(330) @map("meta_minutos_semana")
+  ativo             Boolean   @default(true)
+  ultimoLoginEm     DateTime? @map("ultimo_login_em")
+  criadoEm          DateTime  @default(now()) @map("criado_em")
+  atualizadoEm      DateTime  @updatedAt @map("atualizado_em")
+
+  setor             Setor?               @relation(fields: [setorId], references: [id], onDelete: SetNull)
+  classes           ClasseMembro[]
+  atribuicoes       Atribuicao[]         @relation("AtribuicaoUsuario")
+  atribuicoesFeitas Atribuicao[]         @relation("AtribuicaoAutor")
+  matriculas        Matricula[]
+  aulasConcluidas   AulaProgresso[]
+  avaliacoes        AvaliacaoResultado[]
+  avaliacoesCurso   CursoAvaliacao[]
+  certificados      Certificado[]
+  pontuacoes        PontuacaoEvento[]
+  sessoesEstudo     SessaoEstudo[]
+  atividades        Atividade[]
+
+  @@index([setorId])
+  @@map("usuario")
+}
+
+model Setor {
+  id          Int          @id @default(autoincrement())
+  nome        String       @unique
+  usuarios    Usuario[]
+  atribuicoes Atribuicao[]
+
+  @@map("setor")
+}
+
+/// Grupo livre de colaboradores, independente do setor (ex.: Brigada de emergência, Novos colaboradores).
+model Classe {
+  id          Int            @id @default(autoincrement())
+  nome        String         @unique
+  descricao   String?
+  criadoEm    DateTime       @default(now()) @map("criado_em")
+  membros     ClasseMembro[]
+  atribuicoes Atribuicao[]
+
+  @@map("classe")
+}
+
+model ClasseMembro {
+  classeId  Int      @map("classe_id")
+  usuarioId String   @map("usuario_id")
+  criadoEm  DateTime @default(now()) @map("criado_em")
+
+  classe  Classe  @relation(fields: [classeId], references: [id], onDelete: Cascade)
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@id([classeId, usuarioId])
+  @@index([usuarioId])
+  @@map("classe_membro")
+}
+
+// ─── Catálogo ────────────────────────────────────────────────────────────────
+
+model Instrutor {
+  id       String  @id @default(cuid())
+  nome     String
+  titulo   String
+  iniciais String
+  bio      String?
+  /// Texto livre exibido no card do instrutor (ex.: "18 turmas · 1.420 colaboradores treinados")
+  resumo   String?
+  cursos   Curso[]
+
+  @@map("instrutor")
+}
+
+/// capaCor: navy | sand | ocean | steel | gold
+/// capaIcone: building | flag | shield | clipboard | chart | workflow | heart | book
+/// tipoConteudo: NULL (curso com módulos) | video | document
+model Curso {
+  id            String   @id @default(cuid())
+  titulo        String
+  categoria     String
+  descricao     String
+  cargaHoraria  Float    @map("carga_horaria")
+  pontos        Int      @default(0)
+  capaCor       String   @default("navy") @map("capa_cor")
+  capaIcone     String   @default("book") @map("capa_icone")
+  capaImagem    String?  @map("capa_imagem")
+  instrutorId   String?  @map("instrutor_id")
+  /// JSON com a lista de objetivos (string[])
+  objetivos     String   @default("[]")
+  tipoConteudo  String?  @map("tipo_conteudo")
+  videoUrl      String?  @map("video_url")
+  videoProvedor String?  @map("video_provedor")
+  embedUrl      String?  @map("embed_url")
+  publicado     Boolean  @default(true)
+  criadoEm      DateTime @default(now()) @map("criado_em")
+  atualizadoEm  DateTime @updatedAt @map("atualizado_em")
+
+  instrutor    Instrutor?    @relation(fields: [instrutorId], references: [id], onDelete: SetNull)
+  modulos      Modulo[]
+  atribuicoes  Atribuicao[]
+  matriculas   Matricula[]
+  certificados Certificado[]
+  pontuacoes   PontuacaoEvento[]
+  sessoes      SessaoEstudo[]
+  avaliacoes   CursoAvaliacao[]
+
+  @@index([instrutorId])
+  @@map("curso")
+}
+
+model Modulo {
+  id      String  @id @default(cuid())
+  cursoId String  @map("curso_id")
+  ordem   Int
+  titulo  String
+  resumo  String?
+
+  curso Curso  @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  aulas Aula[]
+
+  @@unique([cursoId, ordem])
+  @@map("modulo")
+}
+
+/// tipo: video | pdf | quiz
+model Aula {
+  id          String  @id @default(cuid())
+  moduloId    String  @map("modulo_id")
+  ordem       Int
+  titulo      String
+  tipo        String
+  duracaoMin  Int?    @map("duracao_min")
+  paginas     Int?
+  questoes    Int?
+  pontos      Int?
+  obrigatoria Boolean @default(false)
+
+  modulo     Modulo               @relation(fields: [moduloId], references: [id], onDelete: Cascade)
+  progresso  AulaProgresso[]
+  avaliacoes AvaliacaoResultado[]
+
+  @@unique([moduloId, ordem])
+  @@map("aula")
+}
+
+// ─── Atribuição de cursos ────────────────────────────────────────────────────
+
+/// Um curso chega ao colaborador por um destes alvos:
+///   alvo = usuario → usuarioId preenchido
+///   alvo = setor   → setorId preenchido (todos do setor)
+///   alvo = classe  → classeId preenchido (todos os membros da classe)
+/// prazo: data limite (yyyy-mm-dd), usada principalmente nos obrigatórios.
+model Atribuicao {
+  id             String   @id @default(cuid())
+  cursoId        String   @map("curso_id")
+  alvo           String
+  usuarioId      String?  @map("usuario_id")
+  setorId        Int?     @map("setor_id")
+  classeId       Int?     @map("classe_id")
+  obrigatorio    Boolean  @default(false)
+  prazo          String?
+  atribuidoPorId String?  @map("atribuido_por_id")
+  criadoEm       DateTime @default(now()) @map("criado_em")
+
+  curso       Curso    @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  usuario     Usuario? @relation("AtribuicaoUsuario", fields: [usuarioId], references: [id], onDelete: Cascade)
+  setor       Setor?   @relation(fields: [setorId], references: [id], onDelete: Cascade)
+  classe      Classe?  @relation(fields: [classeId], references: [id], onDelete: Cascade)
+  atribuidoPor Usuario? @relation("AtribuicaoAutor", fields: [atribuidoPorId], references: [id], onDelete: SetNull)
+
+  @@index([cursoId])
+  @@index([usuarioId])
+  @@index([setorId])
+  @@index([classeId])
+  @@map("atribuicao")
+}
+
+// ─── Progresso do colaborador ────────────────────────────────────────────────
+
+/// status: pendente | em_andamento | concluido
+model Matricula {
+  id             String    @id @default(cuid())
+  usuarioId      String    @map("usuario_id")
+  cursoId        String    @map("curso_id")
+  status         String    @default("pendente")
+  progresso      Int       @default(0)
+  iniciadoEm     DateTime? @map("iniciado_em")
+  concluidoEm    DateTime? @map("concluido_em")
+  ultimoAcessoEm DateTime? @map("ultimo_acesso_em")
+  criadoEm       DateTime  @default(now()) @map("criado_em")
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  curso   Curso   @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+
+  @@unique([usuarioId, cursoId])
+  @@index([cursoId])
+  @@map("matricula")
+}
+
+model AulaProgresso {
+  usuarioId   String   @map("usuario_id")
+  aulaId      String   @map("aula_id")
+  concluidaEm DateTime @default(now()) @map("concluida_em")
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  aula    Aula    @relation(fields: [aulaId], references: [id], onDelete: Cascade)
+
+  @@id([usuarioId, aulaId])
+  @@index([aulaId])
+  @@map("aula_progresso")
+}
+
+/// nota: 0 a 100
+model AvaliacaoResultado {
+  id           String   @id @default(cuid())
+  usuarioId    String   @map("usuario_id")
+  aulaId       String   @map("aula_id")
+  nota         Float
+  respondidoEm DateTime @default(now()) @map("respondido_em")
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  aula    Aula    @relation(fields: [aulaId], references: [id], onDelete: Cascade)
+
+  @@index([usuarioId])
+  @@map("avaliacao_resultado")
+}
+
+/// Avaliação do curso pelo colaborador (aba "Avaliações" da aula). Uma por colaborador e curso.
+/// nota: 1 a 5 estrelas
+model CursoAvaliacao {
+  id           String   @id @default(cuid())
+  usuarioId    String   @map("usuario_id")
+  cursoId      String   @map("curso_id")
+  nota         Int
+  comentario   String?
+  criadoEm     DateTime @default(now()) @map("criado_em")
+  atualizadoEm DateTime @updatedAt @map("atualizado_em")
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  curso   Curso   @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+
+  @@unique([usuarioId, cursoId])
+  @@index([cursoId])
+  @@map("curso_avaliacao")
+}
+
+model Certificado {
+  id        String   @id @default(cuid())
+  usuarioId String   @map("usuario_id")
+  cursoId   String   @map("curso_id")
+  codigo    String   @unique
+  emitidoEm DateTime @default(now()) @map("emitido_em")
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  curso   Curso   @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+
+  @@unique([usuarioId, cursoId])
+  @@map("certificado")
+}
+
+/// Extrato de pontos: a pontuação e o ranking são sempre a soma destes lançamentos.
+model PontuacaoEvento {
+  id        String   @id @default(cuid())
+  usuarioId String   @map("usuario_id")
+  cursoId   String?  @map("curso_id")
+  pontos    Int
+  motivo    String
+  criadoEm  DateTime @default(now()) @map("criado_em")
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  curso   Curso?  @relation(fields: [cursoId], references: [id], onDelete: SetNull)
+
+  @@index([usuarioId, criadoEm])
+  @@index([criadoEm])
+  @@map("pontuacao_evento")
+}
+
+/// Tempo de estudo registrado pelo player (base da "Dedicação semanal").
+model SessaoEstudo {
+  id         String   @id @default(cuid())
+  usuarioId  String   @map("usuario_id")
+  cursoId    String?  @map("curso_id")
+  minutos    Int
+  iniciadoEm DateTime @map("iniciado_em")
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  curso   Curso?  @relation(fields: [cursoId], references: [id], onDelete: SetNull)
+
+  @@index([usuarioId, iniciadoEm])
+  @@map("sessao_estudo")
+}
+
+/// tipo: completion | progress | assignment | points
+model Atividade {
+  id        String   @id @default(cuid())
+  usuarioId String   @map("usuario_id")
+  tipo      String
+  descricao String
+  criadoEm  DateTime @default(now()) @map("criado_em")
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@index([usuarioId, criadoEm])
+  @@map("atividade")
+}

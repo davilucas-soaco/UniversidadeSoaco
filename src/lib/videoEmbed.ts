@@ -73,6 +73,13 @@ export function parseVideoUrl(raw: string): VideoEmbedInfo | null {
   return null
 }
 
+/** Miniatura pública do vídeo, usada como capa do card. */
+export function videoThumbnailUrl(info: VideoEmbedInfo) {
+  if (info.provider === 'youtube') return `https://i.ytimg.com/vi/${info.id}/hqdefault.jpg`
+  if (info.provider === 'vimeo') return `https://vumbnail.com/${info.id}.jpg`
+  return `https://cdn.loom.com/sessions/thumbnails/${info.id}-00001.jpg`
+}
+
 export const videoProviderLabel: Record<VideoProvider, string> = {
   youtube: 'YouTube',
   vimeo: 'Vimeo',

@@ -1,9 +1,8 @@
 import { useEffect, useMemo } from 'react'
-import { NavLink, useNavigate } from 'react-router-dom'
-import { BadgeCheck, PanelLeftClose, PanelLeftOpen, ShieldCheck } from 'lucide-react'
-import { adminNav, collaboratorNav } from '@/data/navigation'
-import { executiveTrail } from '@/data/dashboard'
-import { currentUser } from '@/data/collaborators'
+import { NavLink } from 'react-router-dom'
+import { PanelLeftClose, PanelLeftOpen, ShieldCheck } from 'lucide-react'
+import { adminNav, collaboratorNav, navForRole } from '@/data/navigation'
+import { useSessionUser } from '@/context/AuthContext'
 import { useLayout } from '@/context/LayoutContext'
 import { useDrawerGesture } from '@/hooks/useDrawerGesture'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
@@ -53,8 +52,8 @@ function NavButton({ item, onNavigate }: { item: NavItem; onNavigate?: () => voi
 
 export function Sidebar() {
   const { mobileOpen, closeMobile, openMobile, collapsed, toggleCollapsed } = useLayout()
-  const navigate = useNavigate()
-  const isAdmin = currentUser.role !== 'colaborador'
+  const { role } = useSessionUser()
+  const managementNav = useMemo(() => navForRole(adminNav, role), [role])
   const isMobile = useMediaQuery('(max-width: 1023px)')
   const expanded = isMobile ? true : !collapsed
   const drawer = useDrawerGesture({
@@ -67,16 +66,13 @@ export function Sidebar() {
   const dockItems = useMemo<FloatingDockItem[]>(
     () => [
       ...collaboratorNav.map((item) => toDockItem(item, closeMobile)),
-      { title: 'Governança', href: '', icon: null, separator: true },
-      ...adminNav.map((item) => toDockItem(item, closeMobile)),
+      ...(managementNav.length > 0
+        ? [{ title: 'Governança', href: '', icon: null, separator: true }]
+        : []),
+      ...managementNav.map((item) => toDockItem(item, closeMobile)),
     ],
-    [closeMobile],
+    [closeMobile, managementNav],
   )
-
-  const openTrail = () => {
-    navigate('/trilhas')
-    closeMobile()
-  }
 
   useEffect(() => {
     if (!isMobile || !mobileOpen) return
@@ -132,19 +128,19 @@ export function Sidebar() {
               ))}
             </div>
 
-            <div className="soaco-admin-block">
-              <p className="soaco-section-title">Governança</p>
-              <div className="soaco-nav-group">
-                {adminNav.map((item) => (
-                  <NavButton key={item.to} item={item} onNavigate={closeMobile} />
-                ))}
-              </div>
-              {isAdmin ? (
+            {managementNav.length > 0 ? (
+              <div className="soaco-admin-block">
+                <p className="soaco-section-title">Governança</p>
+                <div className="soaco-nav-group">
+                  {managementNav.map((item) => (
+                    <NavButton key={item.to} item={item} onNavigate={closeMobile} />
+                  ))}
+                </div>
                 <p className="mx-6 mt-3 inline-flex items-center gap-1.5 text-[11px] text-[#64748b]">
                   <ShieldCheck size={12} /> Acesso de gestão
                 </p>
-              ) : null}
-            </div>
+              </div>
+            ) : null}
           </nav>
         ) : (
           <nav
@@ -153,39 +149,6 @@ export function Sidebar() {
           >
             <FloatingDockVertical items={dockItems} />
           </nav>
-        )}
-
-        {expanded ? (
-          <button
-            type="button"
-            className="soaco-press soaco-side-card w-[calc(100%-2rem)] text-left hover:border-[var(--soaco-accent)]/40"
-            onClick={openTrail}
-          >
-            <div className="flex items-center gap-2">
-              <BadgeCheck size={16} className="text-[var(--soaco-accent)]" />
-              <span className="font-display text-sm font-semibold whitespace-nowrap text-[var(--soaco-sidebar-ink)]">
-                {executiveTrail.name}
-              </span>
-            </div>
-            <p className="mt-1 text-xs whitespace-nowrap text-[var(--soaco-sidebar-muted)]">
-              {executiveTrail.progress}% concluído
-            </p>
-            <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/10">
-              <div
-                className="h-full rounded-full bg-[var(--soaco-accent)] transition-[width] duration-500"
-                style={{ width: `${executiveTrail.progress}%` }}
-              />
-            </div>
-          </button>
-        ) : (
-          <button
-            type="button"
-            title={`${executiveTrail.name} · ${executiveTrail.progress}% concluído`}
-            onClick={openTrail}
-            className="soaco-press soaco-dock-icon mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full text-[var(--soaco-accent)]"
-          >
-            <BadgeCheck size={18} />
-          </button>
         )}
 
         <div className="hidden border-t border-[var(--soaco-sidebar-line)] p-3 lg:block">

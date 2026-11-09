@@ -1,7 +1,58 @@
 import { Award, BadgeCheck, BookOpenText, Medal, RefreshCw, TrendingUp } from 'lucide-react'
-import { indicatorMetrics, type IndicatorMetric } from '@/data/dashboard'
+import { useCourseSummary } from '@/context/CatalogContext'
+import { useDashboardData } from '@/context/DashboardContext'
+import type { CourseSummary } from '@/lib/courseStats'
 import { formatNumber } from '@/lib/format'
 import { cn } from '@/lib/cn'
+import type { DashboardData } from '@/types'
+
+type IndicatorMetric = {
+  key: 'points' | 'completed' | 'progress' | 'score'
+  label: string
+  value: number | null
+  unit: string
+  detail: string
+  trend: 'up' | 'neutral' | 'sync'
+}
+
+function buildMetrics(summary: CourseSummary, dashboard: DashboardData): IndicatorMetric[] {
+  const percentile = dashboard.ranking.percentile
+  return [
+    {
+      key: 'points',
+      label: 'Pontuação',
+      value: dashboard.points,
+      unit: 'pts',
+      detail: `+${dashboard.monthPoints} pts no mês`,
+      trend: 'up',
+    },
+    {
+      key: 'completed',
+      label: 'Cursos concluídos',
+      value: summary.completed.length,
+      unit: 'cursos',
+      detail: `Meta: ${summary.total}`,
+      trend: 'neutral',
+    },
+    {
+      key: 'progress',
+      label: 'Em andamento',
+      value: summary.inProgress.length,
+      unit: 'cursos',
+      detail: `${summary.mandatoryOpen.length} obrigatórios em aberto`,
+      trend: 'sync',
+    },
+    {
+      key: 'score',
+      label: 'Aproveitamento',
+      value: dashboard.assessmentAverage,
+      unit: '%',
+      detail:
+        dashboard.assessmentAverage == null ? 'Sem avaliações' : percentile ? `Top ${percentile}%` : 'Fora do ranking',
+      trend: 'neutral',
+    },
+  ]
+}
 
 const icons: Record<IndicatorMetric['key'], typeof Award> = {
   points: Medal,
@@ -23,14 +74,17 @@ const iconBox = {
   neutral: 'bg-fill border-line text-accent',
 }
 
-function formatValue(value: number) {
+function formatValue(value: number | null) {
+  if (value == null) return '—'
   return Number.isInteger(value) ? formatNumber(value) : value.toFixed(1).replace('.', ',')
 }
 
 export function KpiCards() {
+  const metrics = buildMetrics(useCourseSummary(), useDashboardData())
+
   return (
     <section id="tour-indicators" className="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
-      {indicatorMetrics.map((metric) => {
+      {metrics.map((metric) => {
         const Icon = icons[metric.key]
         const kind = tone[metric.key]
         return (
@@ -50,7 +104,7 @@ export function KpiCards() {
             <div>
               <div className="font-display text-[32px] leading-10 font-bold tracking-tight text-ink">
                 {formatValue(metric.value)}
-                {metric.unit === '%' ? (
+                {metric.value == null ? null : metric.unit === '%' ? (
                   <span className="text-base font-semibold text-accent">%</span>
                 ) : (
                   <span

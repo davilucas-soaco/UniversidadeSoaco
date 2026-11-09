@@ -1,12 +1,10 @@
-import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Search } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/Card'
-import { courses } from '@/data/courses'
-import { courseStartedAt } from '@/data/profile'
+import { DataTable, type DataTableColumn } from '@/components/ui/DataTable'
+import { useCatalog } from '@/context/CatalogContext'
 import { formatDate } from '@/lib/format'
 import { cn } from '@/lib/cn'
-import type { CourseStatus } from '@/types'
+import type { Course, CourseStatus } from '@/types'
 
 const statusLabel: Record<CourseStatus, string> = {
   em_andamento: 'Ativo',
@@ -20,91 +18,88 @@ const statusClass: Record<CourseStatus, string> = {
   pendente: 'bg-accent/15 text-accent',
 }
 
-function normalize(text: string) {
-  return text
-    .toLocaleLowerCase('pt-BR')
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-}
+const NOT_STARTED = 'Não iniciado'
+const NO_DEADLINE = 'Sem prazo'
+
+const dateTime = (iso?: string) => (iso ? new Date(iso.length === 10 ? `${iso}T12:00:00` : iso).getTime() : 0)
+
+const columns: DataTableColumn<Course>[] = [
+  {
+    key: 'title',
+    header: 'Curso',
+    filterValues: (course) => [course.title],
+    render: (course) => <p className="font-medium text-ink">{course.title}</p>,
+  },
+  {
+    key: 'category',
+    header: 'Categoria',
+    filterValues: (course) => [course.category],
+    className: 'text-muted',
+    render: (course) => course.category,
+  },
+  {
+    key: 'startedAt',
+    header: 'Início',
+    filterValues: (course) => [course.startedAt ? formatDate(course.startedAt) : NOT_STARTED],
+    sortValue: (course) => dateTime(course.startedAt),
+    sortLabels: { asc: 'Mais antigo primeiro', desc: 'Mais recente primeiro' },
+    optionOrder: 'sort-desc',
+    emptyValues: [NOT_STARTED],
+    className: 'whitespace-nowrap text-muted',
+    render: (course) => (course.startedAt ? formatDate(course.startedAt) : '—'),
+  },
+  {
+    key: 'dueDate',
+    header: 'Prazo',
+    filterValues: (course) => [course.dueDate ? formatDate(course.dueDate) : NO_DEADLINE],
+    sortValue: (course) => dateTime(course.dueDate),
+    sortLabels: { asc: 'Prazo mais próximo primeiro', desc: 'Prazo mais distante primeiro' },
+    optionOrder: 'sort-asc',
+    emptyValues: [NO_DEADLINE],
+    className: 'whitespace-nowrap text-muted',
+    render: (course) => (course.dueDate ? formatDate(course.dueDate) : '—'),
+  },
+  {
+    key: 'status',
+    header: 'Status',
+    filterValues: (course) => [statusLabel[course.status]],
+    render: (course) => (
+      <span className={cn('inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold', statusClass[course.status])}>
+        {statusLabel[course.status]}
+      </span>
+    ),
+  },
+]
 
 export function ProfileCoursesCard() {
   const navigate = useNavigate()
-  const [query, setQuery] = useState('')
-
-  const rows = useMemo(() => {
-    const term = normalize(query)
-    return courses
-      .filter((course) => !term || normalize(course.title).includes(term) || normalize(course.category).includes(term))
-      .slice(0, 8)
-  }, [query])
+  const { courses } = useCatalog()
 
   return (
     <Card className="h-full">
       <CardContent className="p-5 sm:p-6">
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <h2 className="font-display text-lg font-semibold text-ink">Cursos</h2>
-          <div className="flex items-center gap-2">
-            <label className="flex h-9 items-center gap-2 rounded-lg border border-line bg-surface px-2.5">
-              <Search size={14} className="text-muted" />
-              <input
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Buscar..."
-                className="w-32 bg-transparent text-xs text-ink outline-none placeholder:text-muted/70 sm:w-40"
-              />
-            </label>
+        <h2 className="mb-4 font-display text-lg font-semibold text-ink">Cursos</h2>
+        <DataTable
+          variant="plain"
+          rows={courses}
+          columns={columns}
+          rowKey={(course) => course.id}
+          search={{ placeholder: 'Buscar curso ou categoria...', text: (course) => `${course.title} ${course.category}` }}
+          limit={8}
+          onRowClick={(course) => navigate(`/aula/${course.id}`)}
+          emptyMessage={courses.length === 0 ? 'Nenhum curso foi destinado a você ainda.' : 'Nenhum curso corresponde à busca e aos filtros.'}
+          itemLabel={{ singular: 'curso', plural: 'cursos' }}
+          minWidth="640px"
+          actions={
             <button
               type="button"
               onClick={() => navigate('/conteudos')}
-              className="rounded-lg border border-line px-3 py-2 text-xs font-semibold text-ink transition hover:bg-fill"
+              className="rounded-lg border border-line px-3 py-2 text-xs font-semibold whitespace-nowrap text-ink transition hover:bg-fill"
             >
               Ver todos
             </button>
-          </div>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[540px] text-left text-sm">
-            <thead>
-              <tr className="text-[11px] font-semibold tracking-wider text-muted uppercase">
-                <th className="pb-3 font-semibold">Curso</th>
-                <th className="pb-3 font-semibold">Início</th>
-                <th className="pb-3 font-semibold">Prazo</th>
-                <th className="pb-3 font-semibold">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((course) => (
-                <tr
-                  key={course.id}
-                  className="cursor-pointer border-t border-line/80 transition hover:bg-fill/60"
-                  onClick={() => navigate(`/aula/${course.id}`)}
-                >
-                  <td className="py-3 pr-3">
-                    <p className="font-medium text-ink">{course.title}</p>
-                    <p className="text-[11px] text-muted">{course.category}</p>
-                  </td>
-                  <td className="py-3 pr-3 whitespace-nowrap text-muted">
-                    {courseStartedAt[course.id] ? formatDate(courseStartedAt[course.id]) : '—'}
-                  </td>
-                  <td className="py-3 pr-3 whitespace-nowrap text-muted">
-                    {course.dueDate ? formatDate(course.dueDate) : '—'}
-                  </td>
-                  <td className="py-3">
-                    <span
-                      className={cn(
-                        'inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold',
-                        statusClass[course.status],
-                      )}
-                    >
-                      {statusLabel[course.status]}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+          }
+        />
       </CardContent>
     </Card>
   )

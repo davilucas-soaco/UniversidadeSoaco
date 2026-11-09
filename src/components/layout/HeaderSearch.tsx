@@ -81,8 +81,8 @@ export function HeaderSearch({ className }: { className?: string }) {
               }
             }
           }}
-          placeholder="Buscar cursos e trilhas..."
-          aria-label="Buscar cursos e trilhas"
+          placeholder="Buscar cursos..."
+          aria-label="Buscar cursos"
           className="h-full min-w-0 flex-1 bg-transparent pr-3 pl-2.5 text-sm text-ink outline-none placeholder:text-muted/70"
         />
       </label>
