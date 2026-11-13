@@ -1,5 +1,5 @@
 import { useState, type FormEvent, type ReactNode } from 'react'
-import { Pencil, Plus, Trash2 } from 'lucide-react'
+import { Pencil, Plus, Search, Trash2, X } from 'lucide-react'
 import { profileFieldClass } from '@/components/profile/fields'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent } from '@/components/ui/Card'
@@ -28,6 +28,16 @@ type NamedListCardProps = {
 }
 
 type FormState = { mode: 'create' } | { mode: 'edit'; item: NamedItem }
+
+/** A busca só aparece quando a lista passa disso. */
+const SEARCH_THRESHOLD = 6
+
+function normalize(text: string) {
+  return text
+    .toLocaleLowerCase('pt-BR')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+}
 
 function errorMessage(caught: unknown, fallback: string) {
   return caught instanceof Error ? caught.message : fallback
@@ -132,6 +142,11 @@ export function NamedListCard({
   const { showToast } = useFeedback()
   const [form, setForm] = useState<FormState | null>(null)
   const [removing, setRemoving] = useState<NamedItem | null>(null)
+  const [query, setQuery] = useState('')
+  const term = normalize(query.trim())
+  const visible = term
+    ? items.filter((item) => normalize(`${item.name} ${item.description ?? ''}`).includes(term))
+    : items
   const f = gender === 'f'
   const ofNoun = `${f ? 'da' : 'do'} ${noun}`
   const Noun = `${noun.charAt(0).toUpperCase()}${noun.slice(1)}`
@@ -177,7 +192,27 @@ export function NamedListCard({
           </Button>
         </div>
 
-        <div className="flex flex-col divide-y divide-line rounded-xl border border-line">
+        {items.length > SEARCH_THRESHOLD ? (
+          <label className="mb-3 flex items-center gap-2 rounded-xl border border-line bg-fill px-3 py-2 transition-colors focus-within:border-accent/60">
+            <Search size={16} className="shrink-0 text-muted" />
+            <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder={`Buscar ${noun}...`}
+              className="w-full bg-transparent text-sm text-ink placeholder:text-muted/60 focus:outline-none"
+            />
+            {query ? (
+              <button type="button" aria-label="Limpar busca" onClick={() => setQuery('')} className="text-muted hover:text-ink">
+                <X size={15} />
+              </button>
+            ) : null}
+          </label>
+        ) : null}
+
+        <div className="flex flex-col divide-y divide-line overflow-hidden rounded-xl border border-line">
+          {items.length > 0 && visible.length === 0 ? (
+            <p className="p-6 text-center text-sm text-muted">Nada encontrado para "{query}".</p>
+          ) : null}
           {items.length === 0 ? (
             <div className="flex flex-col items-center gap-3 p-6 text-center">
               <p className="text-sm text-muted">
@@ -188,33 +223,36 @@ export function NamedListCard({
               </Button>
             </div>
           ) : null}
-          {items.map((item) => (
-            <div key={item.id} className="flex items-center gap-3 px-4 py-3">
+          {visible.map((item) => (
+            <div key={item.id} className="group flex items-center gap-4 px-4 py-3 transition-colors hover:bg-fill/50">
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium text-ink">{item.name}</p>
-                <p className="truncate text-xs text-muted">
-                  {countLabel(item.count)}
-                  {item.description ? ` · ${item.description}` : ''}
-                </p>
+                {item.description ? <p className="truncate text-xs text-muted">{item.description}</p> : null}
+                <p className="text-xs text-muted sm:hidden">{countLabel(item.count)}</p>
               </div>
-              <button
-                type="button"
-                title="Editar"
-                aria-label={`Editar ${item.name}`}
-                onClick={() => setForm({ mode: 'edit', item })}
-                className="rounded-lg p-2 text-muted transition hover:bg-fill hover:text-ink"
-              >
-                <Pencil size={15} />
-              </button>
-              <button
-                type="button"
-                title="Excluir"
-                aria-label={`Excluir ${item.name}`}
-                onClick={() => setRemoving(item)}
-                className="rounded-lg p-2 text-muted transition hover:bg-fill hover:text-danger"
-              >
-                <Trash2 size={15} />
-              </button>
+              <span className="hidden shrink-0 text-xs whitespace-nowrap text-muted tabular-nums sm:inline">
+                {countLabel(item.count)}
+              </span>
+              <div className="flex shrink-0 items-center opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100">
+                <button
+                  type="button"
+                  title="Editar"
+                  aria-label={`Editar ${item.name}`}
+                  onClick={() => setForm({ mode: 'edit', item })}
+                  className="rounded-lg p-2 text-muted transition hover:bg-fill hover:text-ink"
+                >
+                  <Pencil size={15} />
+                </button>
+                <button
+                  type="button"
+                  title="Excluir"
+                  aria-label={`Excluir ${item.name}`}
+                  onClick={() => setRemoving(item)}
+                  className="rounded-lg p-2 text-muted transition hover:bg-fill hover:text-danger"
+                >
+                  <Trash2 size={15} />
+                </button>
+              </div>
             </div>
           ))}
         </div>

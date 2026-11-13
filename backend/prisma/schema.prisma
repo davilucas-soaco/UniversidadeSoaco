@@ -44,6 +44,8 @@ model Usuario {
   avaliacoes        AvaliacaoResultado[]
   avaliacoesCurso   CursoAvaliacao[]
   certificados      Certificado[]
+  certificadosTrilha CertificadoTrilha[]
+  trilhasAlvo       TrilhaAlvo[]
   pontuacoes        PontuacaoEvento[]
   sessoesEstudo     SessaoEstudo[]
   atividades        Atividade[]
@@ -57,6 +59,7 @@ model Setor {
   nome        String       @unique
   usuarios    Usuario[]
   atribuicoes Atribuicao[]
+  trilhasAlvo TrilhaAlvo[]
 
   @@map("setor")
 }
@@ -78,6 +81,7 @@ model Classe {
   criadoEm    DateTime       @default(now()) @map("criado_em")
   membros     ClasseMembro[]
   atribuicoes Atribuicao[]
+  trilhasAlvo TrilhaAlvo[]
 
   @@map("classe")
 }
@@ -148,9 +152,81 @@ model Curso {
   avaliacoes   CursoAvaliacao[]
   documentos   CursoDocumento[]
   etapas       CursoEtapa[]
+  trilhas      TrilhaCurso[]
 
   @@index([instrutorId])
   @@map("curso")
+}
+
+/// Trilha: cursos em ordem. Quem recebe a trilha recebe todos os cursos dela; as atribuições
+/// de cada curso são gravadas em Atribuicao com trilhaId (refeitas a cada alteração da trilha).
+model Trilha {
+  id                   String   @id @default(cuid())
+  titulo               String
+  descricao            String   @default("")
+  /// true = cada curso só libera depois que o anterior da trilha for concluído
+  sequenciaObrigatoria Boolean  @default(false) @map("sequencia_obrigatoria")
+  /// true = ao concluir todos os cursos o colaborador recebe o certificado da trilha
+  geraCertificado      Boolean  @default(true) @map("gera_certificado")
+  obrigatorio          Boolean  @default(false)
+  prazo                String?
+  criadoEm             DateTime @default(now()) @map("criado_em")
+  atualizadoEm         DateTime @updatedAt @map("atualizado_em")
+
+  cursos       TrilhaCurso[]
+  alvos        TrilhaAlvo[]
+  atribuicoes  Atribuicao[]
+  certificados CertificadoTrilha[]
+
+  @@map("trilha")
+}
+
+model TrilhaCurso {
+  trilhaId String @map("trilha_id")
+  cursoId  String @map("curso_id")
+  ordem    Int
+
+  trilha Trilha @relation(fields: [trilhaId], references: [id], onDelete: Cascade)
+  curso  Curso  @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+
+  @@id([trilhaId, cursoId])
+  @@index([cursoId])
+  @@map("trilha_curso")
+}
+
+/// Público da trilha (mesmos alvos da Atribuicao: usuario | setor | classe).
+model TrilhaAlvo {
+  id        String  @id @default(cuid())
+  trilhaId  String  @map("trilha_id")
+  alvo      String
+  usuarioId String? @map("usuario_id")
+  setorId   Int?    @map("setor_id")
+  classeId  Int?    @map("classe_id")
+
+  trilha  Trilha   @relation(fields: [trilhaId], references: [id], onDelete: Cascade)
+  usuario Usuario? @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  setor   Setor?   @relation(fields: [setorId], references: [id], onDelete: Cascade)
+  classe  Classe?  @relation(fields: [classeId], references: [id], onDelete: Cascade)
+
+  @@index([trilhaId])
+  @@index([usuarioId])
+  @@index([setorId])
+  @@index([classeId])
+  @@map("trilha_alvo")
+}
+
+model CertificadoTrilha {
+  id        String   @id @default(cuid())
+  usuarioId String   @map("usuario_id")
+  trilhaId  String   @map("trilha_id")
+  codigo    String   @unique
+  emitidoEm DateTime @default(now()) @map("emitido_em")
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  trilha  Trilha  @relation(fields: [trilhaId], references: [id], onDelete: Cascade)
+
+  @@unique([usuarioId, trilhaId])
+  @@map("certificado_trilha")
 }
 
 /// Arquivo de apoio do curso (PDF, Word, Excel). O arquivo fica em backend/var/uploads/cursos/<cursoId>/.
@@ -340,9 +416,12 @@ model Atribuicao {
   obrigatorio    Boolean  @default(false)
   prazo          String?
   atribuidoPorId String?  @map("atribuido_por_id")
+  /// Preenchido quando a atribuição vem de uma trilha (o cadastro do curso não mexe nela).
+  trilhaId       String?  @map("trilha_id")
   criadoEm       DateTime @default(now()) @map("criado_em")
 
   curso       Curso    @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  trilha      Trilha?  @relation(fields: [trilhaId], references: [id], onDelete: Cascade)
   usuario     Usuario? @relation("AtribuicaoUsuario", fields: [usuarioId], references: [id], onDelete: Cascade)
   setor       Setor?   @relation(fields: [setorId], references: [id], onDelete: Cascade)
   classe      Classe?  @relation(fields: [classeId], references: [id], onDelete: Cascade)
@@ -352,6 +431,7 @@ model Atribuicao {
   @@index([usuarioId])
   @@index([setorId])
   @@index([classeId])
+  @@index([trilhaId])
   @@map("atribuicao")
 }
 

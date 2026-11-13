@@ -8,12 +8,16 @@ import {
   CloudCheck,
   Download,
   GraduationCap,
+  Lock,
   Medal,
   NotebookPen,
   Share2,
 } from 'lucide-react'
 import { CertificateModal } from '@/components/certificates/CertificateModal'
+import { Button } from '@/components/ui/Button'
+import { CourseCompletedActions, CourseCompletedModal } from '@/components/lesson/CourseCompletedActions'
 import { CurriculumPanel } from '@/components/lesson/CurriculumPanel'
+import { TrailPipelinePanel } from '@/components/lesson/TrailPipelinePanel'
 import { MediaHub, type MediaMode } from '@/components/lesson/MediaHub'
 import {
   LessonWorkspace,
@@ -28,9 +32,11 @@ import { buildCurriculum, curriculumStats, isLessonLocked } from '@/data/curricu
 import { instructorById } from '@/data/instructors'
 import { Spinner } from '@/components/ui/Spinner'
 import { useLocalStorageState } from '@/hooks/useLocalStorageState'
+import { useTrails } from '@/hooks/useTrails'
 import { api } from '@/lib/api'
-import { certificateFor } from '@/lib/certificate'
+import { certificateFor, type CertificateData } from '@/lib/certificate'
 import { formatClock } from '@/lib/format'
+import { nextStepAfter } from '@/lib/nextCourse'
 import { cn } from '@/lib/cn'
 import type { Course, CourseModule, ExamSubmitResult, Lesson } from '@/types'
 
@@ -55,17 +61,21 @@ function applyState(base: CourseModule[], doneIds: string[]) {
 function LessonView({ course: initialCourse }: { course: Course }) {
   const navigate = useNavigate()
   const { showToast } = useFeedback()
-  const { reload: reloadCatalog } = useCatalog()
+  const { reload: reloadCatalog, courses: catalogCourses } = useCatalog()
+  const { trails } = useTrails()
   const user = useSessionUser()
   // Depois de concluir uma etapa, a API devolve o curso atualizado (progresso e etapas concluídas).
   const [updatedCourse, setUpdatedCourse] = useState<Course | null>(null)
   const course = updatedCourse ?? initialCourse
+  const [justCompleted, setJustCompleted] = useState(false)
+  const nextStep = useMemo(() => nextStepAfter(course.id, trails, catalogCourses), [course.id, trails, catalogCourses])
+  const currentTrail = nextStep.trail
   const staged = Boolean(course.stages?.length)
   const sequential = staged && Boolean(course.sequential)
   const instructor = instructorById[course.instructorId] ?? Object.values(instructorById)[0]
   const baseModules = useMemo(() => buildCurriculum(course), [course])
   const [completing, setCompleting] = useState(false)
-  const [certificateOpen, setCertificateOpen] = useState(false)
+  const [shownCertificate, setShownCertificate] = useState<CertificateData | null>(null)
   const certificate = certificateFor(course, user.name)
 
   const [state, setState] = useLocalStorageState<LessonState>(`universidade-soaco.lesson.${course.id}`, {
@@ -131,6 +141,7 @@ function LessonView({ course: initialCourse }: { course: Course }) {
         )
         setUpdatedCourse(data.course)
         reloadCatalog()
+        if (!alreadyDone && data.course.status === 'concluido' && course.status !== 'concluido') setJustCompleted(true)
         if (!alreadyDone) {
           const lessons = buildCurriculum(data.course).flatMap((module) => module.lessons)
           const index = lessons.findIndex((item) => item.id === lesson.id)
@@ -152,7 +163,7 @@ function LessonView({ course: initialCourse }: { course: Course }) {
         setCompleting(false)
       }
     },
-    [completing, course.id, reloadCatalog, setState, showToast],
+    [completing, course.id, course.status, reloadCatalog, setState, showToast],
   )
 
   const onExamSubmitted = useCallback(
@@ -160,10 +171,23 @@ function LessonView({ course: initialCourse }: { course: Course }) {
       setUpdatedCourse(updated)
       reloadCatalog()
       if (!result.approved) return
+      if (updated.status === 'concluido' && course.status !== 'concluido') setJustCompleted(true)
       showToast(updated.status === 'concluido' ? 'Curso concluído! Pontos e certificado garantidos.' : 'Aprovado! Etapa concluída.')
     },
-    [reloadCatalog, showToast],
+    [course.status, reloadCatalog, showToast],
   )
+
+  const completedActions = {
+    next: nextStep,
+    hasCertificate: Boolean(certificate),
+    onNext: (courseId: string) => navigate(`/aula/${courseId}`),
+    onTrail: (trailId: string) => navigate(`/trilha/${trailId}`),
+    onCertificate: () => {
+      setJustCompleted(false)
+      setShownCertificate(certificate)
+    },
+    onCourses: () => navigate('/conteudos'),
+  }
 
   const completeCurrent = useCallback(() => {
     if (!currentLesson) return
@@ -413,39 +437,93 @@ function LessonView({ course: initialCourse }: { course: Course }) {
           </div>
         </div>
 
-        <aside className="flex flex-col gap-4 lg:sticky lg:top-24 lg:col-span-4">
-          <div data-tour="lesson-curriculum">
-            <CurriculumPanel
-              modules={modules}
-              currentLessonId={currentLesson.id}
-              playing={playing}
-              onSelectLesson={selectLesson}
-              stages={staged ? { sequential } : undefined}
-              certificate={course.certificate?.enabled !== false}
-            />
-          </div>
-          {certificate ? (
-            <button
-              type="button"
-              onClick={() => setCertificateOpen(true)}
-              className="flex items-center justify-center gap-2 rounded-xl border border-accent-2/40 bg-accent-2/15 px-4 py-3 font-display text-sm font-semibold text-accent-2 shadow-lg transition hover:bg-accent-2/25"
+        {currentTrail ? (
+          <aside data-tour="lesson-trail" className="flex flex-col gap-4 lg:sticky lg:top-24 lg:col-span-4">
+            <TrailPipelinePanel
+              trail={currentTrail}
+              current={{
+                id: course.id,
+                status: course.status,
+                progress: stats.percent,
+                summary: stats.percent === 100 ? 'concluído' : `${stats.done}/${stats.total} etapas`,
+              }}
+              next={stats.percent === 100 ? nextStep.course : null}
+              certificateOf={(item) =>
+                item.id === course.id
+                  ? certificate
+                  : item.certificate
+                    ? {
+                        name: user.name,
+                        course: item.title,
+                        category: item.category,
+                        hours: item.durationHours,
+                        issuedAt: item.certificate.issuedAt,
+                        code: item.certificate.code,
+                      }
+                    : null
+              }
+              onOpenCourse={(item) => {
+                if (item.id === course.id) return
+                if (item.lockedBy && item.status !== 'concluido') {
+                  showToast(`Conclua antes "${item.lockedBy.courseTitle}" para liberar este curso.`)
+                  return
+                }
+                navigate(`/aula/${item.id}`)
+              }}
+              onNext={(courseId) => navigate(`/aula/${courseId}`)}
+              onOpenTrail={() => navigate(`/trilha/${currentTrail.id}`)}
+              onCertificate={setShownCertificate}
             >
-              <BadgeCheck size={18} /> Ver certificado
-            </button>
-          ) : null}
-          {stats.percent === 100 ? (
-            <button
-              type="button"
-              onClick={() => navigate('/conteudos')}
-              className="rounded-xl bg-accent px-4 py-3 font-display text-sm font-semibold text-accent-ink shadow-lg hover:bg-accent-strong"
-            >
-              Curso concluído · voltar aos meus cursos
-            </button>
-          ) : null}
-        </aside>
+              <CurriculumPanel
+                modules={modules}
+                currentLessonId={currentLesson.id}
+                playing={playing}
+                onSelectLesson={selectLesson}
+                stages={staged ? { sequential } : undefined}
+                certificate={course.certificate?.enabled !== false}
+                embedded
+              />
+            </TrailPipelinePanel>
+          </aside>
+        ) : (
+          <aside className="flex flex-col gap-4 lg:sticky lg:top-24 lg:col-span-4">
+            <div data-tour="lesson-curriculum">
+              <CurriculumPanel
+                modules={modules}
+                currentLessonId={currentLesson.id}
+                playing={playing}
+                onSelectLesson={selectLesson}
+                stages={staged ? { sequential } : undefined}
+                certificate={course.certificate?.enabled !== false}
+              />
+            </div>
+            {stats.percent === 100 ? (
+              <div className="rounded-2xl border border-line bg-surface p-4 shadow-lg">
+                <p className="mb-3 flex items-center gap-2 font-display text-sm font-semibold text-ink">
+                  <CheckCircle2 size={17} className="text-accent" /> Curso concluído
+                </p>
+                <CourseCompletedActions {...completedActions} />
+              </div>
+            ) : certificate ? (
+              <button
+                type="button"
+                onClick={() => setShownCertificate(certificate)}
+                className="flex items-center justify-center gap-2 rounded-xl border border-accent-2/40 bg-accent-2/15 px-4 py-3 font-display text-sm font-semibold text-accent-2 shadow-lg transition hover:bg-accent-2/25"
+              >
+                <BadgeCheck size={18} /> Ver certificado
+              </button>
+            ) : null}
+          </aside>
+        )}
       </div>
 
-      <CertificateModal data={certificateOpen ? certificate : null} onClose={() => setCertificateOpen(false)} />
+      <CourseCompletedModal
+        open={justCompleted}
+        courseTitle={course.title}
+        onClose={() => setJustCompleted(false)}
+        {...completedActions}
+      />
+      <CertificateModal data={shownCertificate} onClose={() => setShownCertificate(null)} />
     </div>
   )
 }
@@ -477,5 +555,31 @@ export function LessonPage() {
       </div>
     )
   }
+  if (course.lockedBy) return <LockedCourse course={course} lock={course.lockedBy} />
   return <LessonView key={course.id} course={course} />
+}
+
+/** Curso de trilha sequencial que ainda espera a conclusão do anterior. */
+function LockedCourse({ course, lock }: { course: Course; lock: NonNullable<Course['lockedBy']> }) {
+  const navigate = useNavigate()
+  return (
+    <div className="mx-auto flex w-full max-w-xl flex-col items-center gap-5 py-16 text-center">
+      <span className="flex h-16 w-16 items-center justify-center rounded-2xl border border-line bg-elevated text-accent shadow-card">
+        <Lock size={28} />
+      </span>
+      <div>
+        <h1 className="font-display text-2xl font-bold text-ink">{course.title}</h1>
+        <p className="mt-2 text-sm leading-relaxed text-muted">
+          Este curso faz parte da trilha <strong className="text-ink">{lock.trailTitle}</strong>, que segue uma sequência.
+          Ele libera assim que você concluir <strong className="text-ink">{lock.courseTitle}</strong>.
+        </p>
+      </div>
+      <div className="flex flex-wrap justify-center gap-3">
+        <Button onClick={() => navigate(`/aula/${lock.courseId}`)}>Ir para {lock.courseTitle}</Button>
+        <Button variant="secondary" onClick={() => navigate(`/trilha/${lock.trailId}`)}>
+          Ver a trilha
+        </Button>
+      </div>
+    </div>
+  )
 }

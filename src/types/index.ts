@@ -221,8 +221,66 @@ export type AdminCourse = {
   }
   mandatory: boolean
   dueDate: string | null
+  /** Trilhas de que o curso faz parte. */
+  trails: { id: string; title: string }[]
   createdAt: string
   updatedAt: string
+}
+
+export type AdminTrail = {
+  id: string
+  title: string
+  description: string
+  sequential: boolean
+  certificate: boolean
+  courses: { id: string; title: string; category: string; durationHours: number; coverImage: string | null }[]
+  durationHours: number
+  audience: AdminCourse['audience']
+  mandatory: boolean
+  dueDate: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export type AdminTrailInput = {
+  title: string
+  description: string
+  sequential: boolean
+  certificate: boolean
+  courseIds: string[]
+  audience: { userIds: string[]; sectorIds: number[]; classIds: number[] }
+  mandatory: boolean
+  dueDate: string | null
+}
+
+/** Curso de trilha sequencial que espera a conclusão de outro. */
+export type TrailLock = { trailId: string; trailTitle: string; courseId: string; courseTitle: string }
+
+/** Trilha como o colaborador recebe, com o andamento dele. */
+export type LearnerTrail = {
+  id: string
+  title: string
+  description: string
+  sequential: boolean
+  mandatory: boolean
+  dueDate?: string
+  durationHours: number
+  status: CourseStatus
+  progress: number
+  completedCount: number
+  certificate: { enabled: boolean; code?: string; issuedAt?: string }
+  courses: {
+    id: string
+    title: string
+    category: string
+    durationHours: number
+    cover: Course['cover']
+    status: CourseStatus
+    progress: number
+    lockedBy?: TrailLock
+    /** Certificado do curso, quando já emitido. */
+    certificate?: { code: string; issuedAt: string }
+  }[]
 }
 
 export type AdminStageInput = {
@@ -346,6 +404,8 @@ export type Course = {
   documents?: AuthoredDocument[]
   /** Por onde o curso chegou ao colaborador. */
   assignedVia?: AssignmentTarget[]
+  /** Trilha sequencial em que o curso ainda espera a conclusão de outro. */
+  lockedBy?: TrailLock
   assignedAt?: string
   startedAt?: string
   completedAt?: string

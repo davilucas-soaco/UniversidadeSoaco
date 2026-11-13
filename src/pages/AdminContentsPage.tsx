@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ExternalLink, Layers, ListOrdered, Pencil, Plus, RefreshCw, Trash2 } from 'lucide-react'
+import { AdminTrailsPanel } from '@/components/admin/AdminTrailsPanel'
 import { CourseCover } from '@/components/content/CourseCover'
+import { PillTabs } from '@/components/ui/PillTabs'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
@@ -23,6 +25,7 @@ function audienceValues(course: AdminCourse) {
     ...course.audience.classes.map((item) => `Classe · ${item.name}`),
     ...course.audience.sectors.map((item) => `Setor · ${item.name}`),
     ...course.audience.users.map((item) => `Colaborador · ${item.name}`),
+    ...course.trails.map((item) => `Trilha · ${item.title}`),
   ]
   return values.length > 0 ? values : [NOT_ASSIGNED]
 }
@@ -52,6 +55,8 @@ function hoursLabel(hours: number) {
 
 export function AdminContentsPage() {
   const navigate = useNavigate()
+  const [params, setParams] = useSearchParams()
+  const tab: 'cursos' | 'trilhas' = params.get('aba') === 'trilhas' ? 'trilhas' : 'cursos'
   const { showToast } = useFeedback()
   const { reload: reloadCatalog } = useCatalog()
   const [courses, setCourses] = useState<AdminCourse[] | null>(null)
@@ -260,20 +265,39 @@ export function AdminContentsPage() {
 
   return (
     <div className="mx-auto flex w-full max-w-[1600px] flex-col pb-12">
-      <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+      <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
           <p className="font-display text-[11px] font-semibold tracking-widest text-accent uppercase">Governança</p>
           <h1 className="mt-1 font-display text-[32px] leading-10 font-bold tracking-tight text-ink">
             Gestão de conteúdos
           </h1>
-          <p className="mt-1 text-sm text-muted">Cadastre os cursos e defina para quem cada um vai.</p>
+          <p className="mt-1 text-sm text-muted">Cadastre os cursos e as trilhas e defina para quem cada um vai.</p>
         </div>
-        <Button data-tour="admin-courses-new" icon={<Plus size={16} />} onClick={() => navigate('/admin/conteudos/novo')}>
-          Novo curso
-        </Button>
+        {tab === 'trilhas' ? (
+          <Button data-tour="admin-trails-new" icon={<Plus size={16} />} onClick={() => navigate('/admin/trilhas/nova')}>
+            Nova trilha
+          </Button>
+        ) : (
+          <Button data-tour="admin-courses-new" icon={<Plus size={16} />} onClick={() => navigate('/admin/conteudos/novo')}>
+            Novo curso
+          </Button>
+        )}
       </div>
 
-      {error ? (
+      <PillTabs
+        value={tab}
+        onChange={(value) => setParams(value === 'cursos' ? {} : { aba: value }, { replace: true })}
+        options={[
+          { value: 'cursos', label: 'Cursos', count: courses?.length },
+          { value: 'trilhas', label: 'Trilhas' },
+        ]}
+        size="md"
+        className="mb-6 self-start"
+      />
+
+      {tab === 'trilhas' ? (
+        <AdminTrailsPanel />
+      ) : error ? (
         <Card className="flex flex-col items-center gap-4 p-8 text-center">
           <p className="text-sm text-muted">{error}</p>
           <Button variant="secondary" icon={<RefreshCw size={16} />} onClick={() => void load()}>

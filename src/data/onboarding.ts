@@ -108,6 +108,14 @@ const coursesTour: OnboardingTourDefinition = {
       position: 'bottom',
     },
     {
+      id: 'trails',
+      title: 'Minhas trilhas',
+      description:
+        'Trilhas são sequências de cursos. Abra uma trilha para ver a ordem, o seu andamento e, ao concluir todos os cursos, o certificado.',
+      element: tour('courses-trails'),
+      position: 'bottom',
+    },
+    {
       id: 'filters',
       title: 'Encontre um curso',
       description:
@@ -186,6 +194,14 @@ const lessonTour: OnboardingTourDefinition = {
       position: 'top',
     },
     {
+      id: 'trail',
+      title: 'Sua trilha',
+      description:
+        'Quando o curso faz parte de uma trilha, aqui você vê todos os cursos dela, em qual está e pode avançar para o próximo.',
+      element: tour('lesson-trail'),
+      position: 'left',
+    },
+    {
       id: 'curriculum',
       title: 'Etapas do curso',
       description:
@@ -234,6 +250,13 @@ const adminCoursesTour: OnboardingTourDefinition = {
   paths: ['/admin/conteudos'],
   ready: tour('admin-courses-new'),
   steps: [
+    {
+      id: 'new-trail',
+      title: 'Cadastrar uma trilha',
+      description: 'Junte cursos em uma sequência, defina para quem a trilha vai e se ela gera certificado.',
+      element: tour('admin-trails-new'),
+      position: 'left',
+    },
     {
       id: 'new',
       title: 'Cadastrar um curso',
@@ -321,6 +344,69 @@ const courseFormTour: OnboardingTourDefinition = {
   ],
 }
 
+const trailFormTour: OnboardingTourDefinition = {
+  id: 'cadastro-trilha',
+  label: 'Cadastro de trilha',
+  paths: ['/admin/trilhas/nova', '/admin/trilhas/:trailId/editar'],
+  ready: tour('trail-info'),
+  steps: [
+    {
+      id: 'info',
+      title: '1 · Informações',
+      description: 'Nome e descrição da trilha, como o colaborador vai ver.',
+      element: tour('trail-info'),
+      position: 'bottom',
+    },
+    {
+      id: 'certificate',
+      title: 'Certificado da trilha',
+      description:
+        'Ligado, o colaborador recebe o certificado da trilha ao concluir todos os cursos, com a carga horária total. Use "Ver prévia" para conferir.',
+      element: tour('trail-certificate'),
+      position: 'top',
+    },
+    {
+      id: 'audience',
+      title: '2 · Destinado a',
+      description: 'Quem recebe a trilha passa a ter todos os cursos dela, sem precisar destinar curso por curso.',
+      element: tour('trail-audience'),
+      position: 'top',
+    },
+    {
+      id: 'courses',
+      title: '3 · Cursos',
+      description:
+        'Busque e adicione os cursos e arraste para definir a ordem. Com a sequência obrigatória, cada curso libera ao concluir o anterior.',
+      element: tour('trail-courses'),
+      position: 'top',
+    },
+  ],
+}
+
+const learnerTrailTour: OnboardingTourDefinition = {
+  id: 'trilha',
+  label: 'Trilha',
+  paths: ['/trilha/:trailId'],
+  ready: tour('trail-hero'),
+  steps: [
+    {
+      id: 'hero',
+      title: 'Sua trilha',
+      description: 'Andamento da trilha e o atalho para o próximo curso. Ao concluir todos, o certificado aparece aqui.',
+      element: tour('trail-hero'),
+      position: 'bottom',
+    },
+    {
+      id: 'list',
+      title: 'Cursos em ordem',
+      description: 'Os cursos com cadeado liberam quando você conclui o anterior. Clique em um curso para abrir.',
+      element: tour('trail-courses-list'),
+      position: 'top',
+    },
+    replayStep,
+  ],
+}
+
 const usersTour: OnboardingTourDefinition = {
   id: 'colaboradores',
   label: 'Colaboradores',
@@ -357,29 +443,23 @@ const settingsTour: OnboardingTourDefinition = {
   id: 'configuracoes',
   label: 'Configurações',
   paths: ['/admin/configuracoes'],
-  ready: tour('settings-lists'),
+  ready: tour('settings-nav'),
   steps: [
     {
-      id: 'lists',
-      title: 'Setores, classes e categorias',
+      id: 'nav',
+      title: 'Seções',
       description:
-        'Setores e classes organizam os colaboradores e definem para quem os cursos vão. As categorias organizam os cursos.',
-      element: tour('settings-lists'),
-      position: 'bottom',
+        'Setores e classes organizam os colaboradores e definem para quem os cursos vão; as categorias organizam os cursos. Em Provas você cria as avaliações reutilizáveis e em E-mail configura o envio dos avisos.',
+      element: tour('settings-nav'),
+      position: 'right',
     },
     {
-      id: 'exams',
-      title: 'Provas',
-      description: 'Crie as provas com perguntas e alternativas. A mesma prova pode ser usada em vários cursos.',
-      element: tour('settings-exams'),
-      position: 'top',
-    },
-    {
-      id: 'email',
-      title: 'Envio de e-mails',
-      description: 'Credenciais da conta que envia os avisos de novos cursos. Use "Enviar teste" para validar.',
-      element: tour('settings-email'),
-      position: 'top',
+      id: 'panel',
+      title: 'Cadastro da seção',
+      description:
+        'Adicione itens pelo botão do topo. Passe o mouse sobre um item para editar ou excluir; com muitos itens, use a busca.',
+      element: tour('settings-panel'),
+      position: 'left',
     },
     replayStep,
   ],
@@ -422,6 +502,8 @@ export const onboardingTours: OnboardingTourDefinition[] = [
   profileTour,
   adminCoursesTour,
   courseFormTour,
+  trailFormTour,
+  learnerTrailTour,
   usersTour,
   settingsTour,
 ]

@@ -7,6 +7,7 @@ import { requireAuth } from './middleware/auth.js'
 import { requireRole } from './middleware/requireRole.js'
 import adminCursoRoutes from './routes/adminCursoRoutes.js'
 import adminRoutes from './routes/adminRoutes.js'
+import adminTrilhaRoutes from './routes/adminTrilhaRoutes.js'
 import authRoutes from './routes/authRoutes.js'
 import cursoRoutes from './routes/cursoRoutes.js'
 import emailRoutes from './routes/emailRoutes.js'
@@ -32,6 +33,7 @@ app.use('/api/cursos', requireAuth, cursoRoutes)
 app.use('/api/admin/cursos', requireAuth, requireRole('administrador', 'gestor_conteudo'), adminCursoRoutes)
 app.use('/api/admin/email', requireAuth, requireRole('administrador'), emailRoutes)
 app.use('/api/admin/provas', requireAuth, requireRole('administrador', 'gestor_conteudo'), provaRoutes)
+app.use('/api/admin/trilhas', requireAuth, requireRole('administrador', 'gestor_conteudo'), adminTrilhaRoutes)
 app.use('/api/admin', requireAuth, requireRole('administrador'), adminRoutes)
 app.use('/api', (_req, res) => {
   res.status(404).json({ error: 'Rota não encontrada.' })

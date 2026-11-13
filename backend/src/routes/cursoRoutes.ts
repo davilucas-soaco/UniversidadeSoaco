@@ -6,6 +6,7 @@ import { caminhoUpload } from '../config/uploads.js'
 import { cursoDestinadoAoUsuario, obterCursoParaUsuario } from '../services/cursosUsuario.js'
 import { carregarArvore, recalcularMatricula, unidadesDoCurso } from '../services/etapasCurso.js'
 import { corrigirProva } from '../services/provas.js'
+import { bloqueioDoCurso } from '../services/trilhas.js'
 import { storyboardDoYoutube } from '../services/videoStoryboard.js'
 import { asyncHandler } from '../utils/asyncHandler.js'
 
@@ -63,6 +64,16 @@ async function etapaDoColaborador(req: Request, res: Response, avancar: boolean)
   if (!curso || posicao < 0) {
     res.status(404).json({ error: 'Etapa não encontrada.' })
     return null
+  }
+
+  if (avancar) {
+    const bloqueio = await bloqueioDoCurso(usuarioId, cursoId)
+    if (bloqueio) {
+      res.status(409).json({
+        error: `Este curso faz parte da trilha "${bloqueio.trailTitle}": conclua antes o curso "${bloqueio.courseTitle}".`,
+      })
+      return null
+    }
   }
 
   if (avancar && curso.sequenciaObrigatoria && posicao > 0) {

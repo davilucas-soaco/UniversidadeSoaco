@@ -1,6 +1,7 @@
 import { appPublicUrl } from '../config/env.js'
 import { prisma } from '../config/prisma.js'
 import { emailCursoAtribuido } from './email/emailCursoAtribuido.js'
+import { emailTrilhaAtribuida } from './email/emailTrilhaAtribuida.js'
 import { enviarEmailSistema } from './email/systemEmail.js'
 import { etapaInclude, montarArvore } from './etapasCurso.js'
 
@@ -138,6 +139,82 @@ async function enviarAvisoCurso(cursoId: string, usuarioId: string) {
 }
 
 const pausa = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+const CATEGORIA_TRILHA = 'trilha-atribuida'
+
+/** Colaboradores ativos que recebem a trilha (direto, pelo setor ou pela classe). */
+export async function destinatariosDaTrilha(trilhaId: string) {
+  const alvos = await prisma.trilhaAlvo.findMany({
+    where: { trilhaId },
+    select: { usuarioId: true, setorId: true, classeId: true },
+  })
+  const usuarioIds = alvos.flatMap((item) => (item.usuarioId ? [item.usuarioId] : []))
+  const setorIds = alvos.flatMap((item) => (item.setorId ? [item.setorId] : []))
+  const classeIds = alvos.flatMap((item) => (item.classeId ? [item.classeId] : []))
+  if (usuarioIds.length + setorIds.length + classeIds.length === 0) return new Set<string>()
+
+  const usuarios = await prisma.usuario.findMany({
+    where: {
+      ativo: true,
+      OR: [
+        { id: { in: usuarioIds } },
+        { setorId: { in: setorIds } },
+        { classes: { some: { classeId: { in: classeIds } } } },
+      ],
+    },
+    select: { id: true },
+  })
+  return new Set(usuarios.map((usuario) => usuario.id))
+}
+
+async function enviarAvisoTrilha(trilhaId: string, usuarioId: string) {
+  const chave = `${CATEGORIA_TRILHA}:${trilhaId}:${usuarioId}`
+  if (await prisma.emailDisparoLog.findUnique({ where: { chave } })) return
+  const [trilha, usuario] = await Promise.all([
+    prisma.trilha.findUnique({
+      where: { id: trilhaId },
+      include: { cursos: { orderBy: { ordem: 'asc' }, include: { curso: { select: { titulo: true, cargaHoraria: true } } } } },
+    }),
+    prisma.usuario.findUnique({ where: { id: usuarioId }, select: { nome: true, email: true } }),
+  ])
+  if (!trilha || !usuario) return
+  const { assunto, html } = emailTrilhaAtribuida({
+    nome: usuario.nome,
+    link: `${appPublicUrl}/trilha/${trilha.id}`,
+    trilha: {
+      titulo: trilha.titulo,
+      descricao: trilha.descricao,
+      sequencial: trilha.sequenciaObrigatoria,
+      certificado: trilha.geraCertificado,
+      cursos: trilha.cursos.map(({ curso }) => ({ titulo: curso.titulo, cargaHoraria: curso.cargaHoraria })),
+    },
+    obrigatorio: trilha.obrigatorio,
+    prazo: trilha.prazo,
+  })
+  const enviado = await enviarEmailSistema({ to: usuario.email, subject: assunto, html })
+  if (enviado) {
+    await prisma.emailDisparoLog.create({
+      data: { categoria: CATEGORIA_TRILHA, chave, destinatarios: usuario.email, assunto },
+    })
+  }
+}
+
+/** Avisa, em segundo plano, quem passou a receber a trilha (um e-mail por trilha, nunca repetido). */
+export function avisarNovosDestinatariosTrilha(trilhaId: string, usuarioIds: string[]) {
+  if (usuarioIds.length === 0) return
+  void (async () => {
+    for (const [indice, usuarioId] of usuarioIds.entries()) {
+      try {
+        await enviarAvisoTrilha(trilhaId, usuarioId)
+      } catch (error) {
+        const mensagem = error instanceof Error ? error.message : String(error)
+        console.error(`[email] Aviso de trilha não enviado (${trilhaId} → ${usuarioId}): ${mensagem}`)
+        if (/não configurad|bloqueada|ENCRYPTION_KEY/i.test(mensagem)) return
+      }
+      if (indice < usuarioIds.length - 1) await pausa(PAUSA_ENTRE_ENVIOS_MS)
+    }
+  })()
+}
 
 /**
  * Avisa por e-mail os colaboradores que passaram a receber cursos. Roda em segundo plano

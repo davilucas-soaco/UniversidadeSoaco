@@ -1,10 +1,11 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   ArrowRight,
   ArrowUpDown,
   Award,
   BadgeCheck,
+  BookOpen,
   CalendarClock,
   ChevronDown,
   ChevronLeft,
@@ -13,6 +14,7 @@ import {
   Compass,
   LayoutGrid,
   List,
+  Route,
   Search,
   Timer,
   TrendingUp,
@@ -21,9 +23,11 @@ import {
 import { CertificatesListModal } from '@/components/certificates/CertificatesListModal'
 import { useCourseOpener } from '@/components/certificates/useCourseOpener'
 import { CourseCard } from '@/components/content/CourseCard'
+import { TrailCard } from '@/components/content/TrailCard'
 import { useCatalog, useCourseSummary } from '@/context/CatalogContext'
 import { useFeedback } from '@/context/FeedbackContext'
 import { instructorById } from '@/data/instructors'
+import { useTrails } from '@/hooks/useTrails'
 import { dueLabel, formatMinutes, formatNumber } from '@/lib/format'
 import { cn } from '@/lib/cn'
 import type { CourseStatus } from '@/types'
@@ -48,6 +52,25 @@ function normalize(text: string) {
     .replace(/[\u0300-\u036f]/g, '')
 }
 
+function SectionHeader({ icon, title, subtitle, count }: { icon: ReactNode; title: string; subtitle: string; count: string }) {
+  return (
+    <div className="mb-5 flex items-center justify-between gap-4">
+      <div className="flex items-center gap-3">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-line bg-fill text-accent">
+          {icon}
+        </span>
+        <div>
+          <h2 className="font-display text-lg leading-tight font-semibold text-ink">{title}</h2>
+          <p className="text-xs text-muted">{subtitle}</p>
+        </div>
+      </div>
+      <span className="shrink-0 rounded-full border border-line bg-fill px-2.5 py-1 text-xs font-medium text-muted tabular-nums">
+        {count}
+      </span>
+    </div>
+  )
+}
+
 export function CoursesPage() {
   const navigate = useNavigate()
   const { showComingSoon } = useFeedback()
@@ -65,6 +88,7 @@ export function CoursesPage() {
   const [requestedPage, setPage] = useState(1)
   const [certificatesOpen, setCertificatesOpen] = useState(false)
   const { openCourse, element: courseOpener } = useCourseOpener()
+  const { trails } = useTrails()
   const certificatesCount = courses.filter((course) => course.certificate?.code).length
 
   const counts = useMemo(
@@ -175,7 +199,7 @@ export function CoursesPage() {
         </div>
       </div>
 
-      <div data-tour="courses-kpis" className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div data-tour="courses-kpis" className="mb-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-line bg-elevated p-4 shadow-lg transition-all hover:border-accent/40">
           <div className="mb-3 flex items-center justify-between">
             <span className="font-display text-[11px] font-semibold tracking-wider text-muted uppercase">Em andamento</span>
@@ -276,145 +300,170 @@ export function CoursesPage() {
         </div>
       </div>
 
-      <div className="mb-6 flex flex-col gap-4 rounded-2xl border border-line bg-elevated p-4 shadow-lg">
-        <div data-tour="courses-filters" className="flex flex-col justify-between gap-3 lg:flex-row lg:items-center">
-          <label className="flex max-w-xl flex-1 items-center rounded-xl border border-line bg-fill px-4 py-2 shadow-inner transition-colors focus-within:border-accent/60">
-            <Search size={20} className="mr-2 text-muted" />
-            <input
-              value={query}
-              onChange={(event) => changeQuery(event.target.value)}
-              placeholder="Buscar curso, categoria ou instrutor..."
-              className="w-full bg-transparent text-xs text-ink placeholder:text-muted/60 focus:outline-none"
-            />
-            {query ? (
-              <button type="button" aria-label="Limpar busca" onClick={() => changeQuery('')} className="text-muted hover:text-ink">
-                <X size={18} />
-              </button>
-            ) : null}
-          </label>
+      {trails.length > 0 ? (
+        <section data-tour="courses-trails" className="mb-8 rounded-3xl border border-line bg-surface p-5 shadow-card sm:p-6">
+          <SectionHeader
+            icon={<Route size={18} />}
+            title="Minhas trilhas"
+            subtitle="Sequências de cursos pensadas para você."
+            count={`${trails.length} ${trails.length === 1 ? 'trilha' : 'trilhas'}`}
+          />
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {trails.map((trail) => (
+              <TrailCard key={trail.id} trail={trail} onOpen={() => navigate(`/trilha/${trail.id}`)} />
+            ))}
+          </div>
+        </section>
+      ) : null}
 
-          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-            <div className="relative inline-block text-left">
-              <select
-                value={category}
-                onChange={(event) => changeCategory(event.target.value)}
-                className="cursor-pointer appearance-none rounded-xl border border-line bg-fill py-2.5 pr-9 pl-4 font-display text-xs font-semibold text-ink shadow-sm transition-colors hover:border-accent/40 focus:outline-none"
-              >
-                <option value="Todas">Todas</option>
-                {courseCategories.map((item) => (
-                  <option key={item} value={item}>{item}</option>
-                ))}
-              </select>
-              <ChevronDown size={18} className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-muted" />
+      <section className="rounded-3xl border border-line bg-surface p-5 shadow-card sm:p-6">
+        <SectionHeader
+          icon={<BookOpen size={18} />}
+          title="Cursos"
+          subtitle="Todos os cursos destinados a você, inclusive os das trilhas."
+          count={`${courses.length} ${courses.length === 1 ? 'curso' : 'cursos'}`}
+        />
+
+        <div className="mb-5 flex flex-col gap-4 rounded-2xl border border-line bg-elevated p-4">
+          <div data-tour="courses-filters" className="flex flex-col justify-between gap-3 lg:flex-row lg:items-center">
+            <label className="flex max-w-xl flex-1 items-center rounded-xl border border-line bg-fill px-4 py-2 shadow-inner transition-colors focus-within:border-accent/60">
+              <Search size={20} className="mr-2 text-muted" />
+              <input
+                value={query}
+                onChange={(event) => changeQuery(event.target.value)}
+                placeholder="Buscar curso, categoria ou instrutor..."
+                className="w-full bg-transparent text-xs text-ink placeholder:text-muted/60 focus:outline-none"
+              />
+              {query ? (
+                <button type="button" aria-label="Limpar busca" onClick={() => changeQuery('')} className="text-muted hover:text-ink">
+                  <X size={18} />
+                </button>
+              ) : null}
+            </label>
+
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+              <div className="relative inline-block text-left">
+                <select
+                  value={category}
+                  onChange={(event) => changeCategory(event.target.value)}
+                  className="cursor-pointer appearance-none rounded-xl border border-line bg-fill py-2.5 pr-9 pl-4 font-display text-xs font-semibold text-ink shadow-sm transition-colors hover:border-accent/40 focus:outline-none"
+                >
+                  <option value="Todas">Todas</option>
+                  {courseCategories.map((item) => (
+                    <option key={item} value={item}>{item}</option>
+                  ))}
+                </select>
+                <ChevronDown size={18} className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-muted" />
+              </div>
+              <div className="relative inline-block text-left">
+                <select
+                  value={sort}
+                  onChange={(event) => changeSort(event.target.value as SortKey)}
+                  className="cursor-pointer appearance-none rounded-xl border border-line bg-fill py-2.5 pr-9 pl-4 font-display text-xs font-semibold text-ink shadow-sm transition-colors hover:border-accent/40 focus:outline-none"
+                >
+                  {(Object.keys(sortLabels) as SortKey[]).map((key) => (
+                    <option key={key} value={key}>{sortLabels[key]}</option>
+                  ))}
+                </select>
+                <ArrowUpDown size={16} className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-muted" />
+              </div>
+              <div className="hidden h-6 w-px bg-line sm:block" />
+              <div className="flex items-center rounded-xl border border-line bg-fill p-1 shadow-inner">
+                <button
+                  type="button"
+                  title="Visualização em grade"
+                  onClick={() => setView('grid')}
+                  className={cn('flex items-center justify-center rounded-lg p-1.5 transition-all', view === 'grid' ? 'bg-elevated text-accent shadow-sm' : 'text-muted hover:text-ink')}
+                >
+                  <LayoutGrid size={18} />
+                </button>
+                <button
+                  type="button"
+                  title="Visualização em lista"
+                  onClick={() => setView('list')}
+                  className={cn('flex items-center justify-center rounded-lg p-1.5 transition-all', view === 'list' ? 'bg-elevated text-accent shadow-sm' : 'text-muted hover:text-ink')}
+                >
+                  <List size={18} />
+                </button>
+              </div>
             </div>
-            <div className="relative inline-block text-left">
-              <select
-                value={sort}
-                onChange={(event) => changeSort(event.target.value as SortKey)}
-                className="cursor-pointer appearance-none rounded-xl border border-line bg-fill py-2.5 pr-9 pl-4 font-display text-xs font-semibold text-ink shadow-sm transition-colors hover:border-accent/40 focus:outline-none"
-              >
-                {(Object.keys(sortLabels) as SortKey[]).map((key) => (
-                  <option key={key} value={key}>{sortLabels[key]}</option>
-                ))}
-              </select>
-              <ArrowUpDown size={16} className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-muted" />
-            </div>
-            <div className="hidden h-6 w-px bg-line sm:block" />
-            <div className="flex items-center rounded-xl border border-line bg-fill p-1 shadow-inner">
+          </div>
+
+          <div data-tour="courses-tabs" className="flex items-center gap-1 overflow-x-auto pb-1">
+            {tabs.map((tab) => (
               <button
+                key={tab.value}
                 type="button"
-                title="Visualização em grade"
-                onClick={() => setView('grid')}
-                className={cn('flex items-center justify-center rounded-lg p-1.5 transition-all', view === 'grid' ? 'bg-elevated text-accent shadow-sm' : 'text-muted hover:text-ink')}
+                onClick={() => changeFilter(tab.value)}
+                className={cn(
+                  'flex items-center gap-1.5 rounded-full border px-4 py-1.5 font-display text-xs whitespace-nowrap transition-colors',
+                  filter === tab.value
+                    ? 'border-accent bg-accent font-semibold text-accent-ink shadow-sm'
+                    : 'border-transparent text-muted hover:border-line hover:bg-fill hover:text-ink',
+                )}
               >
-                <LayoutGrid size={18} />
+                {tab.label}
               </button>
-              <button
-                type="button"
-                title="Visualização em lista"
-                onClick={() => setView('list')}
-                className={cn('flex items-center justify-center rounded-lg p-1.5 transition-all', view === 'list' ? 'bg-elevated text-accent shadow-sm' : 'text-muted hover:text-ink')}
-              >
-                <List size={18} />
-              </button>
-            </div>
+            ))}
           </div>
         </div>
 
-        <div data-tour="courses-tabs" className="flex items-center gap-1 overflow-x-auto pb-1">
-          {tabs.map((tab) => (
-            <button
-              key={tab.value}
-              type="button"
-              onClick={() => changeFilter(tab.value)}
-              className={cn(
-                'flex items-center gap-1.5 rounded-full border px-4 py-1.5 font-display text-xs whitespace-nowrap transition-colors',
-                filter === tab.value
-                  ? 'border-accent bg-accent font-semibold text-accent-ink shadow-sm'
-                  : 'border-transparent text-muted hover:border-line hover:bg-fill hover:text-ink',
-              )}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-      </div>
+        {pageItems.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-line p-12 text-center text-sm text-muted">
+            {courses.length === 0
+              ? 'Nenhum curso foi destinado a você ainda.'
+              : 'Nenhum curso encontrado com esses filtros.'}
+          </div>
+        ) : (
+          <div data-tour="courses-grid" className={cn(view === 'grid' ? 'grid grid-cols-1 gap-3 overflow-visible px-1 pt-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' : 'flex flex-col gap-1')}>
+            {pageItems.map((course) => (
+              <CourseCard key={course.id} course={course} view={view} onOpen={() => openCourse(course)} />
+            ))}
+          </div>
+        )}
 
-      {pageItems.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-line p-12 text-center text-sm text-muted">
-          {courses.length === 0
-            ? 'Nenhum curso foi destinado a você ainda.'
-            : 'Nenhum curso encontrado com esses filtros.'}
-        </div>
-      ) : (
-        <div data-tour="courses-grid" className={cn(view === 'grid' ? 'grid grid-cols-1 gap-3 overflow-visible px-1 pt-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' : 'flex flex-col gap-1')}>
-          {pageItems.map((course) => (
-            <CourseCard key={course.id} course={course} view={view} onOpen={() => openCourse(course)} />
-          ))}
-        </div>
-      )}
-
-      <div className="mt-12 flex flex-col items-center justify-between gap-4 rounded-2xl border border-line bg-elevated p-4 shadow-lg sm:flex-row">
-        <div className="text-xs text-muted">
-          Exibindo <span className="font-bold text-ink">{rangeStart}-{rangeEnd}</span> de{' '}
-          <span className="font-bold text-ink">{filtered.length}</span> cursos
-        </div>
-        <div className="flex items-center gap-1">
-          <button
-            type="button"
-            aria-label="Página anterior"
-            disabled={page === 1}
-            onClick={() => setPage((value) => Math.max(1, value - 1))}
-            className="rounded-xl border border-line bg-fill p-2 text-muted transition-colors hover:text-ink disabled:opacity-30"
-          >
-            <ChevronLeft size={18} />
-          </button>
-          {Array.from({ length: totalPages }, (_, index) => index + 1).map((number) => (
+        <div className="mt-6 flex flex-col items-center justify-between gap-4 border-t border-line pt-5 sm:flex-row">
+          <div className="text-xs text-muted">
+            Exibindo <span className="font-bold text-ink">{rangeStart}-{rangeEnd}</span> de{' '}
+            <span className="font-bold text-ink">{filtered.length}</span> cursos
+          </div>
+          <div className="flex items-center gap-1">
             <button
-              key={number}
               type="button"
-              onClick={() => setPage(number)}
-              className={cn(
-                'flex h-9 w-9 items-center justify-center rounded-xl font-display text-xs transition-colors',
-                number === page
-                  ? 'bg-accent font-bold text-accent-ink shadow-md'
-                  : 'border border-line bg-fill text-ink hover:border-accent/40',
-              )}
+              aria-label="Página anterior"
+              disabled={page === 1}
+              onClick={() => setPage((value) => Math.max(1, value - 1))}
+              className="rounded-xl border border-line bg-fill p-2 text-muted transition-colors hover:text-ink disabled:opacity-30"
             >
-              {number}
+              <ChevronLeft size={18} />
             </button>
-          ))}
-          <button
-            type="button"
-            aria-label="Próxima página"
-            disabled={page === totalPages}
-            onClick={() => setPage((value) => Math.min(totalPages, value + 1))}
-            className="rounded-xl border border-line bg-fill p-2 text-ink transition-colors hover:border-accent/40 disabled:opacity-30"
-          >
-            <ChevronRight size={18} />
-          </button>
+            {Array.from({ length: totalPages }, (_, index) => index + 1).map((number) => (
+              <button
+                key={number}
+                type="button"
+                onClick={() => setPage(number)}
+                className={cn(
+                  'flex h-9 w-9 items-center justify-center rounded-xl font-display text-xs transition-colors',
+                  number === page
+                    ? 'bg-accent font-bold text-accent-ink shadow-md'
+                    : 'border border-line bg-fill text-ink hover:border-accent/40',
+                )}
+              >
+                {number}
+              </button>
+            ))}
+            <button
+              type="button"
+              aria-label="Próxima página"
+              disabled={page === totalPages}
+              onClick={() => setPage((value) => Math.min(totalPages, value + 1))}
+              className="rounded-xl border border-line bg-fill p-2 text-ink transition-colors hover:border-accent/40 disabled:opacity-30"
+            >
+              <ChevronRight size={18} />
+            </button>
+          </div>
         </div>
-      </div>
+      </section>
 
       <CertificatesListModal open={certificatesOpen} courses={courses} onClose={() => setCertificatesOpen(false)} />
       {courseOpener}

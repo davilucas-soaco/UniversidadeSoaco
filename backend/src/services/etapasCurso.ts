@@ -1,7 +1,8 @@
-import { randomBytes } from 'node:crypto'
 import type { Prisma, PrismaClient } from '@prisma/client'
 import { prisma } from '../config/prisma.js'
+import { codigoCertificado } from '../utils/certificado.js'
 import { provaInclude } from './provas.js'
+import { emitirCertificadosDeTrilha } from './trilhas.js'
 
 type Cliente = PrismaClient | Prisma.TransactionClient
 
@@ -30,10 +31,6 @@ export function unidadesDoCurso(arvore: EtapaArvore[]) {
 export async function carregarArvore(cursoId: string, client: Cliente = prisma) {
   const etapas = await client.cursoEtapa.findMany({ where: { cursoId }, include: etapaInclude })
   return montarArvore(etapas)
-}
-
-function codigoCertificado() {
-  return `USA-${new Date().getFullYear()}-${randomBytes(4).toString('hex').toUpperCase()}`
 }
 
 /**
@@ -94,6 +91,7 @@ export async function recalcularMatricula(usuarioId: string, cursoId: string) {
       update: {},
     })
   }
+  if (status === 'concluido') await emitirCertificadosDeTrilha(usuarioId, cursoId)
 
   return { status, progresso }
 }

@@ -2,6 +2,7 @@ import type { Prisma } from '@prisma/client'
 import { prisma } from '../config/prisma.js'
 import { etapaInclude, montarArvore, type EtapaComDocumentos } from './etapasCurso.js'
 import { provaParaAluno } from './provas.js'
+import { bloqueioDoCurso, bloqueiosDoUsuario, type BloqueioTrilha } from './trilhas.js'
 
 type DocumentoDto = { id: string; name: string; mime: string; size: number; url: string }
 
@@ -60,6 +61,8 @@ export type CursoDoUsuario = {
   /** O curso gera certificado e, se já emitido, o código e a data. */
   certificate: { enabled: boolean; code?: string; issuedAt?: string }
   assignedVia: AlvoAtribuicao[]
+  /** Trilha sequencial em que o curso ainda espera a conclusão de outro. */
+  lockedBy?: BloqueioTrilha
   assignedAt: string
   startedAt?: string
   completedAt?: string
@@ -155,7 +158,7 @@ function montarEtapas(cursoId: string, etapas: EtapaComDocumentos[], progresso: 
 }
 
 type CursoCompleto = Prisma.CursoGetPayload<{ include: typeof cursoInclude }>
-type AtribuicaoResumo = { alvo: string; obrigatorio: boolean; prazo: string | null; criadoEm: Date }
+type AtribuicaoResumo = { alvo: string; obrigatorio: boolean; prazo: string | null; criadoEm: Date; trilhaId: string | null }
 type MatriculaResumo = Prisma.MatriculaGetPayload<object>
 
 function lerObjetivos(valor: string): string[] {
@@ -177,6 +180,7 @@ function montarCurso(
   matricula: MatriculaResumo | undefined,
   agora: Date,
   progresso: ProgressoDoUsuario = progressoVazio(),
+  bloqueio?: BloqueioTrilha | null,
 ): CursoDoUsuario {
   const obrigatorias = doCurso.filter((item) => item.obrigatorio)
   const prazos = (obrigatorias.length > 0 ? obrigatorias : doCurso)
@@ -219,6 +223,7 @@ function montarCurso(
     sequential: curso.sequenciaObrigatoria,
     certificate: { enabled: curso.geraCertificado, ...progresso.certificados.get(curso.id) },
     assignedVia: [...new Set(doCurso.map((item) => item.alvo as AlvoAtribuicao))],
+    lockedBy: bloqueio ?? undefined,
     assignedAt: atribuidoEm.toISOString(),
     startedAt: dataIso(matricula?.iniciadoEm),
     completedAt: dataIso(matricula?.concluidoEm),
@@ -241,7 +246,7 @@ async function atribuicoesDoUsuario(usuarioId: string, cursoId?: string) {
 
   return prisma.atribuicao.findMany({
     where: { OR: alvos, curso: { publicado: true }, ...(cursoId ? { cursoId } : {}) },
-    select: { cursoId: true, alvo: true, obrigatorio: true, prazo: true, criadoEm: true },
+    select: { cursoId: true, alvo: true, obrigatorio: true, prazo: true, criadoEm: true, trilhaId: true },
   })
 }
 
@@ -254,10 +259,12 @@ export async function listarCursosDoUsuario(usuarioId: string, agora = new Date(
   if (atribuicoes.length === 0) return []
 
   const cursoIds = [...new Set(atribuicoes.map((item) => item.cursoId))]
-  const [cursos, matriculas, progresso] = await Promise.all([
+  const diretos = new Set(atribuicoes.filter((item) => !item.trilhaId).map((item) => item.cursoId))
+  const [cursos, matriculas, progresso, bloqueios] = await Promise.all([
     prisma.curso.findMany({ where: { id: { in: cursoIds } }, include: cursoInclude }),
     prisma.matricula.findMany({ where: { usuarioId, cursoId: { in: cursoIds } } }),
     carregarProgresso(usuarioId, cursoIds),
+    bloqueiosDoUsuario(usuarioId, diretos),
   ])
   const matriculaPorCurso = new Map(matriculas.map((item) => [item.cursoId, item]))
 
@@ -269,6 +276,7 @@ export async function listarCursosDoUsuario(usuarioId: string, agora = new Date(
         matriculaPorCurso.get(curso.id),
         agora,
         progresso,
+        bloqueios.get(curso.id),
       ),
     )
     .sort((a, b) => b.assignedAt.localeCompare(a.assignedAt) || a.title.localeCompare(b.title, 'pt-BR'))
@@ -281,14 +289,15 @@ export async function obterCursoParaUsuario(
   podeVerTodos: boolean,
   agora = new Date(),
 ): Promise<CursoDoUsuario | null> {
-  const [curso, atribuicoes, matricula, progresso] = await Promise.all([
+  const [curso, atribuicoes, matricula, progresso, bloqueio] = await Promise.all([
     prisma.curso.findUnique({ where: { id: cursoId }, include: cursoInclude }),
     atribuicoesDoUsuario(usuarioId, cursoId),
     prisma.matricula.findUnique({ where: { usuarioId_cursoId: { usuarioId, cursoId } } }),
     carregarProgresso(usuarioId, [cursoId]),
+    bloqueioDoCurso(usuarioId, cursoId),
   ])
   if (!curso || (atribuicoes.length === 0 && !podeVerTodos)) return null
-  return montarCurso(curso, atribuicoes, matricula ?? undefined, agora, progresso)
+  return montarCurso(curso, atribuicoes, matricula ?? undefined, agora, progresso, bloqueio)
 }
 
 export async function cursoDestinadoAoUsuario(cursoId: string, usuarioId: string) {

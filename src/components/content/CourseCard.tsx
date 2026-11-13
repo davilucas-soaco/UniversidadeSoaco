@@ -1,10 +1,11 @@
-import { Play } from 'lucide-react'
+import { Lock, Play } from 'lucide-react'
 import { CourseCover } from '@/components/content/CourseCover'
 import { daysUntil, dueLabel, formatMinutes } from '@/lib/format'
 import { cn } from '@/lib/cn'
 import type { Course } from '@/types'
 
 function ctaFor(course: Course) {
+  if (course.lockedBy) return 'Bloqueado na trilha'
   if (course.status === 'concluido') return course.certificate?.code ? 'Certificado ou revisar' : 'Revisar'
   if (course.status === 'pendente') return 'Assistir'
   return 'Continuar'
@@ -68,7 +69,7 @@ export function CourseCard({
           <div className="absolute inset-0 bg-black/0 transition group-hover:bg-black/35" />
           <span className="absolute inset-0 flex items-center justify-center opacity-0 transition group-hover:opacity-100">
             <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-black shadow">
-              <Play size={14} fill="currentColor" className="ml-px" />
+              {course.lockedBy ? <Lock size={14} /> : <Play size={14} fill="currentColor" className="ml-px" />}
             </span>
           </span>
         </div>
@@ -105,10 +106,18 @@ export function CourseCard({
         <div className="absolute top-2.5 left-2.5">
           <CoverBadge course={course} />
         </div>
+        {course.lockedBy ? (
+          <span
+            title={`Libera ao concluir "${course.lockedBy.courseTitle}"`}
+            className="absolute top-2.5 right-2.5 flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-sm"
+          >
+            <Lock size={14} />
+          </span>
+        ) : null}
 
         <span className="absolute inset-0 flex items-center justify-center opacity-0 transition duration-300 group-hover:opacity-100">
           <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-black shadow-lg">
-            <Play size={22} fill="currentColor" className="ml-0.5" />
+            {course.lockedBy ? <Lock size={20} /> : <Play size={22} fill="currentColor" className="ml-0.5" />}
           </span>
         </span>
 

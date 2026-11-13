@@ -1,6 +1,6 @@
 /** Desenho do certificado de conclusão sobre o modelo da Universidade (public/certificado). */
 
-import type { Course } from '@/types'
+import type { Course, LearnerTrail } from '@/types'
 
 export type CertificateData = {
   name: string
@@ -10,6 +10,8 @@ export type CertificateData = {
   /** ISO da emissão. */
   issuedAt: string
   code: string
+  /** Certificado de trilha: cita a quantidade de cursos em vez da categoria. */
+  trail?: { coursesCount: number }
 }
 
 const TEMPLATE_URL = '/certificado/modelo-certificado.jpg'
@@ -143,7 +145,7 @@ export async function renderCertificate(data: CertificateData) {
 
   ctx.fillStyle = TEXT
   setFont(ctx, 25)
-  centered(ctx, 'concluiu com êxito o curso', CENTER_X, 566)
+  centered(ctx, data.trail ? 'concluiu com êxito a trilha' : 'concluiu com êxito o curso', CENTER_X, 566)
 
   ctx.fillStyle = NAVY
   setFont(ctx, 38, 700)
@@ -153,7 +155,9 @@ export async function renderCertificate(data: CertificateData) {
   ctx.fillStyle = TEXT
   setFont(ctx, 21)
   const detailsTop = 624 + courseLines.length * 46 + 4
-  const details = `na categoria ${data.category}, com carga horária de ${hoursLabel(data.hours)}, oferecido pela Universidade Corporativa Só Aço.`
+  const details = data.trail
+    ? `composta por ${data.trail.coursesCount} cursos, com carga horária total de ${hoursLabel(data.hours)}, oferecida pela Universidade Corporativa Só Aço.`
+    : `na categoria ${data.category}, com carga horária de ${hoursLabel(data.hours)}, oferecido pela Universidade Corporativa Só Aço.`
   wrap(ctx, details, CONTENT_W, 2).forEach((line, index) => centered(ctx, line, CENTER_X, detailsTop + index * 30))
 
   footerBlock(ctx, CENTER_X - 400, longDate(data.issuedAt), 'Data de conclusão')
@@ -173,6 +177,20 @@ export function certificateFor(course: Course, name: string): CertificateData | 
     hours: course.durationHours,
     issuedAt: course.certificate.issuedAt,
     code: course.certificate.code,
+  }
+}
+
+/** Dados do certificado de uma trilha concluída (null se ainda não foi emitido). */
+export function trailCertificateFor(trail: LearnerTrail, name: string): CertificateData | null {
+  if (!trail.certificate.code || !trail.certificate.issuedAt) return null
+  return {
+    name,
+    course: trail.title,
+    category: 'Trilha',
+    hours: trail.durationHours,
+    issuedAt: trail.certificate.issuedAt,
+    code: trail.certificate.code,
+    trail: { coursesCount: trail.courses.length },
   }
 }
 

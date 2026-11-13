@@ -2,6 +2,8 @@ import { api } from '@/lib/api'
 import type {
   AdminCourse,
   AdminCourseInput,
+  AdminTrail,
+  AdminTrailInput,
   AdminUser,
   ClassGroup,
   CourseAudienceOptions,
@@ -37,6 +39,17 @@ export const courseAdminApi = {
     api<{ course: AdminCourse }>(`/admin/cursos/${id}/documentos/${documentId}`, { method: 'DELETE' }).then(
       (data) => data.course,
     ),
+}
+
+/** Trilhas de cursos (administrador e gestor de conteúdo). */
+export const trailAdminApi = {
+  list: () => api<{ trails: AdminTrail[] }>('/admin/trilhas').then((data) => data.trails),
+  get: (id: string) => api<{ trail: AdminTrail }>(`/admin/trilhas/${id}`).then((data) => data.trail),
+  create: (input: AdminTrailInput) =>
+    api<{ trail: AdminTrail }>('/admin/trilhas', { method: 'POST', body: input }).then((data) => data.trail),
+  update: (id: string, input: AdminTrailInput) =>
+    api<{ trail: AdminTrail }>(`/admin/trilhas/${id}`, { method: 'PUT', body: input }).then((data) => data.trail),
+  remove: (id: string) => api(`/admin/trilhas/${id}`, { method: 'DELETE' }),
 }
 
 export type UserInput = {

@@ -13,6 +13,8 @@ import { LoginPage } from '@/pages/LoginPage'
 import { PlaceholderPage } from '@/pages/PlaceholderPage'
 import { ProfilePage } from '@/pages/ProfilePage'
 import { SettingsPage } from '@/pages/SettingsPage'
+import { TrailFormPage } from '@/pages/TrailFormPage'
+import { TrailPage } from '@/pages/TrailPage'
 import type { UserRole } from '@/types'
 
 const MANAGERS: UserRole[] = ['administrador', 'gestor_conteudo']
@@ -44,12 +46,15 @@ export default function App() {
         <Route index element={<DashboardPage />} />
         <Route path="conteudos" element={<CoursesPage />} />
         <Route path="aula/:courseId" element={<LessonPage />} />
+        <Route path="trilha/:trailId" element={<TrailPage />} />
         <Route path="desempenho" element={<PlaceholderPage />} />
         <Route path="perfil" element={<ProfilePage />} />
         <Route path="ajuda" element={<PlaceholderPage />} />
         <Route path="admin/conteudos" element={only(MANAGERS, <AdminContentsPage />)} />
         <Route path="admin/conteudos/novo" element={only(MANAGERS, <CourseCreatePage />)} />
         <Route path="admin/conteudos/:courseId/editar" element={only(MANAGERS, <CourseCreatePage />)} />
+        <Route path="admin/trilhas/nova" element={only(MANAGERS, <TrailFormPage />)} />
+        <Route path="admin/trilhas/:trailId/editar" element={only(MANAGERS, <TrailFormPage />)} />
         <Route path="admin/colaboradores" element={only(ADMINS, <CollaboratorsPage />)} />
         <Route path="admin/indicadores" element={only(MANAGERS, <PlaceholderPage />)} />
         <Route path="admin/configuracoes" element={only(ADMINS, <SettingsPage />)} />

@@ -24,6 +24,8 @@ type CurriculumPanelProps = {
   stages?: { sequential: boolean }
   /** false = o curso não emite certificado. */
   certificate?: boolean
+  /** Só a lista de etapas, sem cartão nem cabeçalho (dentro do pipeline da trilha). */
+  embedded?: boolean
 }
 
 function lessonMeta(lesson: Lesson) {
@@ -45,6 +47,7 @@ export function CurriculumPanel({
   onSelectLesson,
   stages,
   certificate = true,
+  embedded = false,
 }: CurriculumPanelProps) {
   const stats = curriculumStats(modules)
   const sequential = stages?.sequential ?? false
@@ -123,6 +126,178 @@ export function CurriculumPanel({
     else map.delete(id)
   }
 
+  const track = (
+    <div ref={trackRef} className="relative">
+      {rail ? (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute z-[1] w-0.5 -translate-x-1/2 rounded-full bg-line"
+          style={{ left: rail.x, top: rail.top, height: rail.height }}
+        >
+          <div
+            className="absolute inset-x-0 top-0 rounded-full bg-gradient-to-b from-emerald-400 to-accent shadow-[0_0_10px_var(--soaco-accent)] transition-[height] duration-700 ease-out motion-reduce:transition-none"
+            style={{ height: shownFill }}
+          />
+          {!complete ? (
+            <span
+              className="absolute left-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent shadow-[0_0_12px_var(--soaco-accent)] transition-[top] duration-700 ease-out motion-safe:animate-pulse motion-reduce:transition-none"
+              style={{ top: shownFill }}
+            />
+          ) : null}
+        </div>
+      ) : null}
+      <div className={cn('flex flex-col', embedded ? 'gap-0.5' : 'divide-y divide-line')}>
+        {modules.map((module, moduleIndex) => {
+          const done = module.lessons.every((lesson) => lesson.done)
+          const locked = moduleLocked(moduleIndex)
+          const current = moduleIndex === stats.currentModuleIndex && !done
+          const expanded = isExpanded(module.id, moduleIndex)
+          const minutes = moduleMinutes(module)
+          const videoCount = module.lessons.filter((lesson) => lesson.kind === 'video').length
+
+          return (
+            <div key={module.id} className={cn(embedded ? 'rounded-lg' : current ? 'bg-fill/40' : 'bg-surface/60')}>
+              <button
+                type="button"
+                onClick={() => toggle(module.id, moduleIndex)}
+                aria-expanded={expanded}
+                className={cn(
+                  'flex w-full items-center justify-between pr-4 text-left transition-colors hover:bg-fill/50',
+                  embedded ? 'rounded-lg py-2.5 pl-[13px]' : 'py-4 pl-[21px]',
+                )}
+              >
+                <div className="flex items-center gap-2">
+                  <div
+                    ref={circleRef('module', module.id)}
+                    className={cn(
+                      'relative z-10 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border',
+                      done
+                        ? 'border-emerald-500/40 bg-emerald-950 text-emerald-400'
+                        : current
+                          ? 'border-accent/40 bg-accent/20 text-accent'
+                          : 'border-line bg-fill text-muted',
+                    )}
+                  >
+                    {done ? <Check size={15} strokeWidth={3} /> : locked ? <Lock size={13} /> : <CircleDashed size={15} />}
+                  </div>
+                  <div className="flex flex-col">
+                    <span className={cn('font-display text-sm font-semibold', current ? 'font-bold text-accent' : 'text-ink')}>
+                      {module.title}
+                    </span>
+                    <span className={cn('font-display text-[11px]', done ? 'font-semibold text-emerald-400' : 'text-muted')}>
+                      {stages
+                        ? module.lessons.length > 1
+                          ? `${module.lessons.length} subetapas`
+                          : lessonMeta(module.lessons[0])
+                        : `${videoCount} aulas · ${formatMinutes(minutes)}`}
+                    </span>
+                  </div>
+                </div>
+                <ChevronDown size={20} className={cn('transition-transform', expanded && 'rotate-180', current ? 'text-accent' : 'text-muted')} />
+              </button>
+
+              {expanded ? (
+                locked ? (
+                  <div className={cn('pr-4 pb-4 text-xs text-muted', embedded ? 'pl-10' : 'pl-11')}>
+                    {stages
+                      ? 'Liberada após concluir a etapa anterior.'
+                      : 'Liberação automática após concluir o módulo anterior.'}
+                  </div>
+                ) : (
+                  <div className={cn('flex flex-col gap-1 pr-4', embedded ? 'pb-2 pl-1' : 'pb-4 pl-3')}>
+                    {module.lessons.map((lesson) => {
+                      const active = lesson.id === currentLessonId
+                      return (
+                        <button
+                          key={lesson.id}
+                          type="button"
+                          onClick={() => onSelectLesson(lesson, moduleIndex)}
+                          className={cn(
+                            'group relative flex w-full items-start gap-3 rounded-lg border p-2 text-left transition-colors',
+                            active ? 'my-1 border-accent/50 bg-elevated shadow-md' : 'border-transparent hover:bg-elevated/60',
+                          )}
+                        >
+                          <div
+                            ref={circleRef('lesson', lesson.id)}
+                            className={cn(
+                              'relative z-10 mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border',
+                              active
+                                ? 'border-transparent bg-accent text-accent-ink ring-4 ring-accent/20'
+                                : lesson.done
+                                  ? 'border-emerald-500/50 bg-emerald-950 text-emerald-400'
+                                  : 'border-line bg-fill text-muted',
+                            )}
+                          >
+                            {active ? (
+                              <Volume2 size={14} className={cn(playing && 'animate-pulse')} />
+                            ) : lesson.done ? (
+                              <Check size={13} strokeWidth={3} />
+                            ) : lessonLocked(lesson) ? (
+                              <Lock size={12} />
+                            ) : lesson.kind === 'pdf' ? (
+                              <BookOpenText size={13} />
+                            ) : lesson.kind === 'quiz' ? (
+                              <ListChecks size={13} />
+                            ) : (
+                              <PlayCircle size={13} />
+                            )}
+                          </div>
+                          <div className="flex min-w-0 flex-1 flex-col">
+                            <span
+                              className={cn(
+                                'truncate font-display text-xs transition-colors',
+                                active ? 'font-bold text-ink' : lesson.done ? 'text-ink' : 'text-muted group-hover:text-accent',
+                              )}
+                            >
+                              {lesson.title}
+                            </span>
+                            <div className="mt-0.5 flex items-center gap-2 font-display text-[11px] text-muted">
+                              {active ? (
+                                <span className="flex items-center gap-1 font-semibold text-accent">
+                                  <span className={cn('h-1.5 w-1.5 rounded-full bg-accent', playing && 'animate-ping')} />
+                                  {playing ? 'Reproduzindo agora' : stages ? 'Etapa atual' : 'Aula atual'}
+                                </span>
+                              ) : (
+                                <span className="flex items-center gap-1">
+                                  {lesson.kind === 'video' ? <PlayCircle size={12} className="text-accent" /> : null}
+                                  {lessonMeta(lesson)}
+                                </span>
+                              )}
+                              <span>·</span>
+                              {lesson.done ? (
+                                <span className="font-semibold text-emerald-400">Concluído</span>
+                              ) : lessonLocked(lesson) ? (
+                                <span>Bloqueada</span>
+                              ) : lesson.kind === 'quiz' && lesson.stageId ? (
+                                <span className="font-semibold text-accent">
+                                  {lesson.examResult ? `Melhor nota ${lesson.examResult.bestScore}%` : `Aprovação ${lesson.exam?.passingScore ?? 70}%`}
+                                </span>
+                              ) : lesson.kind === 'quiz' ? (
+                                <span className="font-semibold text-accent">+{lesson.points} pts</span>
+                              ) : lesson.mandatory ? (
+                                <span>Obrigatória</span>
+                              ) : active ? (
+                                <span>{lessonMeta(lesson)}</span>
+                              ) : (
+                                <span>Pendente</span>
+                              )}
+                            </div>
+                          </div>
+                        </button>
+                      )
+                    })}
+                  </div>
+                )
+              ) : null}
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+
+  if (embedded) return track
+
   return (
     <div className="flex flex-col overflow-hidden rounded-xl border border-line bg-surface shadow-2xl">
       <div className="flex flex-col gap-2 border-b border-line bg-elevated p-4">
@@ -163,170 +338,7 @@ export function CurriculumPanel({
       </div>
 
       <div className="max-h-[calc(100vh-320px)] overflow-y-auto">
-        <div ref={trackRef} className="relative">
-          {rail ? (
-            <div
-              aria-hidden
-              className="pointer-events-none absolute z-[1] w-0.5 -translate-x-1/2 rounded-full bg-line"
-              style={{ left: rail.x, top: rail.top, height: rail.height }}
-            >
-              <div
-                className="absolute inset-x-0 top-0 rounded-full bg-gradient-to-b from-emerald-400 to-accent shadow-[0_0_10px_var(--soaco-accent)] transition-[height] duration-700 ease-out motion-reduce:transition-none"
-                style={{ height: shownFill }}
-              />
-              {!complete ? (
-                <span
-                  className="absolute left-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent shadow-[0_0_12px_var(--soaco-accent)] transition-[top] duration-700 ease-out motion-safe:animate-pulse motion-reduce:transition-none"
-                  style={{ top: shownFill }}
-                />
-              ) : null}
-            </div>
-          ) : null}
-          <div className="flex flex-col divide-y divide-line">
-            {modules.map((module, moduleIndex) => {
-              const done = module.lessons.every((lesson) => lesson.done)
-              const locked = moduleLocked(moduleIndex)
-              const current = moduleIndex === stats.currentModuleIndex && !done
-              const expanded = isExpanded(module.id, moduleIndex)
-              const minutes = moduleMinutes(module)
-              const videoCount = module.lessons.filter((lesson) => lesson.kind === 'video').length
-
-              return (
-                <div key={module.id} className={cn(current ? 'bg-fill/40' : 'bg-surface/60')}>
-                  <button
-                    type="button"
-                    onClick={() => toggle(module.id, moduleIndex)}
-                    aria-expanded={expanded}
-                    className="flex w-full items-center justify-between py-4 pr-4 pl-[21px] text-left transition-colors hover:bg-fill/50"
-                  >
-                    <div className="flex items-center gap-2">
-                      <div
-                        ref={circleRef('module', module.id)}
-                        className={cn(
-                          'relative z-10 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border',
-                          done
-                            ? 'border-emerald-500/40 bg-emerald-950 text-emerald-400'
-                            : current
-                              ? 'border-accent/40 bg-accent/20 text-accent'
-                              : 'border-line bg-fill text-muted',
-                        )}
-                      >
-                        {done ? <Check size={15} strokeWidth={3} /> : locked ? <Lock size={13} /> : <CircleDashed size={15} />}
-                      </div>
-                      <div className="flex flex-col">
-                        <span className={cn('font-display text-sm font-semibold', current ? 'font-bold text-accent' : 'text-ink')}>
-                          {module.title}
-                        </span>
-                        <span className={cn('font-display text-[11px]', done ? 'font-semibold text-emerald-400' : 'text-muted')}>
-                          {stages
-                            ? module.lessons.length > 1
-                              ? `${module.lessons.length} subetapas`
-                              : lessonMeta(module.lessons[0])
-                            : `${videoCount} aulas · ${formatMinutes(minutes)}`}
-                        </span>
-                      </div>
-                    </div>
-                    <ChevronDown size={20} className={cn('transition-transform', expanded && 'rotate-180', current ? 'text-accent' : 'text-muted')} />
-                  </button>
-
-                  {expanded ? (
-                    locked ? (
-                      <div className="px-4 pb-4 pl-11 text-xs text-muted">
-                        {stages
-                          ? 'Liberada após concluir a etapa anterior.'
-                          : 'Liberação automática após concluir o módulo anterior.'}
-                      </div>
-                    ) : (
-                      <div className="flex flex-col gap-1 pr-4 pb-4 pl-3">
-                        {module.lessons.map((lesson) => {
-                          const active = lesson.id === currentLessonId
-                          return (
-                            <button
-                              key={lesson.id}
-                              type="button"
-                              onClick={() => onSelectLesson(lesson, moduleIndex)}
-                              className={cn(
-                                'group relative flex w-full items-start gap-3 rounded-lg border p-2 text-left transition-colors',
-                                active ? 'my-1 border-accent/50 bg-elevated shadow-md' : 'border-transparent hover:bg-elevated/60',
-                              )}
-                            >
-                              <div
-                                ref={circleRef('lesson', lesson.id)}
-                                className={cn(
-                                  'relative z-10 mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border',
-                                  active
-                                    ? 'border-transparent bg-accent text-accent-ink ring-4 ring-accent/20'
-                                    : lesson.done
-                                      ? 'border-emerald-500/50 bg-emerald-950 text-emerald-400'
-                                      : 'border-line bg-fill text-muted',
-                                )}
-                              >
-                                {active ? (
-                                  <Volume2 size={14} className={cn(playing && 'animate-pulse')} />
-                                ) : lesson.done ? (
-                                  <Check size={13} strokeWidth={3} />
-                                ) : lessonLocked(lesson) ? (
-                                  <Lock size={12} />
-                                ) : lesson.kind === 'pdf' ? (
-                                  <BookOpenText size={13} />
-                                ) : lesson.kind === 'quiz' ? (
-                                  <ListChecks size={13} />
-                                ) : (
-                                  <PlayCircle size={13} />
-                                )}
-                              </div>
-                              <div className="flex min-w-0 flex-1 flex-col">
-                                <span
-                                  className={cn(
-                                    'truncate font-display text-xs transition-colors',
-                                    active ? 'font-bold text-ink' : lesson.done ? 'text-ink' : 'text-muted group-hover:text-accent',
-                                  )}
-                                >
-                                  {lesson.title}
-                                </span>
-                                <div className="mt-0.5 flex items-center gap-2 font-display text-[11px] text-muted">
-                                  {active ? (
-                                    <span className="flex items-center gap-1 font-semibold text-accent">
-                                      <span className={cn('h-1.5 w-1.5 rounded-full bg-accent', playing && 'animate-ping')} />
-                                      {playing ? 'Reproduzindo agora' : stages ? 'Etapa atual' : 'Aula atual'}
-                                    </span>
-                                  ) : (
-                                    <span className="flex items-center gap-1">
-                                      {lesson.kind === 'video' ? <PlayCircle size={12} className="text-accent" /> : null}
-                                      {lessonMeta(lesson)}
-                                    </span>
-                                  )}
-                                  <span>·</span>
-                                  {lesson.done ? (
-                                    <span className="font-semibold text-emerald-400">Concluído</span>
-                                  ) : lessonLocked(lesson) ? (
-                                    <span>Bloqueada</span>
-                                  ) : lesson.kind === 'quiz' && lesson.stageId ? (
-                                    <span className="font-semibold text-accent">
-                                      {lesson.examResult ? `Melhor nota ${lesson.examResult.bestScore}%` : `Aprovação ${lesson.exam?.passingScore ?? 70}%`}
-                                    </span>
-                                  ) : lesson.kind === 'quiz' ? (
-                                    <span className="font-semibold text-accent">+{lesson.points} pts</span>
-                                  ) : lesson.mandatory ? (
-                                    <span>Obrigatória</span>
-                                  ) : active ? (
-                                    <span>{lessonMeta(lesson)}</span>
-                                  ) : (
-                                    <span>Pendente</span>
-                                  )}
-                                </div>
-                              </div>
-                            </button>
-                          )
-                        })}
-                      </div>
-                    )
-                  ) : null}
-                </div>
-              )
-            })}
-          </div>
-        </div>
+        {track}
       </div>
     </div>
   )

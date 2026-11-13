@@ -85,7 +85,7 @@ export function CertificateModal({
         <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs text-muted">
             {preview
-              ? 'Exemplo com os dados do formulário. O nome do colaborador e o código entram na conclusão do curso.'
+              ? `Exemplo com os dados do formulário. O nome do colaborador e o código entram na conclusão ${data?.trail ? 'da trilha' : 'do curso'}.`
               : `Código de verificação: ${data?.code ?? ''}`}
           </p>
           <div className="flex gap-2">

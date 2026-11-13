@@ -22,11 +22,11 @@ export type DadosEmailCursoAtribuido = {
 
 const MAX_ETAPAS_LISTADAS = 6
 
-function primeiroNome(nome: string) {
+export function primeiroNome(nome: string) {
   return nome.trim().split(/\s+/)[0] || nome
 }
 
-function cargaLegivel(horas: number) {
+export function cargaLegivel(horas: number) {
   const total = Math.round(horas * 60)
   const h = Math.floor(total / 60)
   const min = total % 60
@@ -34,12 +34,12 @@ function cargaLegivel(horas: number) {
   return min ? `${h}h${String(min).padStart(2, '0')}` : `${h}h`
 }
 
-function dataLegivel(iso: string) {
+export function dataLegivel(iso: string) {
   const [ano, mes, dia] = iso.split('-')
   return `${dia}/${mes}/${ano}`
 }
 
-function resumo(texto: string, limite = 260) {
+export function resumo(texto: string, limite = 260) {
   const limpo = texto.trim().replace(/\s+/g, ' ')
   return limpo.length > limite ? `${limpo.slice(0, limite - 1).trimEnd()}…` : limpo
 }

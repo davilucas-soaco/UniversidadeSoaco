@@ -80,12 +80,14 @@ type SubetapaInput = z.infer<typeof subetapaSchema>
 const cursoInclude = {
   etapas: { include: etapaInclude },
   atribuicoes: {
+    where: { trilhaId: null },
     include: {
       usuario: { select: { id: true, nome: true } },
       setor: { select: { id: true, nome: true } },
       classe: { select: { id: true, nome: true } },
     },
   },
+  trilhas: { include: { trilha: { select: { id: true, titulo: true } } } },
 } satisfies Prisma.CursoInclude
 
 type CursoAdmin = Prisma.CursoGetPayload<{ include: typeof cursoInclude }>
@@ -127,6 +129,7 @@ function toCursoAdmin(curso: CursoAdmin) {
     },
     mandatory: atribuicoes.some((item) => item.obrigatorio),
     dueDate: prazos[0] ?? null,
+    trails: curso.trilhas.map((item) => ({ id: item.trilha.id, title: item.trilha.titulo })),
     createdAt: curso.criadoEm.toISOString(),
     updatedAt: curso.atualizadoEm.toISOString(),
   }
@@ -217,9 +220,9 @@ async function salvarEtapas(tx: Prisma.TransactionClient, cursoId: string, input
   return { ids, arquivosRemovidos }
 }
 
-/** Substitui as atribuições do curso pelas escolhidas no formulário. */
+/** Substitui as atribuições diretas do curso pelas escolhidas no formulário (as das trilhas ficam). */
 async function salvarAtribuicoes(tx: Prisma.TransactionClient, cursoId: string, input: CursoInput, autorId: string) {
-  await tx.atribuicao.deleteMany({ where: { cursoId } })
+  await tx.atribuicao.deleteMany({ where: { cursoId, trilhaId: null } })
   const comum = {
     cursoId,
     obrigatorio: input.mandatory,
