@@ -8,7 +8,8 @@ export function Tooltip({
 }: {
   label: string
   children: ReactNode
-  side?: 'right' | 'top'
+  /** "bottom-end": abaixo e alinhada à direita do botão — use no cabeçalho, que fica no topo e à direita da tela. */
+  side?: 'right' | 'top' | 'bottom-end'
 }) {
   return (
     <span className="group relative inline-flex">
@@ -18,6 +19,7 @@ export function Tooltip({
           'pointer-events-none absolute z-50 hidden whitespace-nowrap rounded-lg bg-elevated px-2.5 py-1 text-[11px] font-medium text-ink shadow-panel ring-1 ring-line group-hover:block',
           side === 'right' && 'top-1/2 left-[calc(100%+0.6rem)] -translate-y-1/2',
           side === 'top' && 'bottom-[calc(100%+0.45rem)] left-1/2 -translate-x-1/2',
+          side === 'bottom-end' && 'top-[calc(100%+0.45rem)] right-0',
         )}
       >
         {label}

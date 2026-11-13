@@ -10,6 +10,7 @@ import 'dotenv/config'
 import { readFileSync } from 'node:fs'
 import bcrypt from 'bcryptjs'
 import { PrismaClient } from '@prisma/client'
+import { ensureMaster } from '../src/config/ensureMaster.ts'
 
 type AulaSeed = {
   id: string
@@ -60,7 +61,7 @@ const setores = ['Administrativo', 'Produção', 'Compras', 'Recursos Humanos', 
 
 /** totalPontos distribui o histórico de pontos nos últimos 12 meses. */
 const usuarios = [
-  { chave: 'davi', nome: 'Davi Lucas Barros', email: 'davilucas@soacoindustrial.com', senha: 'soaco2020', cargo: 'Assistente Administrativo', setor: 'Administrativo', papel: 'administrador', telefone: '(11) 98800-2144', localizacao: 'Guarulhos, SP', totalPontos: 128 },
+  { chave: 'davi', nome: 'Davi Lucas Barros', email: 'davi.lucas@soaco.com.br', cargo: 'Assistente Administrativo', setor: 'Administrativo', papel: 'colaborador', telefone: '(11) 98800-2144', localizacao: 'Guarulhos, SP', totalPontos: 128 },
   { chave: 'mariana', nome: 'Mariana Alves Costa', email: 'mariana.costa@soaco.com.br', cargo: 'Supervisora de Produção', setor: 'Produção', papel: 'colaborador', totalPontos: 186 },
   { chave: 'rafael', nome: 'Rafael Mendes Oliveira', email: 'rafael.oliveira@soaco.com.br', cargo: 'Analista de Compras', setor: 'Compras', papel: 'colaborador', totalPontos: 154 },
   { chave: 'camila', nome: 'Camila Ferreira Santos', email: 'camila.santos@soaco.com.br', cargo: 'Analista de RH', setor: 'Recursos Humanos', papel: 'gestor_conteudo', totalPontos: 121 },
@@ -187,7 +188,7 @@ async function main() {
       data: {
         nome: pessoa.nome,
         email: pessoa.email,
-        senhaHash: 'senha' in pessoa ? await bcrypt.hash(pessoa.senha, 10) : senhaHash,
+        senhaHash,
         papel: pessoa.papel,
         cargo: pessoa.cargo,
         setorId: setorId.get(pessoa.setor),
@@ -213,6 +214,7 @@ async function main() {
   await prisma.instrutor.createMany({ data: data.instrutores })
 
   if (!INCLUIR_DEMO) {
+    await ensureMaster(prisma)
     console.log('Seed concluído sem cursos de demonstração (use SEED_DEMO=true para incluí-los).')
     logAcessos()
     return
@@ -393,13 +395,13 @@ async function main() {
     matriculas: await prisma.matricula.count(),
     pontuacoes: await prisma.pontuacaoEvento.count(),
   }
+  await ensureMaster(prisma)
   console.log('Seed concluído com demonstração:', totais)
   logAcessos()
 }
 
 function logAcessos() {
-  console.log('Login do Davi: davilucas@soacoindustrial.com / soaco2020')
-  console.log(`Demais usuários (inclusive admin@soaco.com.br): senha ${SENHA_PADRAO}`)
+  console.log(`Usuários de demonstração (inclusive admin@soaco.com.br): senha ${SENHA_PADRAO}`)
 }
 
 main()

@@ -18,6 +18,7 @@ backend/prisma/*.db
 backend/prisma/*.db-journal
 backend/prisma/*.db-wal
 backend/prisma/*.db-shm
+backend/var/
 
 # Editor directories and files
 .vscode/*

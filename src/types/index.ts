@@ -2,16 +2,8 @@ export type UserRole = 'administrador' | 'gestor_conteudo' | 'colaborador'
 
 export type CourseStatus = 'concluido' | 'em_andamento' | 'pendente'
 
-export type CourseCategory =
-  | 'Institucional'
-  | 'Recursos Humanos'
-  | 'Segurança do Trabalho'
-  | 'Compras'
-  | 'Desenvolvimento Profissional'
-  | 'Produção'
-  | 'Logística'
-  | 'Financeiro'
-  | 'Tecnologia'
+/** Nome de uma categoria cadastrada em Configurações. */
+export type CourseCategory = string
 
 export type CoverAccent = 'navy' | 'sand' | 'ocean' | 'steel' | 'gold'
 
@@ -38,23 +30,12 @@ export type Collaborator = {
   isCurrentUser?: boolean
 }
 
-export type ProfileNotifications = {
-  courses: boolean
-  deadlines: boolean
-  ranking: boolean
-  digest: boolean
-}
-
 export type ProfileAccount = {
   name: string
   email: string
   phone: string
   location: string
   photoUrl: string | null
-  notifications: ProfileNotifications
-  dndEnabled: boolean
-  dndFrom: string
-  dndTo: string
 }
 
 export type SessionUser = {
@@ -84,6 +65,8 @@ export type AdminUser = {
   classIds: number[]
   classNames: string[]
   active: boolean
+  /** Usuário master do .env: não pode ser desativado, excluído nem ter login alterado. */
+  isMaster: boolean
   mustChangePassword: boolean
   lastLoginAt: string | null
   createdAt: string
@@ -93,6 +76,37 @@ export type Sector = {
   id: number
   name: string
   usersCount: number
+}
+
+export type EmailSettings = {
+  configured: boolean
+  provider: string
+  fromEmail: string
+  fromName: string
+  clientId: string
+  hasClientSecret: boolean
+  hasRefreshToken: boolean
+  lastTestedAt: string | null
+  lastError: string | null
+  credentialBlockedAt: string | null
+  credentialBlockSummary: string | null
+  updatedAt: string | null
+  /** NOTIFICACOES_ENVIO_HABILITADO=true no backend/.env (produção). */
+  sendingEnabled: boolean
+}
+
+export type EmailSettingsInput = {
+  fromEmail: string
+  fromName: string
+  clientId: string
+  clientSecret?: string
+  refreshToken?: string
+}
+
+export type CourseCategoryItem = {
+  id: number
+  name: string
+  coursesCount: number
 }
 
 export type ClassGroup = {
@@ -113,7 +127,55 @@ export type Instructor = {
 
 export type LessonKind = 'video' | 'pdf' | 'quiz'
 
-export type ContentKind = 'document' | 'video'
+export type ContentKind = 'document' | 'video' | 'exam'
+
+/** Prova do banco de provas, como aparece nas listas da gestão. */
+export type ExamSummary = {
+  id: string
+  title: string
+  description: string
+  passingScore: number
+  questionsCount: number
+  usedIn: { courseId: string; courseTitle: string; stageTitle: string }[]
+  updatedAt: string
+}
+
+/** Prova completa para edição (com o gabarito). */
+export type ExamDetail = {
+  id: string
+  title: string
+  description: string
+  passingScore: number
+  questions: { id: string; text: string; options: { id: string; text: string; correct: boolean }[] }[]
+  updatedAt: string
+}
+
+export type ExamInput = {
+  title: string
+  description: string
+  passingScore: number
+  questions: { text: string; options: { text: string; correct: boolean }[] }[]
+}
+
+/** Prova como o colaborador recebe: sem indicar a opção correta. */
+export type LearnerExam = {
+  id: string
+  title: string
+  description: string
+  passingScore: number
+  questions: { id: string; text: string; options: { id: string; text: string }[] }[]
+}
+
+export type ExamAttemptSummary = { bestScore: number; approved: boolean; attempts: number; lastAttemptAt: string }
+
+export type ExamSubmitResult = {
+  correct: number
+  total: number
+  score: number
+  passingScore: number
+  approved: boolean
+  review: { questionId: string; selectedOptionId: string | null; correct: boolean; correctOptionId?: string | null }[]
+}
 
 export type VideoProvider = 'youtube' | 'vimeo' | 'loom'
 
@@ -122,17 +184,83 @@ export type AuthoredDocument = {
   name: string
   mime: string
   size: number
+  /** Endereço do arquivo na API (cursos gravados no banco). */
+  url?: string
 }
 
-export type AuthoredCourse = {
+/** Etapa do pipeline na gestão de cursos. Etapa com subetapas é um grupo (sem conteúdo próprio). */
+export type AdminStage = {
   id: string
   title: string
-  kind: ContentKind
-  videoUrl?: string
-  videoProvider?: VideoProvider
-  embedUrl?: string
+  description: string
+  kind: ContentKind | null
+  videoUrl: string | null
+  videoProvider: VideoProvider | null
   documents: AuthoredDocument[]
+  examId: string | null
+  examTitle: string | null
+}
+
+export type AdminCourse = {
+  id: string
+  title: string
+  category: string
+  description: string
+  durationHours: number
+  points: number
+  sequential: boolean
+  /** Ao concluir, o colaborador recebe o certificado. */
+  certificate: boolean
+  coverImage: string | null
+  stages: (AdminStage & { children: AdminStage[] })[]
+  unitsCount: number
+  audience: {
+    users: { id: string; name: string }[]
+    sectors: { id: number; name: string }[]
+    classes: { id: number; name: string }[]
+  }
+  mandatory: boolean
+  dueDate: string | null
   createdAt: string
+  updatedAt: string
+}
+
+export type AdminStageInput = {
+  key: string
+  id: string | null
+  title: string
+  description: string
+  kind: ContentKind | null
+  videoUrl: string | null
+  examId: string | null
+}
+
+export type AdminCourseInput = {
+  title: string
+  category: string
+  description: string
+  durationHours: number
+  points: number
+  sequential: boolean
+  certificate: boolean
+  stages: (AdminStageInput & { children: AdminStageInput[] })[]
+  audience: { userIds: string[]; sectorIds: number[]; classIds: number[] }
+  mandatory: boolean
+  dueDate: string | null
+}
+
+export type CourseAudienceOptions = {
+  users: {
+    id: string
+    name: string
+    email: string
+    sectorId: number | null
+    sectorName: string | null
+    classIds: number[]
+  }[]
+  sectors: Sector[]
+  classes: ClassGroup[]
+  categories: CourseCategory[]
 }
 
 export type Lesson = {
@@ -148,6 +276,31 @@ export type Lesson = {
   points?: number
   mandatory?: boolean
   done: boolean
+  /** Conteúdo próprio (aulas que vêm de etapas cadastradas pela gestão). */
+  videoUrl?: string
+  embedUrl?: string
+  documents?: AuthoredDocument[]
+  /** Etapa gravada no banco: a conclusão é registrada na API. */
+  stageId?: string
+  /** Etapa de prova: concluída ao ser aprovado. */
+  exam?: LearnerExam
+  examResult?: ExamAttemptSummary
+}
+
+/** Etapa do curso como o colaborador recebe (com conclusão). */
+export type CourseStage = {
+  id: string
+  title: string
+  description: string
+  kind: ContentKind | null
+  videoUrl?: string
+  videoProvider?: VideoProvider
+  embedUrl?: string
+  documents: AuthoredDocument[]
+  exam?: LearnerExam
+  examResult?: ExamAttemptSummary
+  done: boolean
+  children: CourseStage[]
 }
 
 export type CourseModule = {
@@ -179,6 +332,12 @@ export type Course = {
   dueDate?: string
   isNew?: boolean
   objectives: string[]
+  /** Pipeline de etapas (cursos cadastrados pela gestão). */
+  stages?: CourseStage[]
+  /** true = as etapas devem ser concluídas na ordem. */
+  sequential?: boolean
+  /** O curso gera certificado e, se já emitido para o colaborador, o código e a data. */
+  certificate?: { enabled: boolean; code?: string; issuedAt?: string }
   authored?: boolean
   contentKind?: ContentKind
   videoUrl?: string
@@ -253,7 +412,6 @@ export type DashboardData = {
   points: number
   monthPoints: number
   assessmentAverage: number | null
-  annualTargetHours: number
   studyWeek: { minutes: number; goalMinutes: number }
   performance: Record<PeriodKey, PerformancePoint[]>
   ranking: {

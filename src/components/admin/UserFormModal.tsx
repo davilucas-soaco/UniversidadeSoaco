@@ -54,7 +54,7 @@ function UserForm({ user, sectors, classes, onClose, onSubmit }: Omit<UserFormMo
     try {
       await onSubmit({
         name: name.trim(),
-        email: email.trim().toLowerCase(),
+        email: user?.isMaster ? user.email : email.trim().toLowerCase(),
         password: password || undefined,
         sectorId,
         classIds,
@@ -70,15 +70,20 @@ function UserForm({ user, sectors, classes, onClose, onSubmit }: Omit<UserFormMo
       <Field label="Nome completo">
         <input value={name} onChange={(event) => setName(event.target.value)} className={profileFieldClass} autoFocus />
       </Field>
-      <Field label="E-mail de login">
+      <Field
+        label="E-mail de login"
+        hint={user?.isMaster ? 'E-mail e senha do master ficam no backend/.env (MASTER_EMAIL e MASTER_SENHA).' : undefined}
+      >
         <input
           type="email"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           placeholder="nome@soacoindustrial.com"
           className={profileFieldClass}
+          disabled={user?.isMaster}
         />
       </Field>
+      {user?.isMaster ? null : (
       <Field
         label={editing ? 'Redefinir senha (opcional)' : 'Senha inicial'}
         hint={
@@ -96,6 +101,7 @@ function UserForm({ user, sectors, classes, onClose, onSubmit }: Omit<UserFormMo
           className={profileFieldClass}
         />
       </Field>
+      )}
       <Field label="Setor">
         <select
           value={sectorId ?? ''}

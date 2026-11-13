@@ -15,3 +15,6 @@ export const jwtSecret = (() => {
 })()
 
 export const cookieSecure = process.env.COOKIE_SECURE === 'true'
+
+/** Endereço que os colaboradores usam para abrir o sistema (links dos e-mails). */
+export const appPublicUrl = (process.env.APP_PUBLIC_URL?.trim() || 'http://localhost:5173').replace(/\/+$/, '')

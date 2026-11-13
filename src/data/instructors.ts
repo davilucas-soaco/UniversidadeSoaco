@@ -55,8 +55,3 @@ export const instructorById = Object.fromEntries(instructors.map((item) => [item
   string,
   Instructor
 >
-
-export const classMonitor = {
-  name: 'Eng. Lucas Brandão',
-  online: true,
-}

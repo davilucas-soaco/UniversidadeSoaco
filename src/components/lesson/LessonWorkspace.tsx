@@ -1,10 +1,8 @@
 import { useState } from 'react'
 import {
   Bookmark,
-  CheckCircle2,
   Download,
   FileText,
-  Mail,
   MessageSquare,
   Paperclip,
   Star,
@@ -15,7 +13,7 @@ import { Avatar } from '@/components/ui/Avatar'
 import { useSessionUser } from '@/context/AuthContext'
 import { useFeedback } from '@/context/FeedbackContext'
 import { cn } from '@/lib/cn'
-import type { Course, Instructor } from '@/types'
+import type { Course } from '@/types'
 
 export type WorkspaceTab = 'overview' | 'reviews' | 'discussion' | 'notes'
 
@@ -31,7 +29,6 @@ const tabs: { value: WorkspaceTab; label: string; Icon: typeof FileText }[] = [
 
 type LessonWorkspaceProps = {
   course: Course
-  instructor: Instructor
   tab: WorkspaceTab
   onTabChange: (tab: WorkspaceTab) => void
   notes: LessonNote[]
@@ -44,7 +41,6 @@ type LessonWorkspaceProps = {
 
 export function LessonWorkspace({
   course,
-  instructor,
   tab,
   onTabChange,
   notes,
@@ -89,40 +85,6 @@ export function LessonWorkspace({
             <h2 className="font-display text-lg font-bold text-ink">Resumo</h2>
             <p className="text-base leading-relaxed text-muted">{course.description}</p>
           </div>
-          <div className="flex flex-col gap-3 rounded-xl border border-line bg-elevated/70 p-4">
-            <h3 className="font-display text-sm font-semibold text-ink">Objetivos</h3>
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-              {course.objectives.map((objective) => (
-                <div key={objective} className="flex items-start gap-2.5">
-                  <CheckCircle2 size={20} className="mt-0.5 shrink-0 text-accent" />
-                  <span className="text-sm text-ink/90">{objective}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="flex flex-col justify-between gap-4 rounded-xl border border-line bg-elevated p-4 sm:flex-row sm:items-center">
-            <div className="flex items-center gap-4">
-              <Avatar name={instructor.name} initials={instructor.initials} size="lg" className="h-16 w-16 text-base ring-2 ring-accent/40" />
-              <div className="flex flex-col">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="font-display text-base font-bold text-ink">{instructor.name}</span>
-                  <span className="rounded-full border border-accent/40 bg-accent/20 px-2 py-0.5 font-display text-[10px] font-bold text-accent">
-                    Instrutor(a)
-                  </span>
-                </div>
-                <p className="mt-1 text-xs text-muted">{instructor.bio}</p>
-                <span className="mt-1 font-display text-xs font-medium text-accent">{instructor.stats}</span>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() => showComingSoon('Enviar dúvida ao instrutor', 'O envio direto de dúvidas será integrado ao e-mail corporativo na próxima fase.')}
-              className="flex items-center justify-center gap-2 rounded-lg border border-line bg-fill px-4 py-2.5 font-display text-xs font-semibold whitespace-nowrap text-accent shadow transition-all hover:brightness-110"
-            >
-              <Mail size={18} />
-              Enviar dúvida
-            </button>
-          </div>
         </div>
       ) : null}
 
@@ -166,6 +128,11 @@ export function LessonWorkspace({
             </div>
           </div>
           <div className="flex flex-col gap-3">
+            {posts.length === 0 ? (
+              <p className="rounded-xl border border-dashed border-line px-4 py-6 text-center text-sm text-muted">
+                Nenhuma dúvida publicada nesta aula ainda.
+              </p>
+            ) : null}
             {posts.map((post) => (
               <div key={post.id} className="flex gap-3 rounded-xl border border-line bg-elevated p-4">
                 <Avatar name={post.author} initials={post.initials} size="md" />

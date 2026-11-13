@@ -18,16 +18,17 @@ import {
   TrendingUp,
   X,
 } from 'lucide-react'
+import { CertificatesListModal } from '@/components/certificates/CertificatesListModal'
+import { useCourseOpener } from '@/components/certificates/useCourseOpener'
 import { CourseCard } from '@/components/content/CourseCard'
 import { useCatalog, useCourseSummary } from '@/context/CatalogContext'
-import { useDashboardData } from '@/context/DashboardContext'
 import { useFeedback } from '@/context/FeedbackContext'
 import { instructorById } from '@/data/instructors'
-import { dueLabel, formatMinutes } from '@/lib/format'
+import { dueLabel, formatMinutes, formatNumber } from '@/lib/format'
 import { cn } from '@/lib/cn'
 import type { CourseStatus } from '@/types'
 
-type Filter = 'todos' | CourseStatus | 'obrigatorios'
+type Filter = 'todos' | Exclude<CourseStatus, 'pendente'>
 type SortKey = 'recentes' | 'progresso' | 'duracao' | 'pontuacao'
 type ViewMode = 'grid' | 'list'
 
@@ -52,7 +53,6 @@ export function CoursesPage() {
   const { showComingSoon } = useFeedback()
   const { courses } = useCatalog()
   const summary = useCourseSummary()
-  const { annualTargetHours } = useDashboardData()
   const courseCategories = useMemo(
     () => Array.from(new Set(courses.map((course) => course.category))).sort((a, b) => a.localeCompare(b, 'pt-BR')),
     [courses],
@@ -63,14 +63,15 @@ export function CoursesPage() {
   const [sort, setSort] = useState<SortKey>('recentes')
   const [view, setView] = useState<ViewMode>('grid')
   const [requestedPage, setPage] = useState(1)
+  const [certificatesOpen, setCertificatesOpen] = useState(false)
+  const { openCourse, element: courseOpener } = useCourseOpener()
+  const certificatesCount = courses.filter((course) => course.certificate?.code).length
 
   const counts = useMemo(
     () => ({
       todos: courses.length,
       em_andamento: courses.filter((c) => c.status === 'em_andamento').length,
       concluido: courses.filter((c) => c.status === 'concluido').length,
-      pendente: courses.filter((c) => c.status === 'pendente').length,
-      obrigatorios: courses.filter((c) => c.mandatory && c.status !== 'concluido').length,
     }),
     [courses],
   )
@@ -78,12 +79,7 @@ export function CoursesPage() {
   const filtered = useMemo(() => {
     const value = normalize(query.trim())
     const list = courses.filter((course) => {
-      const matchesFilter =
-        filter === 'todos'
-          ? true
-          : filter === 'obrigatorios'
-            ? Boolean(course.mandatory) && course.status !== 'concluido'
-            : course.status === filter
+      const matchesFilter = filter === 'todos' || course.status === filter
       const matchesCategory = category === 'Todas' || course.category === category
       const matchesQuery =
         !value ||
@@ -133,14 +129,12 @@ export function CoursesPage() {
     inProgress.reduce((sum, c) => sum + c.progress, 0) / Math.max(1, inProgress.length),
   )
   const nextDeadline = summary.deadlines[0]
-  const annualPercent = Math.min(100, Math.round((summary.studiedHours / Math.max(1, annualTargetHours)) * 100))
+  const annualPercent = summary.goalPercent
 
-  const tabs: { value: Filter; label: string; dot?: boolean }[] = [
+  const tabs: { value: Filter; label: string }[] = [
     { value: 'todos', label: `Todos (${counts.todos})` },
     { value: 'em_andamento', label: `Em andamento (${counts.em_andamento})` },
     { value: 'concluido', label: `Concluídos (${counts.concluido})` },
-    { value: 'pendente', label: `Pendentes (${counts.pendente})` },
-    { value: 'obrigatorios', label: `Obrigatórios (${counts.obrigatorios})`, dot: true },
   ]
 
   return (
@@ -161,7 +155,7 @@ export function CoursesPage() {
             Continue seus cursos, conclua os obrigatórios e explore novos conteúdos.
           </p>
         </div>
-        <div className="flex items-center gap-3 self-start md:self-auto">
+        <div data-tour="courses-actions" className="flex items-center gap-3 self-start md:self-auto">
           <button
             type="button"
             onClick={() => changeFilter('concluido')}
@@ -181,7 +175,7 @@ export function CoursesPage() {
         </div>
       </div>
 
-      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div data-tour="courses-kpis" className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-line bg-elevated p-4 shadow-lg transition-all hover:border-accent/40">
           <div className="mb-3 flex items-center justify-between">
             <span className="font-display text-[11px] font-semibold tracking-wider text-muted uppercase">Em andamento</span>
@@ -212,12 +206,12 @@ export function CoursesPage() {
           </div>
           <div>
             <div className="flex items-baseline gap-2">
-              <span className="font-display text-2xl leading-8 font-bold text-ink">{counts.concluido}</span>
+              <span className="font-display text-2xl leading-8 font-bold text-ink">{certificatesCount}</span>
               <span className="text-xs text-muted">emitidos</span>
             </div>
             <button
               type="button"
-              onClick={() => changeFilter('concluido')}
+              onClick={() => setCertificatesOpen(true)}
               className="mt-1 flex items-center gap-1 font-display text-xs font-medium text-accent-2 hover:underline"
             >
               Ver todos <ArrowRight size={14} />
@@ -269,7 +263,7 @@ export function CoursesPage() {
             <div className="flex items-baseline justify-between">
               <span className="font-display text-2xl leading-8 font-bold text-ink">{annualPercent}%</span>
               <span className="font-display text-xs font-medium text-muted">
-                {summary.studiedHours}h / {annualTargetHours}h
+                {summary.studiedHours}h / {formatNumber(summary.targetHours)}h
               </span>
             </div>
             <div className="mt-2 h-2 w-full overflow-hidden rounded-full border border-line/60 bg-canvas">
@@ -283,7 +277,7 @@ export function CoursesPage() {
       </div>
 
       <div className="mb-6 flex flex-col gap-4 rounded-2xl border border-line bg-elevated p-4 shadow-lg">
-        <div className="flex flex-col justify-between gap-3 lg:flex-row lg:items-center">
+        <div data-tour="courses-filters" className="flex flex-col justify-between gap-3 lg:flex-row lg:items-center">
           <label className="flex max-w-xl flex-1 items-center rounded-xl border border-line bg-fill px-4 py-2 shadow-inner transition-colors focus-within:border-accent/60">
             <Search size={20} className="mr-2 text-muted" />
             <input
@@ -347,7 +341,7 @@ export function CoursesPage() {
           </div>
         </div>
 
-        <div className="flex items-center gap-1 overflow-x-auto pb-1">
+        <div data-tour="courses-tabs" className="flex items-center gap-1 overflow-x-auto pb-1">
           {tabs.map((tab) => (
             <button
               key={tab.value}
@@ -360,7 +354,6 @@ export function CoursesPage() {
                   : 'border-transparent text-muted hover:border-line hover:bg-fill hover:text-ink',
               )}
             >
-              {tab.dot ? <span className="h-2 w-2 rounded-full bg-[#ff6b6b]" /> : null}
               {tab.label}
             </button>
           ))}
@@ -374,9 +367,9 @@ export function CoursesPage() {
             : 'Nenhum curso encontrado com esses filtros.'}
         </div>
       ) : (
-        <div className={cn(view === 'grid' ? 'grid grid-cols-1 gap-3 overflow-visible px-1 pt-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' : 'flex flex-col gap-1')}>
+        <div data-tour="courses-grid" className={cn(view === 'grid' ? 'grid grid-cols-1 gap-3 overflow-visible px-1 pt-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' : 'flex flex-col gap-1')}>
           {pageItems.map((course) => (
-            <CourseCard key={course.id} course={course} view={view} onOpen={() => navigate(`/aula/${course.id}`)} />
+            <CourseCard key={course.id} course={course} view={view} onOpen={() => openCourse(course)} />
           ))}
         </div>
       )}
@@ -422,6 +415,9 @@ export function CoursesPage() {
           </button>
         </div>
       </div>
+
+      <CertificatesListModal open={certificatesOpen} courses={courses} onClose={() => setCertificatesOpen(false)} />
+      {courseOpener}
     </div>
   )
 }

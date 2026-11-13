@@ -22,7 +22,6 @@ export type DashboardUsuario = {
   monthPoints: number
   /** Média das notas das avaliações (0–100); null se ainda não respondeu nenhuma. */
   assessmentAverage: number | null
-  annualTargetHours: number
   studyWeek: { minutes: number; goalMinutes: number }
   performance: Record<Periodo, PontoGrafico[]>
   ranking: {
@@ -88,7 +87,7 @@ export async function montarDashboard(usuarioId: string, agora = new Date()): Pr
     await Promise.all([
       prisma.usuario.findUniqueOrThrow({
         where: { id: usuarioId },
-        select: { metaHorasAno: true, metaMinutosSemana: true },
+        select: { metaMinutosSemana: true },
       }),
       prisma.pontuacaoEvento.aggregate({ where: { usuarioId }, _sum: { pontos: true } }),
       prisma.avaliacaoResultado.aggregate({ where: { usuarioId }, _avg: { nota: true } }),
@@ -159,7 +158,6 @@ export async function montarDashboard(usuarioId: string, agora = new Date()): Pr
     monthPoints: pontosNoMes.get(usuarioId) ?? 0,
     assessmentAverage:
       mediaAvaliacoes._avg.nota == null ? null : Math.round(mediaAvaliacoes._avg.nota * 10) / 10,
-    annualTargetHours: usuario.metaHorasAno,
     studyWeek: { minutes: estudoSemana._sum.minutos ?? 0, goalMinutes: usuario.metaMinutosSemana },
     performance: {
       '30d': serie(faixas30Dias(agora)),

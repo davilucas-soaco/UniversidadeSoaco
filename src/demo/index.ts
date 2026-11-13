@@ -67,7 +67,6 @@ export function buildDemoDashboard(user: SessionUser, now = new Date()): Dashboa
     points: currentUser.points,
     monthPoints: performanceByPeriod['30d'].reduce((sum, point) => sum + point.points, 0),
     assessmentAverage: 92.4,
-    annualTargetHours: 80,
     studyWeek: { minutes: 405, goalMinutes: 330 },
     performance: performanceByPeriod,
     ranking: {

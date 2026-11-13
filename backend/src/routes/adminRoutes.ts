@@ -2,7 +2,9 @@ import bcrypt from 'bcryptjs'
 import { Prisma } from '@prisma/client'
 import { Router, type Response } from 'express'
 import { z } from 'zod'
+import { masterEmail } from '../config/ensureMaster.js'
 import { prisma } from '../config/prisma.js'
+import { avisarNovosDestinatarios, cursosDoUsuario, novos } from '../services/notificacaoCursos.js'
 import { asyncHandler } from '../utils/asyncHandler.js'
 
 const router = Router()
@@ -30,6 +32,7 @@ const usuarioEditarSchema = z.object({
 })
 
 const setorSchema = z.object({ name: nome })
+const categoriaSchema = z.object({ name: nome })
 const classeSchema = z.object({
   name: nome,
   description: z.string().trim().max(300).nullable().optional(),
@@ -37,6 +40,11 @@ const classeSchema = z.object({
 
 function responderErroValidacao(res: Response, error: z.ZodError) {
   res.status(400).json({ error: error.issues[0]?.message ?? 'Dados inválidos.' })
+}
+
+async function ehMaster(usuarioId: string) {
+  const usuario = await prisma.usuario.findUnique({ where: { id: usuarioId }, select: { email: true } })
+  return usuario?.email === masterEmail()
 }
 
 function nomeDuplicado(error: unknown) {
@@ -65,6 +73,7 @@ function toUsuarioAdmin(usuario: UsuarioComRelacoes) {
     classIds: usuario.classes.map((item) => item.classeId),
     classNames: usuario.classes.map((item) => item.classe.nome),
     active: usuario.ativo,
+    isMaster: usuario.email === masterEmail(),
     mustChangePassword: usuario.trocarSenha,
     lastLoginAt: usuario.ultimoLoginEm?.toISOString() ?? null,
     createdAt: usuario.criadoEm.toISOString(),
@@ -101,6 +110,8 @@ router.post(
         include: usuarioInclude,
       })
       res.status(201).json({ user: toUsuarioAdmin(usuario) })
+      const cursos = await cursosDoUsuario(usuario.id)
+      avisarNovosDestinatarios([...cursos].map((cursoId) => ({ cursoId, usuarioId: usuario.id })))
     } catch (error) {
       if (nomeDuplicado(error)) {
         res.status(409).json({ error: 'Já existe um usuário com este e-mail.' })
@@ -124,6 +135,16 @@ router.patch(
       return
     }
 
+    if (await ehMaster(usuarioId)) {
+      if (active === false || password || (login && login !== masterEmail())) {
+        res.status(400).json({
+          error: 'O usuário master não pode ser desativado nem ter e-mail ou senha alterados por aqui (ficam no backend/.env).',
+        })
+        return
+      }
+    }
+
+    const cursosAntes = await cursosDoUsuario(usuarioId)
     try {
       const usuario = await prisma.$transaction(async (tx) => {
         if (classIds) {
@@ -145,6 +166,9 @@ router.patch(
         })
       })
       res.json({ user: toUsuarioAdmin(usuario) })
+      // Mudou de setor/classe (ou foi reativado): avisa só dos cursos que passaram a chegar até ele.
+      const cursosDepois = await cursosDoUsuario(usuarioId)
+      avisarNovosDestinatarios(novos(cursosAntes, cursosDepois).map((cursoId) => ({ cursoId, usuarioId })))
     } catch (error) {
       if (nomeDuplicado(error)) {
         res.status(409).json({ error: 'Já existe um usuário com este e-mail.' })
@@ -165,6 +189,10 @@ router.delete(
     const usuarioId = req.params.id
     if (usuarioId === req.user!.sub) {
       res.status(400).json({ error: 'Você não pode excluir o seu próprio usuário.' })
+      return
+    }
+    if (await ehMaster(usuarioId)) {
+      res.status(400).json({ error: 'O usuário master não pode ser excluído.' })
       return
     }
     try {
@@ -253,6 +281,82 @@ router.delete(
       if (naoEncontrado(error)) return res.status(404).json({ error: 'Setor não encontrado.' })
       throw error
     }
+  }),
+)
+
+// ─── Categorias de curso ─────────────────────────────────────────────────────
+
+async function contarCursosPorCategoria() {
+  const grupos = await prisma.curso.groupBy({ by: ['categoria'], _count: { _all: true } })
+  return new Map(grupos.map((grupo) => [grupo.categoria, grupo._count._all]))
+}
+
+router.get(
+  '/categorias',
+  asyncHandler(async (_req, res) => {
+    const [categorias, contagem] = await Promise.all([
+      prisma.categoria.findMany({ orderBy: { nome: 'asc' } }),
+      contarCursosPorCategoria(),
+    ])
+    res.json({
+      categories: categorias.map((item) => ({ id: item.id, name: item.nome, coursesCount: contagem.get(item.nome) ?? 0 })),
+    })
+  }),
+)
+
+router.post(
+  '/categorias',
+  asyncHandler(async (req, res) => {
+    const parsed = categoriaSchema.safeParse(req.body)
+    if (!parsed.success) return responderErroValidacao(res, parsed.error)
+    try {
+      const categoria = await prisma.categoria.create({ data: { nome: parsed.data.name } })
+      res.status(201).json({ category: { id: categoria.id, name: categoria.nome, coursesCount: 0 } })
+    } catch (error) {
+      if (nomeDuplicado(error)) return res.status(409).json({ error: 'Já existe uma categoria com este nome.' })
+      throw error
+    }
+  }),
+)
+
+router.patch(
+  '/categorias/:id',
+  asyncHandler(async (req, res) => {
+    const parsedId = id.safeParse(req.params.id)
+    const parsed = categoriaSchema.safeParse(req.body)
+    if (!parsedId.success) return res.status(404).json({ error: 'Categoria não encontrada.' })
+    if (!parsed.success) return responderErroValidacao(res, parsed.error)
+    const atual = await prisma.categoria.findUnique({ where: { id: parsedId.data } })
+    if (!atual) return res.status(404).json({ error: 'Categoria não encontrada.' })
+    try {
+      // Os cursos guardam o nome da categoria: renomear atualiza todos eles.
+      const [categoria, cursos] = await prisma.$transaction([
+        prisma.categoria.update({ where: { id: atual.id }, data: { nome: parsed.data.name } }),
+        prisma.curso.updateMany({ where: { categoria: atual.nome }, data: { categoria: parsed.data.name } }),
+      ])
+      res.json({ category: { id: categoria.id, name: categoria.nome, coursesCount: cursos.count } })
+    } catch (error) {
+      if (nomeDuplicado(error)) return res.status(409).json({ error: 'Já existe uma categoria com este nome.' })
+      throw error
+    }
+  }),
+)
+
+router.delete(
+  '/categorias/:id',
+  asyncHandler(async (req, res) => {
+    const parsedId = id.safeParse(req.params.id)
+    if (!parsedId.success) return res.status(404).json({ error: 'Categoria não encontrada.' })
+    const categoria = await prisma.categoria.findUnique({ where: { id: parsedId.data } })
+    if (!categoria) return res.status(404).json({ error: 'Categoria não encontrada.' })
+    const emUso = await prisma.curso.count({ where: { categoria: categoria.nome } })
+    if (emUso > 0) {
+      return res.status(409).json({
+        error: `${emUso === 1 ? '1 curso usa' : `${emUso} cursos usam`} esta categoria. Mude a categoria ${emUso === 1 ? 'dele' : 'deles'} antes de excluir.`,
+      })
+    }
+    await prisma.categoria.delete({ where: { id: categoria.id } })
+    res.json({ ok: true })
   }),
 )
 

@@ -5,10 +5,13 @@ import cookieParser from 'cookie-parser'
 import express, { type NextFunction, type Request, type Response } from 'express'
 import { requireAuth } from './middleware/auth.js'
 import { requireRole } from './middleware/requireRole.js'
+import adminCursoRoutes from './routes/adminCursoRoutes.js'
 import adminRoutes from './routes/adminRoutes.js'
 import authRoutes from './routes/authRoutes.js'
 import cursoRoutes from './routes/cursoRoutes.js'
+import emailRoutes from './routes/emailRoutes.js'
 import meRoutes from './routes/meRoutes.js'
+import provaRoutes from './routes/provaRoutes.js'
 
 const app = express()
 const backendRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), '..')
@@ -26,6 +29,9 @@ app.get('/api/health', (_req, res) => {
 app.use('/api/auth', authRoutes)
 app.use('/api/me', requireAuth, meRoutes)
 app.use('/api/cursos', requireAuth, cursoRoutes)
+app.use('/api/admin/cursos', requireAuth, requireRole('administrador', 'gestor_conteudo'), adminCursoRoutes)
+app.use('/api/admin/email', requireAuth, requireRole('administrador'), emailRoutes)
+app.use('/api/admin/provas', requireAuth, requireRole('administrador', 'gestor_conteudo'), provaRoutes)
 app.use('/api/admin', requireAuth, requireRole('administrador'), adminRoutes)
 app.use('/api', (_req, res) => {
   res.status(404).json({ error: 'Rota não encontrada.' })
@@ -40,6 +46,10 @@ if (fs.existsSync(path.join(frontendDist, 'index.html'))) {
 }
 
 app.use((error: unknown, _req: Request, res: Response, _next: NextFunction) => {
+  if (error instanceof SyntaxError && 'type' in error && error.type === 'entity.parse.failed') {
+    res.status(400).json({ error: 'Dados enviados em formato inválido.' })
+    return
+  }
   console.error('[api]', error instanceof Error ? (error.stack ?? error.message) : error)
   if (!res.headersSent) res.status(500).json({ error: 'Erro interno. Tente novamente.' })
 })

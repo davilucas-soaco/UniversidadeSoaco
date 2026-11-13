@@ -1,21 +1,5 @@
-const blobs = new Map<string, { file: File; url: string }>()
-
 export const documentAccept =
   '.pdf,.doc,.docx,.xls,.xlsx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-
-export function rememberDocument(id: string, file: File) {
-  const previous = blobs.get(id)
-  if (previous) URL.revokeObjectURL(previous.url)
-  blobs.set(id, { file, url: URL.createObjectURL(file) })
-}
-
-export function documentObjectUrl(id: string) {
-  return blobs.get(id)?.url ?? null
-}
-
-export function documentFile(id: string) {
-  return blobs.get(id)?.file ?? null
-}
 
 export function isPdf(mime: string, name: string) {
   return mime === 'application/pdf' || name.toLowerCase().endsWith('.pdf')

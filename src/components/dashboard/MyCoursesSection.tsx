@@ -1,23 +1,24 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
+import { useCourseOpener } from '@/components/certificates/useCourseOpener'
 import { CourseCard } from '@/components/content/CourseCard'
 import { PillTabs } from '@/components/ui/PillTabs'
 import { useCatalog, useCourseSummary } from '@/context/CatalogContext'
 import type { CourseStatus } from '@/types'
 
-type Filter = 'todos' | CourseStatus
+type Filter = 'todos' | Exclude<CourseStatus, 'pendente'>
 
 const filters: { value: Filter; label: string }[] = [
   { value: 'todos', label: 'Todos' },
   { value: 'em_andamento', label: 'Em andamento' },
   { value: 'concluido', label: 'Concluídos' },
-  { value: 'pendente', label: 'Pendentes' },
 ]
 
 export function MyCoursesSection() {
   const navigate = useNavigate()
   const [filter, setFilter] = useState<Filter>('todos')
+  const { openCourse, element: courseOpener } = useCourseOpener()
   const { courses } = useCatalog()
   const { featured } = useCourseSummary()
 
@@ -46,7 +47,7 @@ export function MyCoursesSection() {
       ) : (
         <div className="grid grid-cols-1 gap-3 overflow-visible sm:grid-cols-2 md:grid-cols-3">
           {visible.map((course) => (
-            <CourseCard key={course.id} course={course} onOpen={() => navigate(`/aula/${course.id}`)} />
+            <CourseCard key={course.id} course={course} onOpen={() => openCourse(course)} />
           ))}
         </div>
       )}
@@ -58,6 +59,7 @@ export function MyCoursesSection() {
       >
         Ver todos os cursos <ArrowRight size={14} />
       </button>
+      {courseOpener}
     </section>
   )
 }

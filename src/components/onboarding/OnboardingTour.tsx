@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import introJs from 'intro.js'
 import 'intro.js/introjs.css'
-import { onboardingSteps } from '@/data/onboarding'
+import { hasSeenTour, markTourSeen, tourForPath, type TourPosition } from '@/data/onboarding'
 import { useLayout } from '@/context/LayoutContext'
 import { useOnboarding } from '@/context/OnboardingContext'
 
@@ -149,26 +149,34 @@ function waitForScrollEnd(timeout = 700) {
   })
 }
 
-function desiredScrollForTarget(target: HTMLElement) {
-  const scroller = scrollingRoot()
-  return clampScroll(scroller.scrollTop + (target.getBoundingClientRect().top - headerOffset()))
+/** Espaço acima do alvo quando o balão abre em cima dele (altura do balão + respiro). */
+function roomAboveFor(position: TourPosition | undefined) {
+  if (position !== 'top') return 0
+  const tooltip = document.querySelector('.soaco-tour')
+  const height = tooltip instanceof HTMLElement ? tooltip.offsetHeight : 0
+  return Math.max(height, 220) + 32
 }
 
-async function scrollTargetIntoPlace(target: HTMLElement, smooth: boolean) {
+function desiredScrollForTarget(target: HTMLElement, roomAbove: number) {
+  const scroller = scrollingRoot()
+  return clampScroll(scroller.scrollTop + (target.getBoundingClientRect().top - headerOffset() - roomAbove))
+}
+
+async function scrollTargetIntoPlace(target: HTMLElement, smooth: boolean, roomAbove: number) {
   if (isFixedTourTarget(target)) return
-  const next = desiredScrollForTarget(target)
+  const next = desiredScrollForTarget(target, roomAbove)
   if (Math.abs(scrollingRoot().scrollTop - next) < 3) return
   applyScrollTop(next, smooth)
   await (smooth ? waitForScrollEnd() : wait(32))
 }
 
-async function revealTourStep(target: HTMLElement, refresh: () => void) {
+async function revealTourStep(target: HTMLElement, refresh: () => void, roomAbove: number) {
   if (isFixedTourTarget(target)) {
     refresh()
     return
   }
 
-  await scrollTargetIntoPlace(target, true)
+  await scrollTargetIntoPlace(target, true, roomAbove)
   refresh()
   await wait(48)
 
@@ -181,7 +189,7 @@ async function revealTourStep(target: HTMLElement, refresh: () => void) {
   const tooltipRect = tooltip.getBoundingClientRect()
   const scroller = scrollingRoot()
 
-  if (targetRect.top < minTop) {
+  if (targetRect.top < minTop - 3) {
     applyScrollTop(scroller.scrollTop + (targetRect.top - minTop), true)
     await waitForScrollEnd()
     refresh()
@@ -231,21 +239,18 @@ function isElementVisible(element: Element) {
 }
 
 export function OnboardingTour() {
-  const { token, complete } = useOnboarding()
+  const { token } = useOnboarding()
   const { openMobile, closeMobile } = useLayout()
-  const location = useLocation()
-  const navigate = useNavigate()
-  // Cada pedido de tour (token) roda uma única vez; trocar de aba não o reabre.
+  const { pathname } = useLocation()
+  // Cada pedido manual (token) roda uma única vez; trocar de tela não o reabre.
   const handledToken = useRef(0)
 
   useEffect(() => {
-    if (token === 0 || handledToken.current === token) return
+    const definition = tourForPath(pathname)
+    const manual = token !== 0 && handledToken.current !== token
+    if (!manual && hasSeenTour(definition.id)) return
 
-    if (location.pathname !== '/') {
-      navigate('/', { replace: true })
-      return
-    }
-
+    const previousToken = handledToken.current
     handledToken.current = token
     let cancelled = false
     let started = false
@@ -253,13 +258,15 @@ export function OnboardingTour() {
     let holeTimer = 0
 
     const run = async () => {
-      if (isMobileViewport()) openMobile()
-
-      await waitForElement('#tour-welcome')
-      await new Promise((resolve) => window.setTimeout(resolve, 280))
+      await waitForElement(definition.ready, 6000)
+      await wait(manual ? 280 : 900)
       if (cancelled) return
+      if (isMobileViewport() && definition.steps.some((step) => step.element.startsWith('#tour-collaborator'))) {
+        openMobile()
+        await wait(280)
+      }
 
-      const steps = onboardingSteps
+      const steps = definition.steps
         .filter((step) => {
           const element = document.querySelector(step.element)
           return element ? isElementVisible(element) : false
@@ -311,12 +318,14 @@ export function OnboardingTour() {
         }, 520)
       }
 
+      const roomAbove = (target: Element) => roomAboveFor(steps.find((step) => target.matches(step.element))?.position)
+
       const syncTooltip = async (target?: HTMLElement) => {
         decorateTooltip((tour?.getCurrentStep() ?? 0) + 1, steps.length)
         const element = target ?? document.querySelector('.introjs-showElement')
         syncFocusClass(element)
         if (element instanceof HTMLElement) {
-          await revealTourStep(element, () => tour?.refresh())
+          await revealTourStep(element, () => tour?.refresh(), roomAbove(element))
         }
         if (cancelled) return
         trackHole()
@@ -331,7 +340,7 @@ export function OnboardingTour() {
           else closeMobile()
           await wait(280)
         }
-        if (target) await scrollTargetIntoPlace(target, false)
+        if (target) await scrollTargetIntoPlace(target, false, roomAbove(target))
         return true
       })
 
@@ -350,7 +359,7 @@ export function OnboardingTour() {
       })
 
       started = true
-      complete()
+      markTourSeen(definition.id)
       mountTourChrome()
       window.addEventListener('resize', updateBlurHole)
       window.addEventListener('scroll', updateBlurHole, true)
@@ -363,14 +372,14 @@ export function OnboardingTour() {
     return () => {
       cancelled = true
       // Cancelado antes de abrir (ex.: remontagem do StrictMode): permite nova tentativa.
-      if (!started) handledToken.current = 0
+      if (!started) handledToken.current = previousToken
       window.clearTimeout(holeTimer)
       window.removeEventListener('resize', updateBlurHole)
       window.removeEventListener('scroll', updateBlurHole, true)
       unmountTourChrome()
       void tour?.exit(true)
     }
-  }, [token, location.pathname, complete, openMobile, closeMobile, navigate])
+  }, [token, pathname, openMobile, closeMobile])
 
   return null
 }

@@ -12,7 +12,7 @@ export function PlaceholderPage() {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <Card>
+      <Card data-tour="placeholder">
         <EmptyState
           icon={<Construction size={26} />}
           title={meta?.title ?? 'Área reservada'}

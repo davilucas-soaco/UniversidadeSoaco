@@ -7,12 +7,17 @@ export type VideoEmbedInfo = {
   watchUrl: string
 }
 
+// Parâmetros que reduzem ao mínimo os links para fora da plataforma (o logo do YouTube não pode ser removido).
+const youtubeParams = 'rel=0&iv_load_policy=3&modestbranding=1&playsinline=1'
+const vimeoParams = 'title=0&byline=0&portrait=0&dnt=1'
+const loomParams = 'hide_owner=true&hide_share=true&hide_title=true&hideEmbedTopBar=true'
+
 function youtube(id: string): VideoEmbedInfo {
   const clean = id.replace(/[^a-zA-Z0-9_-]/g, '')
   return {
     provider: 'youtube',
     id: clean,
-    embedUrl: `https://www.youtube.com/embed/${clean}`,
+    embedUrl: `https://www.youtube-nocookie.com/embed/${clean}?${youtubeParams}`,
     watchUrl: `https://www.youtube.com/watch?v=${clean}`,
   }
 }
@@ -51,7 +56,7 @@ export function parseVideoUrl(raw: string): VideoEmbedInfo | null {
       return {
         provider: 'vimeo',
         id,
-        embedUrl: `https://player.vimeo.com/video/${id}`,
+        embedUrl: `https://player.vimeo.com/video/${id}?${vimeoParams}`,
         watchUrl: `https://vimeo.com/${id}`,
       }
     }
@@ -64,7 +69,7 @@ export function parseVideoUrl(raw: string): VideoEmbedInfo | null {
       return {
         provider: 'loom',
         id,
-        embedUrl: `https://www.loom.com/embed/${id}`,
+        embedUrl: `https://www.loom.com/embed/${id}?${loomParams}`,
         watchUrl: `https://www.loom.com/share/${id}`,
       }
     }
@@ -73,11 +78,27 @@ export function parseVideoUrl(raw: string): VideoEmbedInfo | null {
   return null
 }
 
-/** Miniatura pública do vídeo, usada como capa do card. */
+/** Miniatura pública do vídeo. Null no Vimeo, que não tem URL fixa: use `vimeoThumbnail`. */
 export function videoThumbnailUrl(info: VideoEmbedInfo) {
   if (info.provider === 'youtube') return `https://i.ytimg.com/vi/${info.id}/hqdefault.jpg`
-  if (info.provider === 'vimeo') return `https://vumbnail.com/${info.id}.jpg`
+  if (info.provider === 'vimeo') return null
   return `https://cdn.loom.com/sessions/thumbnails/${info.id}-00001.jpg`
+}
+
+const vimeoThumbnails = new Map<string, Promise<string | null>>()
+
+/** Miniatura do Vimeo pelo oEmbed público (aceita chamadas do navegador e vídeos não listados). */
+export function vimeoThumbnail(id: string) {
+  let pending = vimeoThumbnails.get(id)
+  if (!pending) {
+    const url = `https://vimeo.com/api/oembed.json?url=${encodeURIComponent(`https://vimeo.com/${id}`)}&width=1280`
+    pending = fetch(url)
+      .then((response) => (response.ok ? (response.json() as Promise<{ thumbnail_url?: string }>) : null))
+      .then((data) => data?.thumbnail_url ?? null)
+      .catch(() => null)
+    vimeoThumbnails.set(id, pending)
+  }
+  return pending
 }
 
 export const videoProviderLabel: Record<VideoProvider, string> = {

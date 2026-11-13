@@ -16,6 +16,8 @@ export function summarizeCourses(courses: Course[]) {
     .sort((a, b) => daysUntil(a.dueDate!) - daysUntil(b.dueDate!))
 
   const total = courses.length
+  const target = courses.reduce((sum, course) => sum + course.durationHours, 0)
+  const studied = courses.reduce((sum, course) => sum + (course.durationHours * course.progress) / 100, 0)
   const averageProgress = Math.round(courses.reduce((sum, course) => sum + course.progress, 0) / Math.max(1, total))
 
   return {
@@ -29,7 +31,10 @@ export function summarizeCourses(courses: Course[]) {
     averageProgress,
     remaining: total - completed.length,
     completionRate: Math.round((completed.length / Math.max(1, total)) * 100),
-    studiedHours: Math.round(courses.reduce((sum, course) => sum + (course.durationHours * course.progress) / 100, 0)),
+    studiedHours: Math.round(studied),
+    /** Meta = 100% da carga horária dos cursos destinados ao colaborador. */
+    targetHours: Math.round(target * 10) / 10,
+    goalPercent: target > 0 ? Math.min(100, Math.round((studied / target) * 100)) : 0,
   }
 }
 

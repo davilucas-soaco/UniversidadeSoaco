@@ -21,12 +21,13 @@ export async function api<T>(path: string, { method = 'GET', body, signal }: Req
   const offlineMessage = 'Não foi possível conectar ao servidor. Verifique se o backend está rodando.'
   let response: Response
   try {
+    const isForm = body instanceof FormData
     response = await fetch(`/api${path}`, {
       method,
       signal,
       credentials: 'same-origin',
-      headers: body === undefined ? undefined : { 'Content-Type': 'application/json' },
-      body: body === undefined ? undefined : JSON.stringify(body),
+      headers: body === undefined || isForm ? undefined : { 'Content-Type': 'application/json' },
+      body: body === undefined ? undefined : isForm ? body : JSON.stringify(body),
     })
   } catch (error) {
     if (error instanceof DOMException && error.name === 'AbortError') throw error

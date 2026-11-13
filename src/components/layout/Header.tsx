@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import {
   Bell,
   ChevronDown,
@@ -10,6 +10,7 @@ import {
   UserRound,
 } from 'lucide-react'
 import { notifications } from '@/data/activity'
+import { tourForPath } from '@/data/onboarding'
 import { useAuth } from '@/context/AuthContext'
 import { useDemoMode } from '@/context/DemoModeContext'
 import { useFeedback } from '@/context/FeedbackContext'
@@ -38,6 +39,7 @@ export function Header() {
   const { profile, initials, jobTitle, sector } = useProfile()
   const { isDark, setTheme } = useTheme()
   const navigate = useNavigate()
+  const screenTour = tourForPath(useLocation().pathname)
   const unread = notifications.filter((item) => !item.read).length
 
   return (
@@ -54,7 +56,7 @@ export function Header() {
             <HeaderSearch />
           </div>
 
-          <Tooltip label={isDark ? 'Usar tema claro' : 'Usar tema escuro'} side="top">
+          <Tooltip label={isDark ? 'Usar tema claro' : 'Usar tema escuro'} side="bottom-end">
             <SwitchButton
               showLabel={false}
               size="lg"
@@ -65,7 +67,7 @@ export function Header() {
           </Tooltip>
 
           {/* TEMPORÁRIO: alterna os dados de demonstração (src/demo). */}
-          <Tooltip label={demo ? 'Desligar dados de demonstração' : 'Ver com dados de demonstração'} side="top">
+          <Tooltip label={demo ? 'Desligar dados de demonstração' : 'Ver com dados de demonstração'} side="bottom-end">
             <button
               type="button"
               aria-pressed={demo}
@@ -86,16 +88,13 @@ export function Header() {
             </button>
           </Tooltip>
 
-          <Tooltip label="Ver tutorial" side="top">
+          <Tooltip label={`Ver tutorial · ${screenTour.label}`} side="bottom-end">
             <button
               id="tour-tutorial"
               type="button"
               className={toolButtonClass}
-              aria-label="Ver tutorial"
-              onClick={() => {
-                start()
-                showToast('Tutorial reaberto.')
-              }}
+              aria-label={`Ver tutorial da tela ${screenTour.label}`}
+              onClick={start}
             >
               <GraduationCap size={18} strokeWidth={1.8} />
             </button>

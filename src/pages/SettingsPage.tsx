@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Building2, RefreshCw, UsersRound } from 'lucide-react'
+import { Building2, FolderOpen, RefreshCw, UsersRound } from 'lucide-react'
+import { EmailSettingsCard } from '@/components/admin/EmailSettingsCard'
+import { ExamsCard } from '@/components/admin/ExamsCard'
 import { NamedListCard } from '@/components/admin/NamedListCard'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Spinner } from '@/components/ui/Spinner'
 import { adminApi } from '@/lib/adminApi'
-import type { ClassGroup, Sector } from '@/types'
+import type { ClassGroup, CourseCategoryItem, Sector } from '@/types'
 
 const byName = <T extends { name: string }>(a: T, b: T) => a.name.localeCompare(b.name, 'pt-BR')
 
@@ -16,14 +18,20 @@ function plural(count: number, singular: string, pluralForm: string) {
 export function SettingsPage() {
   const [sectors, setSectors] = useState<Sector[] | null>(null)
   const [classes, setClasses] = useState<ClassGroup[] | null>(null)
+  const [categories, setCategories] = useState<CourseCategoryItem[] | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   const load = useCallback(async () => {
     setError(null)
     try {
-      const [loadedSectors, loadedClasses] = await Promise.all([adminApi.listSectors(), adminApi.listClasses()])
+      const [loadedSectors, loadedClasses, loadedCategories] = await Promise.all([
+        adminApi.listSectors(),
+        adminApi.listClasses(),
+        adminApi.listCategories(),
+      ])
       setSectors(loadedSectors)
       setClasses(loadedClasses)
+      setCategories(loadedCategories)
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'Não foi possível carregar as configurações.')
     }
@@ -39,8 +47,8 @@ export function SettingsPage() {
         <p className="font-display text-[11px] font-semibold tracking-widest text-accent uppercase">Governança</p>
         <h1 className="mt-1 font-display text-[32px] leading-10 font-bold tracking-tight text-ink">Configurações</h1>
         <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted">
-          Cadastre os setores e as classes da Universidade. Eles são usados no cadastro dos colaboradores e na atribuição
-          de cursos: um curso destinado a um setor ou a uma classe aparece para todos que fazem parte dele.
+          Cadastre os setores, as classes e as categorias de curso da Universidade. Setores e classes são usados no
+          cadastro dos colaboradores e na atribuição de cursos; as categorias organizam os cursos.
         </p>
       </div>
 
@@ -51,12 +59,12 @@ export function SettingsPage() {
             Tentar novamente
           </Button>
         </Card>
-      ) : !sectors || !classes ? (
+      ) : !sectors || !classes || !categories ? (
         <div className="flex min-h-[40vh] items-center justify-center">
           <Spinner className="h-8 w-8" />
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div data-tour="settings-lists" className="grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
           <NamedListCard
             icon={<Building2 size={20} />}
             title="Setores"
@@ -112,8 +120,44 @@ export function SettingsPage() {
               setClasses((current) => (current ?? []).filter((item) => item.id !== id))
             }}
           />
+
+          <NamedListCard
+            icon={<FolderOpen size={20} />}
+            title="Categorias de curso"
+            subtitle="Usadas no cadastro dos cursos (ex.: Institucional, Segurança do Trabalho)."
+            noun="categoria"
+            gender="f"
+            countLabel={(count) => plural(count, 'curso', 'cursos')}
+            deleteWarning={(item) =>
+              item.count > 0
+                ? `Ela está em ${plural(item.count, 'curso', 'cursos')} e só pode ser excluída depois que ${item.count === 1 ? 'ele mudar' : 'eles mudarem'} de categoria.`
+                : 'Ela deixa de aparecer no cadastro de cursos.'
+            }
+            items={categories.map((item) => ({ id: item.id, name: item.name, count: item.coursesCount }))}
+            onCreate={async (name) => {
+              const created = await adminApi.createCategory(name)
+              setCategories((current) => [...(current ?? []), created].sort(byName))
+            }}
+            onUpdate={async (id, name) => {
+              const updated = await adminApi.updateCategory(id, name)
+              setCategories((current) => (current ?? []).map((item) => (item.id === id ? updated : item)).sort(byName))
+            }}
+            onDelete={async (id) => {
+              await adminApi.deleteCategory(id)
+              setCategories((current) => (current ?? []).filter((item) => item.id !== id))
+            }}
+          />
         </div>
       )}
+
+      <div className="mt-6 flex flex-col gap-6">
+        <div data-tour="settings-exams">
+          <ExamsCard />
+        </div>
+        <div data-tour="settings-email">
+          <EmailSettingsCard />
+        </div>
+      </div>
     </div>
   )
 }

@@ -39,6 +39,8 @@ model Usuario {
   atribuicoesFeitas Atribuicao[]         @relation("AtribuicaoAutor")
   matriculas        Matricula[]
   aulasConcluidas   AulaProgresso[]
+  etapasConcluidas  EtapaProgresso[]
+  tentativasProva   ProvaTentativa[]
   avaliacoes        AvaliacaoResultado[]
   avaliacoesCurso   CursoAvaliacao[]
   certificados      Certificado[]
@@ -57,6 +59,15 @@ model Setor {
   atribuicoes Atribuicao[]
 
   @@map("setor")
+}
+
+/// Categoria de curso, cadastrada em Configurações. O curso guarda o nome em `Curso.categoria`.
+model Categoria {
+  id       Int      @id @default(autoincrement())
+  nome     String   @unique
+  criadoEm DateTime @default(now()) @map("criado_em")
+
+  @@map("categoria")
 }
 
 /// Grupo livre de colaboradores, independente do setor (ex.: Brigada de emergência, Novos colaboradores).
@@ -119,6 +130,10 @@ model Curso {
   videoUrl      String?  @map("video_url")
   videoProvedor String?  @map("video_provedor")
   embedUrl      String?  @map("embed_url")
+  /// true = o colaborador conclui as etapas na ordem cadastrada
+  sequenciaObrigatoria Boolean @default(false) @map("sequencia_obrigatoria")
+  /// true = ao concluir o curso o colaborador recebe o certificado
+  geraCertificado Boolean @default(true) @map("gera_certificado")
   publicado     Boolean  @default(true)
   criadoEm      DateTime @default(now()) @map("criado_em")
   atualizadoEm  DateTime @updatedAt @map("atualizado_em")
@@ -131,9 +146,146 @@ model Curso {
   pontuacoes   PontuacaoEvento[]
   sessoes      SessaoEstudo[]
   avaliacoes   CursoAvaliacao[]
+  documentos   CursoDocumento[]
+  etapas       CursoEtapa[]
 
   @@index([instrutorId])
   @@map("curso")
+}
+
+/// Arquivo de apoio do curso (PDF, Word, Excel). O arquivo fica em backend/var/uploads/cursos/<cursoId>/.
+model CursoDocumento {
+  id       String   @id @default(cuid())
+  cursoId  String   @map("curso_id")
+  /// Etapa dona do arquivo (cursos com etapas).
+  etapaId  String?  @map("etapa_id")
+  nome     String
+  mime     String
+  tamanho  Int
+  /// Caminho relativo a backend/var/uploads
+  arquivo  String
+  ordem    Int      @default(0)
+  criadoEm DateTime @default(now()) @map("criado_em")
+
+  curso Curso       @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  etapa CursoEtapa? @relation(fields: [etapaId], references: [id], onDelete: Cascade)
+
+  @@index([cursoId])
+  @@index([etapaId])
+  @@map("curso_documento")
+}
+
+/// Etapa do curso (pipeline). paiId preenchido = subetapa (um nível só).
+/// Etapa com subetapas é um grupo: o conteúdo (vídeo ou documentos) fica nas subetapas.
+/// tipoConteudo: video | document
+model CursoEtapa {
+  id            String   @id @default(cuid())
+  cursoId       String   @map("curso_id")
+  paiId         String?  @map("pai_id")
+  ordem         Int
+  titulo        String
+  descricao     String?
+  tipoConteudo  String?  @map("tipo_conteudo")
+  videoUrl      String?  @map("video_url")
+  videoProvedor String?  @map("video_provedor")
+  embedUrl      String?  @map("embed_url")
+  /// Prova do banco de provas (etapa com tipo_conteudo = 'exam').
+  provaId       String?  @map("prova_id")
+  criadoEm      DateTime @default(now()) @map("criado_em")
+  atualizadoEm  DateTime @updatedAt @map("atualizado_em")
+
+  curso      Curso            @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  pai        CursoEtapa?      @relation("EtapaFilhas", fields: [paiId], references: [id], onDelete: Cascade)
+  filhas     CursoEtapa[]     @relation("EtapaFilhas")
+  prova      Prova?           @relation(fields: [provaId], references: [id], onDelete: SetNull)
+  documentos CursoDocumento[]
+  progresso  EtapaProgresso[]
+  tentativas ProvaTentativa[]
+
+  @@index([cursoId])
+  @@index([paiId])
+  @@index([provaId])
+  @@map("curso_etapa")
+}
+
+/// Prova reutilizável (cadastrada em Configurações e escolhida nas etapas dos cursos).
+model Prova {
+  id           String   @id @default(cuid())
+  titulo       String
+  descricao    String?
+  /// Percentual mínimo de acertos para aprovar (0–100).
+  notaMinima   Int      @default(70) @map("nota_minima")
+  criadoEm     DateTime @default(now()) @map("criado_em")
+  atualizadoEm DateTime @updatedAt @map("atualizado_em")
+
+  perguntas  ProvaPergunta[]
+  etapas     CursoEtapa[]
+  tentativas ProvaTentativa[]
+
+  @@map("prova")
+}
+
+model ProvaPergunta {
+  id        String @id @default(cuid())
+  provaId   String @map("prova_id")
+  ordem     Int
+  enunciado String
+
+  prova  Prova        @relation(fields: [provaId], references: [id], onDelete: Cascade)
+  opcoes ProvaOpcao[]
+
+  @@index([provaId])
+  @@map("prova_pergunta")
+}
+
+model ProvaOpcao {
+  id         String  @id @default(cuid())
+  perguntaId String  @map("pergunta_id")
+  ordem      Int
+  texto      String
+  correta    Boolean @default(false)
+
+  pergunta ProvaPergunta @relation(fields: [perguntaId], references: [id], onDelete: Cascade)
+
+  @@index([perguntaId])
+  @@map("prova_opcao")
+}
+
+/// Cada envio de prova feito por um colaborador numa etapa.
+model ProvaTentativa {
+  id        String   @id @default(cuid())
+  usuarioId String   @map("usuario_id")
+  provaId   String   @map("prova_id")
+  etapaId   String   @map("etapa_id")
+  acertos   Int
+  total     Int
+  /// Percentual de acertos (0–100).
+  nota      Int
+  aprovado  Boolean
+  /// JSON { perguntaId: opcaoId } com as respostas marcadas.
+  respostas String
+  criadoEm  DateTime @default(now()) @map("criado_em")
+
+  usuario Usuario    @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  prova   Prova      @relation(fields: [provaId], references: [id], onDelete: Cascade)
+  etapa   CursoEtapa @relation(fields: [etapaId], references: [id], onDelete: Cascade)
+
+  @@index([usuarioId, etapaId])
+  @@index([provaId])
+  @@map("prova_tentativa")
+}
+
+model EtapaProgresso {
+  usuarioId   String   @map("usuario_id")
+  etapaId     String   @map("etapa_id")
+  concluidaEm DateTime @default(now()) @map("concluida_em")
+
+  usuario Usuario    @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  etapa   CursoEtapa @relation(fields: [etapaId], references: [id], onDelete: Cascade)
+
+  @@id([usuarioId, etapaId])
+  @@index([etapaId])
+  @@map("etapa_progresso")
 }
 
 model Modulo {
@@ -214,6 +366,8 @@ model Matricula {
   progresso      Int       @default(0)
   iniciadoEm     DateTime? @map("iniciado_em")
   concluidoEm    DateTime? @map("concluido_em")
+  /// Primeira vez que o curso foi concluído: pontos, certificado e atividade só são lançados nela.
+  primeiraConclusaoEm DateTime? @map("primeira_conclusao_em")
   ultimoAcessoEm DateTime? @map("ultimo_acesso_em")
   criadoEm       DateTime  @default(now()) @map("criado_em")
 
@@ -330,4 +484,37 @@ model Atividade {
 
   @@index([usuarioId, criadoEm])
   @@map("atividade")
+}
+
+/// Credencial de envio de e-mail (Gmail API com OAuth). Segredos criptografados com EMAIL_SETTINGS_ENCRYPTION_KEY.
+model EmailProviderSettings {
+  id                     String    @id @default(uuid())
+  provider               String    @default("gmail_api")
+  fromEmail              String    @map("from_email")
+  fromName               String    @map("from_name")
+  clientId               String    @map("client_id")
+  clientSecretEncrypted  String    @map("client_secret_encrypted")
+  refreshTokenEncrypted  String    @map("refresh_token_encrypted")
+  lastTestedAt           DateTime? @map("last_tested_at")
+  lastError              String?   @map("last_error")
+  credentialBlockedAt    DateTime? @map("credential_blocked_at")
+  credentialBlockCode    String?   @map("credential_block_code")
+  credentialBlockSummary String?   @map("credential_block_summary")
+  createdAt              DateTime  @default(now()) @map("created_at")
+  updatedAt              DateTime  @updatedAt @map("updated_at")
+
+  @@map("email_provider_settings")
+}
+
+/// Um registro por e-mail enviado; `chave` única evita disparar a mesma notificação duas vezes.
+model EmailDisparoLog {
+  id            String   @id @default(cuid())
+  categoria     String
+  chave         String   @unique
+  destinatarios String
+  assunto       String
+  enviadoEm     DateTime @default(now()) @map("enviado_em")
+
+  @@index([categoria, enviadoEm])
+  @@map("email_disparo_log")
 }

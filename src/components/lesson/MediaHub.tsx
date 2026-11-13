@@ -4,6 +4,7 @@ import {
   Captions,
   ChevronLeft,
   ChevronRight,
+  Download,
   FileText,
   ListChecks,
   Maximize,
@@ -18,14 +19,16 @@ import {
   ZoomIn,
 } from 'lucide-react'
 import { CourseCover } from '@/components/content/CourseCover'
+import { ExamPlayer } from '@/components/lesson/ExamPlayer'
+import { PlatformVideoPlayer } from '@/components/lesson/PlatformVideoPlayer'
 import { VideoEmbed } from '@/components/lesson/VideoEmbed'
 import { Avatar } from '@/components/ui/Avatar'
 import { useFeedback } from '@/context/FeedbackContext'
-import { documentObjectUrl, isPdf } from '@/lib/documents'
+import { isPdf } from '@/lib/documents'
 import { formatClock } from '@/lib/format'
 import { parseVideoUrl } from '@/lib/videoEmbed'
 import { cn } from '@/lib/cn'
-import type { Course, Instructor, Lesson } from '@/types'
+import type { Course, ExamSubmitResult, Instructor, Lesson } from '@/types'
 
 export type MediaMode = 'video' | 'pdf'
 
@@ -44,6 +47,8 @@ type MediaHubProps = {
   playing: boolean
   onPlayingChange: (playing: boolean) => void
   onFinish: () => void
+  /** Etapa de prova enviada (curso atualizado pela API). */
+  onExamSubmitted?: (course: Course, result: ExamSubmitResult) => void
 }
 
 export function MediaHub({
@@ -59,20 +64,32 @@ export function MediaHub({
   playing,
   onPlayingChange,
   onFinish,
+  onExamSubmitted,
 }: MediaHubProps) {
   const { showToast } = useFeedback()
   const [speedIndex, setSpeedIndex] = useState(1)
   const [page, setPage] = useState(1)
   const [cinema, setCinema] = useState(false)
+  const [documentIndex, setDocumentIndex] = useState(0)
   const barRef = useRef<HTMLDivElement>(null)
-  const embed = course.embedUrl ? parseVideoUrl(course.videoUrl ?? course.embedUrl) : null
-  const currentDocument = course.documents?.find((doc) => doc.id === lesson.id) ?? course.documents?.[0]
-  const documentUrl = currentDocument ? documentObjectUrl(currentDocument.id) : null
+  // Aulas vindas de etapas têm vídeo e documentos próprios; as demais usam o conteúdo do curso.
+  const staged = Boolean(lesson.stageId)
+  const videoSource = staged ? lesson : course
+  const embed = videoSource.embedUrl ? parseVideoUrl(videoSource.videoUrl ?? videoSource.embedUrl) : null
+  const documents = (staged ? lesson.documents : course.documents) ?? []
+  const currentDocument = staged
+    ? documents[Math.min(documentIndex, documents.length - 1)]
+    : (documents.find((doc) => doc.id === lesson.id) ?? documents[0])
+  const documentUrl = currentDocument?.url ?? null
+  const showVideo = staged ? lesson.kind === 'video' : course.contentKind !== 'document'
+  const showDocument = staged ? lesson.kind === 'pdf' : course.contentKind !== 'video'
   const duration = (lesson.durationMin ?? 20) * 60
   const speed = speeds[speedIndex]
   const percent = Math.min(100, (elapsed / duration) * 100)
   const buffered = Math.min(100, percent + 28)
-  const pages = pdfLesson?.pages ?? 12
+  const pages = staged ? Math.max(1, documents.length) : (pdfLesson?.pages ?? 12)
+  const position = staged ? Math.min(documentIndex, pages - 1) + 1 : page
+  const goTo = (next: number) => (staged ? setDocumentIndex(next - 1) : setPage(next))
 
   useEffect(() => {
     if (!playing || mode !== 'video') return
@@ -103,7 +120,7 @@ export function MediaHub({
     <div className="flex flex-col overflow-hidden rounded-xl border border-line bg-surface shadow-2xl">
       <div className="flex items-center justify-between gap-4 border-b border-line bg-elevated/90 px-4 py-2.5 text-ink">
         <div className="flex items-center gap-2">
-          {course.contentKind !== 'document' ? (
+          {showVideo ? (
             <button
               type="button"
               onClick={() => onModeChange('video')}
@@ -116,7 +133,7 @@ export function MediaHub({
               <span>{lesson.kind === 'quiz' ? 'Quiz' : 'Vídeo'}</span>
             </button>
           ) : null}
-          {course.contentKind !== 'video' ? (
+          {showDocument ? (
             <button
               type="button"
               onClick={() => onModeChange('pdf')}
@@ -133,6 +150,10 @@ export function MediaHub({
         <div className="flex items-center gap-3 font-display text-xs text-muted">
           {embed ? (
             <span className="hidden font-display text-xs text-muted sm:inline">Player da plataforma</span>
+          ) : staged && lesson.kind === 'quiz' ? (
+            <span className="inline-flex items-center gap-1.5 font-display text-xs font-semibold text-accent">
+              <ListChecks size={15} /> Prova da etapa
+            </span>
           ) : (
             <span className="hidden items-center gap-1.5 sm:inline-flex">
               <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/50" />
@@ -150,7 +171,18 @@ export function MediaHub({
         </div>
       </div>
 
-      {mode === 'video' && embed ? (
+      {staged && lesson.kind === 'quiz' && lesson.exam && lesson.stageId && onExamSubmitted ? (
+        <ExamPlayer
+          courseId={course.id}
+          stageId={lesson.stageId}
+          exam={lesson.exam}
+          summary={lesson.examResult}
+          done={lesson.done}
+          onSubmitted={onExamSubmitted}
+        />
+      ) : mode === 'video' && embed && embed.provider !== 'loom' ? (
+        <PlatformVideoPlayer key={embed.embedUrl} info={embed} title={lesson.title} onEnded={onFinish} />
+      ) : mode === 'video' && embed ? (
         <VideoEmbed info={embed} title={lesson.title} className="rounded-none" />
       ) : mode === 'video' && lesson.kind === 'quiz' ? (
         <div className="relative flex aspect-video w-full flex-col items-center justify-center overflow-hidden bg-black text-center">
@@ -288,13 +320,23 @@ export function MediaHub({
           <div className="flex items-center justify-between border-b border-line pb-3">
             <div className="flex items-center gap-2 text-ink">
               <FileText size={18} className="text-accent" />
-              <span className="font-display text-sm font-semibold">
-                {pdfLesson?.title ?? `Apostila: ${course.moduleTitles[0]}`}
+              <span className="truncate font-display text-sm font-semibold">
+                {staged ? (currentDocument?.name ?? lesson.title) : (pdfLesson?.title ?? `Apostila: ${course.moduleTitles[0]}`)}
               </span>
             </div>
-            <span className="font-display text-xs text-muted">
-              Página {page} de {pages}
-            </span>
+            <div className="flex shrink-0 items-center gap-3">
+              <span className="font-display text-xs text-muted">
+                {staged ? 'Arquivo' : 'Página'} {position} de {pages}
+              </span>
+              {staged && documentUrl ? (
+                <a
+                  href={`${documentUrl}?download=1`}
+                  className="inline-flex items-center gap-1 font-display text-xs font-semibold text-accent hover:underline"
+                >
+                  <Download size={14} /> Baixar
+                </a>
+              ) : null}
+            </div>
           </div>
           <div className="my-4 flex-1 overflow-hidden rounded-lg border border-line bg-elevated">
             {currentDocument && documentUrl && isPdf(currentDocument.mime, currentDocument.name) ? (
@@ -311,6 +353,10 @@ export function MediaHub({
                 >
                   Baixar arquivo
                 </a>
+              </div>
+            ) : staged ? (
+              <div className="flex h-full min-h-[280px] items-center justify-center p-6 text-sm text-muted">
+                Nenhum documento nesta etapa.
               </div>
             ) : (
               <div className="p-5">
@@ -333,8 +379,8 @@ export function MediaHub({
           <div className="flex items-center justify-between">
             <button
               type="button"
-              disabled={page === 1}
-              onClick={() => setPage((value) => Math.max(1, value - 1))}
+              disabled={position === 1}
+              onClick={() => goTo(Math.max(1, position - 1))}
               className="inline-flex items-center gap-1 rounded-lg border border-line bg-fill px-3 py-1.5 font-display text-xs font-semibold text-ink disabled:opacity-40"
             >
               <ChevronLeft size={14} /> Anterior
@@ -342,8 +388,8 @@ export function MediaHub({
             <span className="text-[11px] text-muted">Validado pela equipe de treinamento</span>
             <button
               type="button"
-              disabled={page === pages}
-              onClick={() => setPage((value) => Math.min(pages, value + 1))}
+              disabled={position === pages}
+              onClick={() => goTo(Math.min(pages, position + 1))}
               className="inline-flex items-center gap-1 rounded-lg border border-line bg-fill px-3 py-1.5 font-display text-xs font-semibold text-ink disabled:opacity-40"
             >
               Próxima <ChevronRight size={14} />

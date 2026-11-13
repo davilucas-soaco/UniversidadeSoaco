@@ -1,4 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { IconButton } from './IconButton'
@@ -55,7 +56,9 @@ export function Modal({ open, title, children, onClose, width = 'max-w-lg' }: Mo
 
   if (!present) return null
 
-  return (
+  // Portal no body: o layout aplica transform no conteúdo quando há modal aberto, e um
+  // position: fixed dentro de elemento com transform deixaria o modal preso à página.
+  return createPortal(
     <div className={cn('soaco-modal', entered && 'is-open')} role="presentation">
       <button type="button" aria-label="Fechar" className="soaco-modal-scrim" onClick={onClose} />
       <div
@@ -63,11 +66,11 @@ export function Modal({ open, title, children, onClose, width = 'max-w-lg' }: Mo
         aria-modal="true"
         aria-labelledby="modal-title"
         className={cn(
-          'soaco-modal-panel w-full rounded-[28px] border border-line bg-elevated p-6 shadow-float',
+          'soaco-modal-panel flex max-h-[calc(100dvh-2rem)] w-full flex-col rounded-[28px] border border-line bg-elevated p-6 shadow-float',
           width,
         )}
       >
-        <div className="mb-4 flex items-start justify-between gap-4">
+        <div className="mb-4 flex shrink-0 items-start justify-between gap-4">
           <h2 id="modal-title" className="text-lg font-bold tracking-tight text-ink">
             {open ? title : cache.title}
           </h2>
@@ -75,8 +78,10 @@ export function Modal({ open, title, children, onClose, width = 'max-w-lg' }: Mo
             <X size={18} />
           </IconButton>
         </div>
-        {open ? children : cache.children}
+        {/* Conteúdo maior que a tela rola dentro do modal (o título fica sempre visível). */}
+        <div className="-mx-1 flex min-h-0 flex-1 flex-col overflow-y-auto px-1">{open ? children : cache.children}</div>
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }

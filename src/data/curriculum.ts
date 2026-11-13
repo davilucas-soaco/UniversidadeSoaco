@@ -1,4 +1,4 @@
-import type { Course, CourseModule, Lesson } from '@/types'
+import type { Course, CourseModule, CourseStage, Lesson } from '@/types'
 
 const lessonTemplates = [
   'Introdução: {m}',
@@ -28,12 +28,40 @@ function lowerFirst(text: string) {
   return text.charAt(0).toLocaleLowerCase('pt-BR') + text.slice(1)
 }
 
+function stageLesson(stage: CourseStage): Lesson {
+  return {
+    id: stage.id,
+    stageId: stage.id,
+    title: stage.title,
+    kind: stage.kind === 'document' ? 'pdf' : stage.kind === 'exam' ? 'quiz' : 'video',
+    pages: stage.documents.length,
+    questions: stage.exam?.questions.length,
+    exam: stage.exam,
+    examResult: stage.examResult,
+    done: stage.done,
+    videoUrl: stage.videoUrl,
+    embedUrl: stage.embedUrl,
+    documents: stage.documents,
+  }
+}
+
+/** Cada etapa vira um módulo; as subetapas (ou a própria etapa, sem subetapas) são as aulas. */
+function stagesCurriculum(stages: CourseStage[]): CourseModule[] {
+  return stages.map((stage, index) => ({
+    id: `etapa-${stage.id}`,
+    title: `${index + 1}. ${stage.title}`,
+    summary: stage.description,
+    lessons: stage.children.length > 0 ? stage.children.map(stageLesson) : [stageLesson(stage)],
+  }))
+}
+
 /**
- * Gera o currículo de um curso de forma determinística a partir de
- * `moduleTitles`, `lessonsCount` e `progress`. Cada módulo recebe aulas em
- * vídeo, uma apostila e um quiz; o progresso define quais itens estão concluídos.
+ * Gera o currículo de um curso. Cursos com etapas usam o pipeline cadastrado; os demais
+ * são montados de forma determinística a partir de `moduleTitles`, `lessonsCount` e `progress`.
  */
 export function buildCurriculum(course: Course): CourseModule[] {
+  if (course.stages && course.stages.length > 0) return stagesCurriculum(course.stages)
+
   if (course.authored) {
     if (course.contentKind === 'video') {
       return [
@@ -186,4 +214,11 @@ export function currentModuleOf(course: Course) {
 export function isModuleLocked(modules: CourseModule[], index: number) {
   if (index === 0) return false
   return modules[index - 1].lessons.some((lesson) => !lesson.done)
+}
+
+/** Na sequência obrigatória, a aula só libera quando todas as anteriores estão concluídas. */
+export function isLessonLocked(modules: CourseModule[], lessonId: string) {
+  const lessons = modules.flatMap((module) => module.lessons)
+  const index = lessons.findIndex((lesson) => lesson.id === lessonId)
+  return index > 0 && lessons.slice(0, index).some((lesson) => !lesson.done)
 }

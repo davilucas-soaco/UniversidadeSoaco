@@ -5,7 +5,7 @@ import { cn } from '@/lib/cn'
 import type { Course } from '@/types'
 
 function ctaFor(course: Course) {
-  if (course.status === 'concluido') return 'Revisar'
+  if (course.status === 'concluido') return course.certificate?.code ? 'Certificado ou revisar' : 'Revisar'
   if (course.status === 'pendente') return 'Assistir'
   return 'Continuar'
 }

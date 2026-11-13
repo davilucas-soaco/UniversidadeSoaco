@@ -49,6 +49,7 @@ export default function App() {
         <Route path="ajuda" element={<PlaceholderPage />} />
         <Route path="admin/conteudos" element={only(MANAGERS, <AdminContentsPage />)} />
         <Route path="admin/conteudos/novo" element={only(MANAGERS, <CourseCreatePage />)} />
+        <Route path="admin/conteudos/:courseId/editar" element={only(MANAGERS, <CourseCreatePage />)} />
         <Route path="admin/colaboradores" element={only(ADMINS, <CollaboratorsPage />)} />
         <Route path="admin/indicadores" element={only(MANAGERS, <PlaceholderPage />)} />
         <Route path="admin/configuracoes" element={only(ADMINS, <SettingsPage />)} />

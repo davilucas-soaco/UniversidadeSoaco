@@ -1,5 +1,5 @@
 import { useRef, useState, type FormEvent } from 'react'
-import { BadgeCheck, Camera, Mail, MapPin, Pencil } from 'lucide-react'
+import { BadgeCheck, Camera, Expand, ImagePlus, Mail, MapPin, Pencil, Trash2 } from 'lucide-react'
 import { Avatar } from '@/components/ui/Avatar'
 import { Button } from '@/components/ui/Button'
 import { Modal } from '@/components/ui/Modal'
@@ -7,6 +7,7 @@ import { useCourseSummary } from '@/context/CatalogContext'
 import { useDashboardData } from '@/context/DashboardContext'
 import { useFeedback } from '@/context/FeedbackContext'
 import { useProfile } from '@/context/ProfileContext'
+import { cn } from '@/lib/cn'
 import { readProfilePhoto } from '@/lib/photo'
 import { profileFieldClass } from './fields'
 
@@ -18,6 +19,7 @@ export function ProfileHero() {
   const { showToast } = useFeedback()
   const inputRef = useRef<HTMLInputElement>(null)
   const [editing, setEditing] = useState(false)
+  const [viewingPhoto, setViewingPhoto] = useState(false)
   const [form, setForm] = useState({
     name: profile.name,
     email: profile.email,
@@ -90,18 +92,31 @@ export function ProfileHero() {
         <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div className="-mt-14 flex flex-col gap-4 sm:-mt-16 sm:flex-row sm:items-end">
             <div className="relative w-max">
-              <Avatar
-                name={profile.name}
-                initials={initials}
-                src={profile.photoUrl}
-                size="xl"
-                className="ring-4 ring-elevated shadow-float"
-              />
               <button
                 type="button"
-                onClick={() => inputRef.current?.click()}
+                onClick={() => setViewingPhoto(true)}
+                aria-label={profile.photoUrl ? 'Ampliar foto de perfil' : 'Adicionar foto de perfil'}
+                className={cn(
+                  'group relative block rounded-full focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none',
+                  profile.photoUrl ? 'cursor-zoom-in' : 'cursor-pointer',
+                )}
+              >
+                <Avatar
+                  name={profile.name}
+                  initials={initials}
+                  src={profile.photoUrl}
+                  size="xl"
+                  className="ring-4 ring-elevated shadow-float"
+                />
+                <span className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-full bg-black/0 text-white opacity-0 transition group-hover:bg-black/40 group-hover:opacity-100">
+                  {profile.photoUrl ? <Expand size={22} /> : <Camera size={22} />}
+                </span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewingPhoto(true)}
                 className="absolute right-1 bottom-1 inline-flex h-8 w-8 items-center justify-center rounded-full bg-accent text-accent-ink shadow-md transition hover:bg-accent-strong"
-                aria-label="Alterar foto de perfil"
+                aria-label="Foto de perfil"
               >
                 <Camera size={14} />
               </button>
@@ -122,9 +137,7 @@ export function ProfileHero() {
                 <h1 className="font-display text-2xl font-bold tracking-tight text-ink">{profile.name}</h1>
                 <BadgeCheck size={18} className="text-accent" />
               </div>
-              <p className="mt-0.5 text-sm text-muted">
-                {jobTitle} · {sector}
-              </p>
+              <p className="mt-0.5 text-sm text-muted">{[jobTitle, sector].filter(Boolean).join(' · ')}</p>
               <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted">
                 <span className="inline-flex items-center gap-1.5">
                   <MapPin size={13} />
@@ -157,6 +170,42 @@ export function ProfileHero() {
           ))}
         </div>
       </div>
+
+      <Modal open={viewingPhoto} onClose={() => setViewingPhoto(false)} title="Foto de perfil" width="max-w-xl">
+        <div className="flex flex-col items-center gap-5">
+          {profile.photoUrl ? (
+            <img
+              src={profile.photoUrl}
+              alt={`Foto de ${profile.name}`}
+              className="aspect-square w-full max-w-[420px] rounded-2xl object-cover shadow-float"
+            />
+          ) : (
+            <div className="flex aspect-square w-full max-w-[280px] items-center justify-center rounded-2xl border border-dashed border-line bg-surface">
+              <Avatar name={profile.name} initials={initials} size="xl" />
+            </div>
+          )}
+          <p className="text-center text-xs text-muted">JPG, PNG ou WEBP até 4 MB. A imagem é recortada em quadrado.</p>
+          <div className="flex w-full flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+            {profile.photoUrl ? (
+              <Button
+                variant="ghost"
+                icon={<Trash2 size={16} />}
+                onClick={() => {
+                  setPhoto(null)
+                  setViewingPhoto(false)
+                  showToast('Foto removida.')
+                }}
+                className="text-danger hover:text-danger"
+              >
+                Remover foto
+              </Button>
+            ) : null}
+            <Button icon={<ImagePlus size={16} />} onClick={() => inputRef.current?.click()}>
+              {profile.photoUrl ? 'Substituir foto' : 'Enviar foto'}
+            </Button>
+          </div>
+        </div>
+      </Modal>
 
       <Modal open={editing} onClose={() => setEditing(false)} title="Editar perfil" width="max-w-xl">
         <form onSubmit={saveEdit} className="flex flex-col gap-4">
@@ -195,7 +244,6 @@ export function ProfileHero() {
               />
             </label>
           </div>
-          <p className="text-xs leading-5 text-muted">Cargo e setor são definidos pelo RH e não podem ser alterados aqui.</p>
           <div className="mt-2 flex justify-end gap-2">
             <Button variant="ghost" onClick={() => setEditing(false)}>
               Cancelar

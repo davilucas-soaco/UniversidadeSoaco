@@ -135,6 +135,11 @@ export function CollaboratorsPage() {
             <div className="min-w-0">
               <p className="truncate font-medium text-ink">
                 {user.name}
+                {user.isMaster ? (
+                  <span className="ml-1.5 rounded bg-podium-gold/15 px-1.5 py-0.5 text-[10px] font-bold text-podium-gold uppercase">
+                    Master
+                  </span>
+                ) : null}
                 {user.id === me.id ? <span className="ml-1.5 text-[11px] font-semibold text-accent">(você)</span> : null}
               </p>
               <p className="truncate text-xs text-muted">
@@ -203,7 +208,7 @@ export function CollaboratorsPage() {
             >
               <Pencil size={16} />
             </button>
-            {user.id !== me.id ? (
+            {user.id !== me.id && !user.isMaster ? (
               <>
                 <button
                   type="button"
@@ -250,7 +255,12 @@ export function CollaboratorsPage() {
             informações.
           </p>
         </div>
-        <Button icon={<UserPlus size={16} />} onClick={() => setModal({ open: true, user: null })} disabled={!data}>
+        <Button
+          data-tour="users-new"
+          icon={<UserPlus size={16} />}
+          onClick={() => setModal({ open: true, user: null })}
+          disabled={!data}
+        >
           Novo colaborador
         </Button>
       </div>
@@ -268,7 +278,7 @@ export function CollaboratorsPage() {
         </div>
       ) : (
         <>
-          <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div data-tour="users-kpis" className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
             {[
               { label: 'Cadastrados', value: total },
               { label: 'Ativos', value: activeCount },
@@ -295,17 +305,19 @@ export function CollaboratorsPage() {
               />
             </Card>
           ) : (
-            <DataTable
-              rows={data.users}
-              columns={columns}
-              rowKey={(user) => user.id}
-              search={{ placeholder: 'Buscar por nome ou e-mail...', text: (user) => `${user.name} ${user.email}` }}
-              initialSort={{ key: 'name', direction: 'asc' }}
-              rowClassName={(user) => (user.active ? undefined : 'opacity-60')}
-              emptyMessage="Nenhum colaborador corresponde à busca e aos filtros."
-              itemLabel={{ singular: 'colaborador', plural: 'colaboradores' }}
-              minWidth="860px"
-            />
+            <div data-tour="users-table">
+              <DataTable
+                rows={data.users}
+                columns={columns}
+                rowKey={(user) => user.id}
+                search={{ placeholder: 'Buscar por nome ou e-mail...', text: (user) => `${user.name} ${user.email}` }}
+                initialSort={{ key: 'name', direction: 'asc' }}
+                rowClassName={(user) => (user.active ? undefined : 'opacity-60')}
+                emptyMessage="Nenhum colaborador corresponde à busca e aos filtros."
+                itemLabel={{ singular: 'colaborador', plural: 'colaboradores' }}
+                minWidth="860px"
+              />
+            </div>
           )}
 
           <UserFormModal
